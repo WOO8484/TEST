@@ -270,7 +270,8 @@ body {
   background: var(--purple-bg); color: var(--purple);
   font-size: 11.5px; font-weight: 600;
 }
-#content { flex: 1; overflow-y: auto; padding: 26px 28px 26px 24px; }
+#content { flex: 1; overflow-y: auto; padding: 26px 28px 26px 24px;   -webkit-overflow-scrolling: touch;
+}
 .page { display: none; }
 .page.active { display: block; }
 
@@ -1103,7 +1104,6 @@ select { -webkit-appearance: auto; }
     </div>
     <div class="login-error" id="loginError"></div>
     <button class="login-btn" onclick="doLogin()">로그인</button>
-    <div id="loginDefaultHint" style="display:none;text-align:center;margin-top:12px;padding:8px 12px;background:#f5f3ff;border-radius:8px;font-size:11.5px;color:#6E4FD0;">🔑 초기 계정: <strong>admin</strong> / <strong>1234</strong></div>
     <!-- 임시 버전 표기 (확인용) -->
     <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--muted-2);">v1.0 · build 0.8</div>
 
@@ -1252,22 +1252,24 @@ select { -webkit-appearance: auto; }
             </div>
           </div>
           <div class="table-wrap">
-            <table style="table-layout:fixed;width:100%;">
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+            <table style="table-layout:fixed;width:100%;min-width:820px;">
               <colgroup>
-                <col style="width:16%;"><!-- 이름 -->
-                <col style="width:12%;"><!-- 연락처 -->
-                <col style="width:8%;"> <!-- 학년/나이 -->
-                <col style="width:10%;"><!-- 수강과정 -->
-                <col style="width:10%;"><!-- 수업일수 -->
-                <col style="width:12%;"><!-- 원비/등록일 -->
-                <col style="width:7%;"> <!-- 상태 -->
-                <col style="width:25%;"><!-- 관리 -->
+                <col style="width:150px;"><!-- 이름 -->
+                <col style="width:130px;"><!-- 연락처 -->
+                <col style="width:80px;"> <!-- 학년/나이 -->
+                <col style="width:100px;"><!-- 수강과정 -->
+                <col style="width:110px;"><!-- 수업일수 -->
+                <col style="width:120px;"><!-- 원비/등록일 -->
+                <col style="width:70px;"> <!-- 상태 -->
+                <col style="width:200px;"><!-- 관리 -->
               </colgroup>
               <thead><tr>
                 <th>이름</th><th>연락처</th><th>학년/나이</th><th>수강과정</th><th>수업일수</th><th>원비/등록일</th><th>상태</th><th style="text-align:center;">관리</th>
               </tr></thead>
               <tbody id="memberTableBody"></tbody>
             </table>
+            </div>
           </div>
         </div>
       </div>
@@ -1378,11 +1380,12 @@ select { -webkit-appearance: auto; }
           <div class="card">
             <div class="card-header"><div class="card-title">자재 재고 현황</div><button class="btn btn-sm btn-ghost" onclick="copyOrderList()" id="copyOrderBtn" style="display:none;color:var(--amber);border-color:var(--amber);">📋 발주 목록 복사</button></div>
             <div class="table-wrap">
-              <table style="table-layout:fixed;width:100%;">
+              <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+              <table style="table-layout:fixed;width:100%;min-width:760px;">
                 <colgroup>
                   <col style="width:140px;"><!-- 자재명 -->
                   <col style="width:100px;"><!-- 카테고리 -->
-                  <col style="width:120px;"><!-- 재고 -->
+                  <col style="width:110px;"><!-- 재고 -->
                   <col style="width:100px;"><!-- 최소재고 -->
                   <col style="width:90px;"> <!-- 단가 -->
                   <col style="width:70px;"> <!-- 상태 -->
@@ -1391,6 +1394,7 @@ select { -webkit-appearance: auto; }
                 <thead><tr><th>자재명</th><th>카테고리</th><th>재고</th><th>최소재고</th><th>단가</th><th>상태</th><th style="text-align:center;">관리</th></tr></thead>
                 <tbody id="materialTableBody"></tbody>
               </table>
+              </div>
             </div>
           </div>
         </div>
@@ -2095,7 +2099,6 @@ select { -webkit-appearance: auto; }
     <div class="modal-header" style="flex-shrink:0;">
       <div class="modal-icon" style="background:var(--purple-bg);"><span style="font-size:20px;">📋</span></div>
       <div class="modal-title">프로그램 정보</div>
-      <button class="modal-close" onclick="closeUpdateHistoryModal()"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
 
     <!-- 버전 배지 -->
@@ -2203,141 +2206,95 @@ select { -webkit-appearance: auto; }
       <!-- ── 탭2: 기능 목록 ── -->
       <div id="uhPanel2" style="display:none;">
 
-        <!-- 대시보드 -->
         <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-size:18px;">🏠</span>
-            <span style="font-size:14px;font-weight:700;color:var(--ink);">대시보드</span>
-            <span style="font-size:11.5px;color:var(--muted);">전체 현황 한눈에 파악</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:18px;">🏠</span><span style="font-size:14px;font-weight:700;color:var(--ink);">대시보드</span><span style="font-size:11.5px;color:var(--muted);">전체 현황 한눈에</span></div>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:28px;">
-            <li style="font-size:13px;color:var(--ink-3);">• 전체 회원 수 / 이번 달 납부율 / 미납 현황 통계</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 오늘 출석 현황 실시간 표시</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 월별 신규 회원 추이 차트 / 월별 수납 추이 차트</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 재고 부족 자재 알림</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 생일 알림 / 장기 결석 알림</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 전체 회원 수 / 이달 납부율 / 미납 현황 통계 카드</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 이달 생일 알림 · 장기 결석 알림 · 재고 부족 알림</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 월별 신규 회원 추이 차트</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 최근 등록 회원 목록</li>
             <li style="font-size:13px;color:var(--teal);">✓ 권한별 맞춤 구성 — 접근 가능한 섹션만 표시</li>
           </ul>
         </div>
 
-        <!-- 회원 관리 -->
         <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-size:18px;">👥</span>
-            <span style="font-size:14px;font-weight:700;color:var(--ink);">회원 관리</span>
-            <span style="font-size:11.5px;color:var(--muted);">원생 정보 통합 관리</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:18px;">👥</span><span style="font-size:14px;font-weight:700;color:var(--ink);">회원 관리</span><span style="font-size:11.5px;color:var(--muted);">원생 정보 통합 관리</span></div>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:28px;">
-            <li style="font-size:13px;color:var(--ink-3);">• 회원 등록 / 수정 / 탈퇴 처리</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 수강 카테고리 분류 (커스텀 가능)</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 회원별 상세 정보 — 연락처 / 등록일 / 메모</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 재원 / 탈퇴 회원 구분 관리</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 검색 범위 확장 — 이름·연락처·수강과정·메모·학년</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 수강 이력 관리 — 과정 변경 시 일시·처리자 자동 기록</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 회원 등록 / 수정 / 삭제 / 탈퇴 처리</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 이름 · 연락처 · 수강과정 · 학년 · 원비 · 등록일 · 메모</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 재원 / 탈퇴 필터 · 통합 검색</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 회원 상세 모달 (출결·원비 이력 한눈에)</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 미납 배지 자동 표시</li>
+            <li style="font-size:13px;color:var(--teal);">✓ 엑셀 내보내기 지원</li>
           </ul>
         </div>
 
-        <!-- 원비 관리 -->
         <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-size:18px;">💰</span>
-            <span style="font-size:14px;font-weight:700;color:var(--ink);">원비 관리</span>
-            <span style="font-size:11.5px;color:var(--muted);">납부 현황 및 통계</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:18px;">💰</span><span style="font-size:14px;font-weight:700;color:var(--ink);">원비 관리</span><span style="font-size:11.5px;color:var(--muted);">납부 현황 및 통계</span></div>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:28px;">
             <li style="font-size:13px;color:var(--ink-3);">• 월별 납부 / 미납 현황 관리</li>
             <li style="font-size:13px;color:var(--ink-3);">• 납부 방법 기록 (현금 / 계좌이체 / 카드)</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 월별 총 수입 / 납부율 통계</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 미납자 목록 한눈에 확인</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 납부 마감일 설정 — 미납 목록 D-day 자동 표시</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 납부 이력에 처리자 이름 자동 기록</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 전체 납부 · 미납 일괄 처리</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 원비 마감일 설정 — D-day 자동 표시</li>
+            <li style="font-size:13px;color:var(--teal);">✓ 납부 처리자 이름 자동 기록</li>
           </ul>
         </div>
 
-        <!-- 출결 관리 -->
         <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-size:18px;">📋</span>
-            <span style="font-size:14px;font-weight:700;color:var(--ink);">출결 관리</span>
-            <span style="font-size:11.5px;color:var(--muted);">출석 / 결석 / 지각 기록</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:18px;">📋</span><span style="font-size:14px;font-weight:700;color:var(--ink);">출결 관리</span><span style="font-size:11.5px;color:var(--muted);">출석 / 결석 / 지각 기록</span></div>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:28px;">
-            <li style="font-size:13px;color:var(--ink-3);">• 일별 출석 체크 (출석 / 결석 / 지각)</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 달력 뷰 — 월간 출결 현황 시각화</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 출석률 순위 — 회원별 출석률 랭킹</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 기간별 출결 통계 요약</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 날짜 범위 일괄 처리 — 방학·휴강·공휴일 출석/결석/초기화</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 일별 출석 체크 (출석 / 지각 / 결석)</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 전체 출석 / 전체 결석 일괄 처리</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 회원별 개별 저장 버튼</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 이달 수업 현황 — 진행률 바 통합 표시</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 달력 뷰 · 출석률 순위</li>
+            <li style="font-size:13px;color:var(--teal);">✓ 날짜 범위 일괄 처리 — 방학·휴강 대응</li>
           </ul>
         </div>
 
-        <!-- 자재 관리 -->
         <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-size:18px;">🎨</span>
-            <span style="font-size:14px;font-weight:700;color:var(--ink);">자재 관리</span>
-            <span style="font-size:11.5px;color:var(--muted);">미술 재료 재고 관리</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:18px;">🎨</span><span style="font-size:14px;font-weight:700;color:var(--ink);">자재 관리</span><span style="font-size:11.5px;color:var(--muted);">미술 재료 재고 관리</span></div>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:28px;">
             <li style="font-size:13px;color:var(--ink-3);">• 자재 등록 / 수정 / 삭제</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 재고 수량 실시간 관리</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 입고 / 사용 이력 기록</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 재고 부족 자재 자동 알림</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 카테고리별 자재 분류</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 입출고 이력에 처리자 이름 자동 기록</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 입고 / 사용 처리 및 이력 기록</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 카테고리별 재고 현황 — 정상 / 부족 / 품절</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 자재별 재고 진행률 바 그래프</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 최소 재고 기준선 — 부족 시 자동 알림</li>
+            <li style="font-size:13px;color:var(--teal);">✓ 입출고 처리자 이름 자동 기록</li>
           </ul>
         </div>
 
-        <!-- 계정 및 권한 -->
         <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-size:18px;">🔐</span>
-            <span style="font-size:14px;font-weight:700;color:var(--ink);">계정 및 권한</span>
-            <span style="font-size:11.5px;color:var(--muted);">다중 계정 / 역할 기반 접근 제어</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:18px;">🔐</span><span style="font-size:14px;font-weight:700;color:var(--ink);">계정 및 권한</span><span style="font-size:11.5px;color:var(--muted);">다중 계정 · 역할 기반 제어</span></div>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:28px;">
-            <li style="font-size:13px;color:var(--ink-3);">• 관리자 계정 — 모든 기능 접근, 계정 생성/삭제</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 직책별 계정 — 원장 / 실장 / 강사 / 기타 (직접 입력)</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 8개 권한 항목 개별 부여 (버튼·기능 단위까지 제어)</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 직책 선택 시 권한 자동 템플릿 적용 (수정 가능)</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 비밀번호 SHA-256 해싱 저장</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 세션 로그인 — 새로고침 유지, 탭 닫으면 자동 로그아웃</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 관리자 / 직책별 계정 (원장 · 실장 · 강사 · 직접입력)</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 8개 권한 항목 개별 설정</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 자동 로그인 / 세션 유지 선택</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 비밀번호 SHA-256 암호화 저장</li>
             <li style="font-size:13px;color:var(--teal);">✓ 로그인 실패 5회 시 5분 자동 잠금</li>
           </ul>
         </div>
 
-        <!-- 설정 -->
         <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-size:18px;">⚙️</span>
-            <span style="font-size:14px;font-weight:700;color:var(--ink);">설정</span>
-            <span style="font-size:11.5px;color:var(--muted);">시스템 및 데이터 관리</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:18px;">⚙️</span><span style="font-size:14px;font-weight:700;color:var(--ink);">설정</span><span style="font-size:11.5px;color:var(--muted);">시스템 및 데이터 관리</span></div>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:28px;">
-            <li style="font-size:13px;color:var(--ink-3);">• Firebase 클라우드 실시간 동기화</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 학원 이름 설정 · 원비 납부 마감일 설정</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 데이터 백업 (JSON) / 복원</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 학원 이름 설정 · Firebase 클라우드 동기화</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 데이터 백업(JSON) / 복원</li>
             <li style="font-size:13px;color:var(--ink-3);">• 버전 이력 복구 (최근 10개 시점)</li>
             <li style="font-size:13px;color:var(--ink-3);">• 전체 데이터 초기화</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 자동 버전 체크 및 업데이트</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 엑셀 내보내기 — 회원·원비·출결·자재·통계 5개 시트</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 관리자 활동 로그 — 최근 500건 작업 이력 조회</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 관리자 활동 로그 조회 (최근 500건)</li>
+            <li style="font-size:13px;color:var(--teal);">✓ 엑셀 내보내기 — 회원·원비·출결·자재 통합</li>
+            <li style="font-size:13px;color:var(--teal);">✓ 자동 버전 체크 및 캐시 갱신</li>
           </ul>
         </div>
 
-        <!-- 지원 기기 -->
         <div style="padding:14px 0;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <span style="font-size:18px;">📱</span>
-            <span style="font-size:14px;font-weight:700;color:var(--ink);">지원 기기</span>
-            <span style="font-size:11.5px;color:var(--muted);">실시간 동기화 지원</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:18px;">📱</span><span style="font-size:14px;font-weight:700;color:var(--ink);">지원 기기</span></div>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:28px;">
-            <li style="font-size:13px;color:var(--ink-3);">• 🖥️ PC — Windows / Mac (Chrome, Edge, Safari)</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 📱 아이패드 — Safari (홈 화면 앱 추가 지원)</li>
-            <li style="font-size:13px;color:var(--ink-3);">• 📱 아이폰 — Safari (홈 화면 앱 추가 지원)</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 🖥️ PC — Windows / Mac (Chrome · Edge · Safari)</li>
+            <li style="font-size:13px;color:var(--ink-3);">• 📱 아이패드 / 아이폰 — Safari (홈 화면 앱 추가 지원)</li>
             <li style="font-size:13px;color:var(--ink-3);">• 📱 안드로이드 — Chrome (홈 화면 앱 추가 지원)</li>
-            <li style="font-size:13px;color:var(--teal);margin-top:4px;">✓ 모든 기기에서 Firebase 실시간 동기화</li>
-            <li style="font-size:13px;color:var(--teal);">✓ 업데이트 시 자동 캐시 갱신 (Service Worker)</li>
+            <li style="font-size:13px;color:var(--teal);">✓ Firebase 실시간 동기화 (기기 간 즉시 반영)</li>
           </ul>
         </div>
 
@@ -3778,7 +3735,6 @@ async function doLogin() {
     } else {
       errorEl.textContent = `아이디 또는 비밀번호가 올바르지 않습니다. (${newCount}/${MAX_FAIL})`;
     }
-    const hint = document.getElementById('loginDefaultHint'); if(hint && newCount >= 1) hint.style.display = '';
     document.getElementById('loginPw').value = '';
     document.getElementById('loginPw').focus();
   }
@@ -4186,16 +4142,16 @@ function renderMembers() {
         </div>
         ${m.memo?`<div class="td-sub">${m.memo}</div>`:''}
       </td>
-      <td style="font-size:13px;color:var(--muted);">${m.phone||'-'}</td>
+      <td style="font-size:12.5px;color:var(--muted);white-space:nowrap;">${m.phone||'-'}</td>
       <td style="font-size:13px;">${m.grade||'-'}</td>
       <td><span class="badge badge-purple">${m.course}</span></td>
       <td style="white-space:nowrap;">
         <span class="class-chip" style="font-size:11px;">${(()=>{try{return classLabel(m)}catch(e){return '-'}})()}</span>
         <span style="font-size:11px;color:var(--muted);margin-left:5px;">월 ${(()=>{try{return getMonthlyTarget(m)}catch(e){return 0}})()}회</span>
       </td>
-      <td style="white-space:nowrap;">
-        <span style="font-size:13px;font-weight:600;">${(m.fee||0).toLocaleString()}원</span>
-        <span style="font-size:11px;color:var(--muted);margin-left:5px;">${m.startDate||'-'}</span>
+      <td>
+        <div style="font-size:13px;font-weight:600;white-space:nowrap;">${(m.fee||0).toLocaleString()}원</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;">${m.startDate||'-'}</div>
       </td>
       <td>${statusBadge}</td>
       <td style="text-align:center;white-space:nowrap;">
@@ -6092,6 +6048,8 @@ function saveLoginSession(id) {
 function clearLoginSession() {
   try { sessionStorage.removeItem(SESSION_KEY); } catch(e) {}
   try { sessionStorage.removeItem(AUTO_LOGIN_SESSION); } catch(e) {}
+  try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
+  try { localStorage.removeItem(AUTO_LOGIN_SESSION); } catch(e) {}
   _storage.removeItem(AUTO_LOGIN_SESSION);
   _storage.removeItem('luke_session_id');
 }
