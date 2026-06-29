@@ -151,7 +151,7 @@ textarea{resize:vertical;line-height:1.7}
   <div class="logo">
     <div class="logo-icon">💰</div>
     <span class="logo-text">AI 블로그 수익화 자동화</span>
-    <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(99,102,241,.2);color:#a78bfa;border:1px solid rgba(99,102,241,.3);margin-left:4px">v1.2.0</span>
+    <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(99,102,241,.2);color:#a78bfa;border:1px solid rgba(99,102,241,.3);margin-left:4px">v1.3.0</span>
   </div>
   <div class="status-bar">
     <span class="sb" id="sb-gemini">❌ Gemini 미설정</span>
@@ -212,18 +212,41 @@ textarea{resize:vertical;line-height:1.7}
       <input type="text" id="blogId" placeholder="예: 1234567890123456789" oninput="autoSave()">
       <p class="hint">Blogger 대시보드 URL → blogger.com/blog/posts/<strong>이 숫자</strong></p>
     </div>
-    <div class="fg">
-      <label>Google OAuth 액세스 토큰</label>
-      <input type="password" id="oauthToken" placeholder="ya29.xxxxx..." oninput="startTokenTimer();autoSave()">
-      <div id="tokenTimerEl" style="margin-top:6px"></div>
-      <div class="infobox">
-        <h4>📋 토큰 발급 (1시간 유효, 무료)</h4>
+
+    <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#34d399;margin-bottom:10px">✅ 영구 자동 갱신 (권장) — 한 번만 설정하면 끝!</div>
+      <div class="fg">
+        <label>Google Client ID</label>
+        <input type="text" id="googleClientId" placeholder="xxxxx.apps.googleusercontent.com" oninput="autoSave()">
+      </div>
+      <div class="fg">
+        <label>Google Client Secret</label>
+        <input type="password" id="googleClientSecret" placeholder="GOCSPX-xxxxx" oninput="autoSave()">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label>Refresh Token</label>
+        <input type="password" id="refreshToken" placeholder="1//xxxxx" oninput="autoSave()">
+      </div>
+      <div class="infobox" style="margin-top:12px">
+        <h4>📋 한 번만 설정하는 방법</h4>
         <ol>
-          <li><a href="https://developers.google.com/oauthplayground/" target="_blank" style="color:#818cf8">OAuth 2.0 Playground</a> 접속</li>
-          <li>Blogger API v3 선택 → <code>https://www.googleapis.com/auth/blogger</code> 체크</li>
-          <li>Authorize APIs → Exchange authorization code for tokens</li>
-          <li>Access token 복사 후 위에 붙여넣기</li>
+          <li><a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#818cf8">Google Cloud Console</a> → OAuth 2.0 클라이언트 ID 생성</li>
+          <li>애플리케이션 유형: <strong>웹 애플리케이션</strong> 선택</li>
+          <li>Client ID, Client Secret 복사해서 위에 입력</li>
+          <li><a href="https://developers.google.com/oauthplayground/" target="_blank" style="color:#818cf8">OAuth Playground</a> → ⚙️ 설정 → "Use your own OAuth credentials" 체크</li>
+          <li>내 Client ID/Secret 입력 → Blogger API v3 선택 → Authorize</li>
+          <li>Exchange authorization code for tokens → <strong>Refresh token 복사</strong></li>
+          <li>위 Refresh Token 칸에 붙여넣기 → 이제 영구 자동 갱신!</li>
         </ol>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px">
+      <div style="font-size:12px;font-weight:700;color:#9ca3af;margin-bottom:10px">⏱ 임시 토큰 (1시간마다 수동 갱신)</div>
+      <div class="fg" style="margin-bottom:0">
+        <label>Access Token (Refresh Token 없을 때만 사용)</label>
+        <input type="password" id="oauthToken" placeholder="ya29.xxxxx..." oninput="startTokenTimer();autoSave()">
+        <div id="tokenTimerEl" style="margin-top:6px"></div>
       </div>
     </div>
   </div>
@@ -399,7 +422,10 @@ textarea{resize:vertical;line-height:1.7}
 const SALT='yblog_salt_2024';
 const DEFAULT_HASH='af176805df287cd3b56f650be6d6d30e2ffe88fa724b37121c51d79d87d1de58';
 
-async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));var arr = Array.from(new Uint8Array(b));
+  var hex = '';
+  for (var xi = 0; xi < arr.length; xi++) { hex += arr[xi].toString(16).padStart(2,'0'); }
+  return hex;}
 
 function doLogout(){sessionStorage.removeItem('yblog_auth');window.location.href='index.html';}
 
@@ -439,10 +465,27 @@ function save() {
 }
 
 function showTab(name) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  document.querySelector('[data-tab="' + name + '"]').classList.add('active');
+  try {
+    var tabs = document.getElementsByClassName('tab-content');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].style.display = 'none';
+    }
+    var btns = document.getElementsByClassName('tab-btn');
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].classList.remove('active');
+    }
+    var tabEl = document.getElementById('tab-' + name);
+    if (tabEl) tabEl.style.display = 'block';
+    var allBtns = document.getElementsByClassName('tab-btn');
+    for (var k = 0; k < allBtns.length; k++) {
+      if (allBtns[k].getAttribute('data-tab') === name) {
+        allBtns[k].classList.add('active');
+      }
+    }
+  } catch(e) {
+    var panel = document.getElementById('debugPanel');
+    if (panel) { panel.style.display='block'; panel.innerHTML += '<div>showTab 오류: ' + e.message + '</div>'; }
+  }
 }
 
 function saveSettings() {
@@ -461,14 +504,19 @@ function saveSettings() {
 
 function updateStatusBar() {
   const s = state.settings;
-  const set = (id, ok, okText, noText) => {
-    const el = document.getElementById(id);
+  function set(id, ok, okText, noText) {
+    var el = document.getElementById(id);
+    if (!el) return;
     el.textContent = ok ? okText : noText;
     el.className = 'sb ' + (ok ? 'ok' : 'no');
-  };
+  }
   set('sb-gemini', s.geminiKey, '✅ Gemini 연결됨', '❌ Gemini 미설정');
   set('sb-blog', s.blogId, '✅ Blog ID 설정됨', '❌ Blog ID 없음');
-  set('sb-token', s.oauthToken, '✅ 토큰 있음', '❌ 토큰 없음');
+  const hasRefresh = s.refreshToken && s.googleClientId && s.googleClientSecret;
+  const hasAccess = s.oauthToken;
+  set('sb-token', hasRefresh || hasAccess,
+    hasRefresh ? '🔄 자동 갱신 설정됨' : '⏱ 임시 토큰 있음',
+    '❌ 토큰 없음');
 }
 
 let timerInterval = null, tokenExpiry = null;
@@ -535,19 +583,22 @@ async function fetchTrends() {
     document.getElementById('trendLoadingText').textContent = '구글 트렌드 데이터 수집 중...';
     const proxyUrl = 'https://api.allorigins.win/get?url=';
     const rssUrl = encodeURIComponent('https://trends.google.com/trends/trendingsearches/daily/rss?geo=' + country);
-    const res = await fetch(proxyUrl + rssUrl, { signal: AbortSignal.timeout(8000) });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(function(){ controller.abort(); }, 8000);
+    const res = await fetch(proxyUrl + rssUrl, { signal: controller.signal });
+    clearTimeout(timeoutId);
     const data = await res.json();
     const parser = new DOMParser();
     const xml = parser.parseFromString(data.contents, 'text/xml');
     const items = xml.querySelectorAll('item');
-    rawTrends = [...items].slice(0, 25).map(item => {
+    rawTrends = Array.from(items).slice(0, 25).map(function(item) {
       const title = item.querySelector('title');
       const traffic = item.querySelector('ht\\:approx_traffic, approx_traffic');
       return {
         title: title ? title.textContent : '',
         traffic: traffic ? traffic.textContent : ''
       };
-    }).filter(t => t.title);
+    }).filter(function(t) { return t.title; });
   } catch(e) {
     rawTrends = [];
   }
@@ -746,7 +797,10 @@ async function generatePost(keyword) {
 }
 
 function getImageUrl(prompt) {
-  const seed = Math.abs([...prompt].reduce(function(a,c){return((a<<5)-a+c.charCodeAt(0))|0;}, 0));
+  var seed = 0;
+  for (var pi = 0; pi < prompt.length; pi++) { seed = ((seed<<5)-seed+prompt.charCodeAt(pi))|0; }
+  seed = Math.abs(seed);
+  var _unused = seed;
   return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=1200&height=630&nologo=true&seed=' + seed;
 }
 
@@ -768,7 +822,8 @@ async function startGeneration() {
   const kwText = document.getElementById('keywordsInput').value.trim();
   if (!kwText) { showAlert('키워드를 입력해 주세요', 'error'); return; }
 
-  const keywords = [...new Set(kwText.split('\n').map(function(k){return k.trim();}).filter(Boolean))];
+  var kwSet = {}; var keywords = [];
+  kwText.split('\n').forEach(function(k){ var t=k.trim(); if(t && !kwSet[t]){kwSet[t]=1;keywords.push(t);} });
   state.isGenerating = true;
 
   const btn = document.getElementById('genBtn');
@@ -822,9 +877,57 @@ async function startGeneration() {
 }
 
 // ===== POSTING =====
+async function refreshAccessToken() {
+  var googleClientId = state.settings.googleClientId;
+  var googleClientSecret = state.settings.googleClientSecret;
+  var refreshToken = state.settings.refreshToken;
+  if (!googleClientId || !googleClientSecret || !refreshToken) return null;
+  try {
+    const res = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: googleClientId,
+        client_secret: googleClientSecret,
+        refresh_token: refreshToken,
+        grant_type: 'refresh_token'
+      })
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      state.settings.oauthToken = data.access_token;
+      state.settings.tokenExpiry = Date.now() + ((data.expires_in || 3600) * 1000);
+      save();
+      document.getElementById('oauthToken').value = data.access_token;
+      addLog('🔄 액세스 토큰 자동 갱신 완료');
+      return data.access_token;
+    }
+  } catch(e) { addLog('⚠️ 토큰 갱신 실패: ' + e.message); }
+  return null;
+}
+
+async function getValidToken() {
+  const s = state.settings;
+  const hasRefresh = s.refreshToken && s.googleClientId && s.googleClientSecret;
+  // 토큰이 5분 이상 남아 있으면 그대로 사용
+  if (s.oauthToken && s.tokenExpiry && Date.now() < s.tokenExpiry - 300000) {
+    return s.oauthToken;
+  }
+  // Refresh Token이 있으면 자동 갱신
+  if (hasRefresh) {
+    const newToken = await refreshAccessToken();
+    if (newToken) return newToken;
+  }
+  // 임시 토큰 사용
+  if (s.oauthToken) return s.oauthToken;
+  return null;
+}
+
 async function postToBlogger(post) {
-  const blogId = state.settings.blogId, token = state.settings.oauthToken;
-  if (!blogId || !token) throw new Error('Blog ID와 토큰을 설정해 주세요');
+  const blogId = state.settings.blogId;
+  if (!blogId) throw new Error('Blog ID를 설정해 주세요');
+  const token = await getValidToken();
+  if (!token) throw new Error('토큰이 없습니다. 설정에서 Refresh Token 또는 Access Token을 입력해 주세요');
   const res = await fetch('https://www.googleapis.com/blogger/v3/blogs/' + blogId + '/posts/', {
     method: 'POST',
     headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
@@ -833,7 +936,12 @@ async function postToBlogger(post) {
   if (!res.ok) {
     const e = await res.json();
     let msg = (e.error && e.error.message) ? e.error.message : ('HTTP ' + res.status);
-    if (/401|invalid.cred/i.test(msg)) msg = '토큰이 만료되었습니다. 새로 발급받아 주세요.';
+    if (/401|invalid.cred/i.test(msg)) {
+      // 401이면 강제 갱신 시도
+      const newToken = await refreshAccessToken();
+      if (newToken) return await postToBlogger(post); // 재시도
+      msg = 'Refresh Token을 설정하면 자동 갱신됩니다.';
+    }
     throw new Error(msg);
   }
   return await res.json();
@@ -980,7 +1088,11 @@ function autoSave() {
   state.settings = {
     geminiKey: document.getElementById('geminiKey').value.trim(),
     blogId: document.getElementById('blogId').value.trim(),
+    googleClientId: document.getElementById('googleClientId').value.trim(),
+    googleClientSecret: document.getElementById('googleClientSecret').value.trim(),
+    refreshToken: document.getElementById('refreshToken').value.trim(),
     oauthToken: document.getElementById('oauthToken').value.trim(),
+    tokenExpiry: state.settings.tokenExpiry || 0,
     postDelay: parseInt(document.getElementById('postDelay').value) || 30,
     defaultTone: document.getElementById('defaultTone').value,
     imageStyle: document.getElementById('imageStyle').value
@@ -995,6 +1107,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const s = state.settings;
   if (s.geminiKey) document.getElementById('geminiKey').value = s.geminiKey;
   if (s.blogId) document.getElementById('blogId').value = s.blogId;
+  if (s.googleClientId) document.getElementById('googleClientId').value = s.googleClientId;
+  if (s.googleClientSecret) document.getElementById('googleClientSecret').value = s.googleClientSecret;
+  if (s.refreshToken) document.getElementById('refreshToken').value = s.refreshToken;
   if (s.oauthToken) document.getElementById('oauthToken').value = s.oauthToken;
   if (s.postDelay) document.getElementById('postDelay').value = s.postDelay;
   if (s.defaultTone) document.getElementById('defaultTone').value = s.defaultTone;
@@ -1003,7 +1118,11 @@ document.addEventListener('DOMContentLoaded', function() {
   renderQueue();
   renderHistory();
   updateQueueCount();
+  // 초기 탭 표시
+  showTab('hotissue');
 });
 </script>
+<div id="debugPanel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a0000;border-top:2px solid #ef4444;padding:10px;z-index:9999;max-height:40vh;overflow-y:auto;font-family:monospace;font-size:12px;color:#fca5a5"></div>
+
 </body>
 </html>
