@@ -6,1123 +6,1042 @@
 <title>AI 블로그 수익화 자동화</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#0d0d1a;color:#e2e2e2;min-height:100vh}
-.header{background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.08);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
-.logo{display:flex;align-items:center;gap:12px}
-.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.logo-text{font-size:16px;font-weight:700;background:linear-gradient(135deg,#818cf8,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.status-bar{display:flex;gap:10px;flex-wrap:wrap}
-.sb{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.1);color:#9ca3af}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d0d1a;color:#e2e2e2;min-height:100vh}
+.hdr{background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-ic{width:34px;height:34px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.logo-tx{font-size:15px;font-weight:700;color:#a78bfa}
+.ver{font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(99,102,241,.2);color:#a78bfa;border:1px solid rgba(99,102,241,.3);margin-left:4px}
+.sb-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sb{font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,.1);color:#9ca3af}
 .sb.ok{border-color:rgba(16,185,129,.4);color:#34d399;background:rgba(16,185,129,.08)}
-.sb.no{border-color:rgba(239,68,68,.3);color:#f87171;background:rgba(239,68,68,.06)}
-.global-alert{position:fixed;top:72px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;z-index:200;display:none;min-width:260px;text-align:center;animation:fadeIn .3s}
-@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.global-alert.success{background:#065f46;color:#6ee7b7;border:1px solid #10b981}
-.global-alert.error{background:#7f1d1d;color:#fca5a5;border:1px solid #ef4444}
-.tabs{display:flex;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.08);padding:0 24px;overflow-x:auto}
-.tab-btn{padding:14px 18px;font-size:13px;font-weight:600;color:#6b7280;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
-.tab-btn:hover{color:#a78bfa}
-.tab-btn.active{color:#a78bfa;border-bottom-color:#7c3aed}
-.container{max-width:900px;margin:0 auto;padding:24px 20px}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:22px;margin-bottom:16px}
-.card-hot{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(251,191,36,.06));border:1px solid rgba(239,68,68,.2)}
-.card-title{font-size:12px;font-weight:700;color:#a78bfa;margin-bottom:16px;display:flex;align-items:center;gap:8px;letter-spacing:.5px;text-transform:uppercase}
-label{display:block;font-size:12px;color:#9ca3af;margin-bottom:5px;font-weight:600;letter-spacing:.3px}
-input,select,textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#e2e2e2;font-size:14px;font-family:inherit;outline:none;transition:all .2s}
-input:focus,select:focus,textarea:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
-input[type="password"]{letter-spacing:2px}
-input[type="password"]::placeholder{letter-spacing:0}
+.sb.no{border-color:rgba(239,68,68,.3);color:#f87171}
+.logout-btn{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);border-radius:20px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:inherit}
+.tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.08);padding:0 16px;overflow-x:auto;background:rgba(255,255,255,.02)}
+.tb{padding:12px 14px;font-size:12px;font-weight:600;color:#6b7280;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit}
+.tb.on{color:#a78bfa;border-bottom-color:#7c3aed}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px}
+.tc{display:none}
+.tc.on{display:block}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;margin-bottom:14px}
+.ct{font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:14px;letter-spacing:.5px;text-transform:uppercase}
+label{display:block;font-size:12px;color:#9ca3af;margin-bottom:4px;font-weight:600}
+input,select,textarea{width:100%;padding:9px 13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e2e2e2;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box}
+input[type=password]{letter-spacing:3px}
+input[type=password]::placeholder{letter-spacing:0}
+input:focus,select:focus,textarea:focus{border-color:#7c3aed}
 select option{background:#1a1a2e}
 textarea{resize:vertical;line-height:1.7}
-.fg{margin-bottom:14px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.hint{font-size:11px;color:#6b7280;margin-top:5px;line-height:1.6}
+.fg{margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.hint{font-size:11px;color:#6b7280;margin-top:4px;line-height:1.5}
 .hint a{color:#818cf8}
-.infobox{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:9px;padding:14px;margin-top:12px}
-.infobox h4{color:#a78bfa;font-size:12px;font-weight:700;margin-bottom:8px}
-.infobox ol,.infobox ul{padding-left:18px;font-size:12px;color:#9ca3af;line-height:2}
-.infobox code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-size:11px;font-family:monospace}
-.btn{padding:10px 18px;border-radius:9px;border:none;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .2s;font-family:inherit;letter-spacing:.3px}
-.btn:disabled{opacity:.45;cursor:not-allowed;transform:none !important;box-shadow:none !important}
-.btn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
-.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.4)}
-.btn-success{background:linear-gradient(135deg,#059669,#10b981);color:#fff}
-.btn-success:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,.35)}
-.btn-danger{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.25)}
-.btn-danger:hover:not(:disabled){background:rgba(239,68,68,.25)}
-.btn-ghost{background:rgba(255,255,255,.06);color:#d1d5db;border:1px solid rgba(255,255,255,.12)}
-.btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.1)}
-.btn-hot{background:linear-gradient(135deg,#dc2626,#f97316);color:#fff}
-.btn-hot:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(239,68,68,.4)}
-.btn-yellow{background:linear-gradient(135deg,#b45309,#d97706);color:#fff}
-.btn-yellow:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(217,119,6,.35)}
-.btn-sm{padding:6px 12px;font-size:12px;border-radius:7px}
-.btn-block{width:100%;justify-content:center}
-.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+.ibox{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:12px;margin-top:10px}
+.ibox h4{color:#a78bfa;font-size:11px;font-weight:700;margin-bottom:7px}
+.ibox ol,.ibox ul{padding-left:16px;font-size:11px;color:#9ca3af;line-height:1.9}
+.ibox code{background:rgba(255,255,255,.08);padding:1px 4px;border-radius:3px;font-size:10px;font-family:monospace}
+.gbox{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:12px;margin-bottom:12px}
+.gbox-t{font-size:11px;font-weight:700;color:#34d399;margin-bottom:8px}
+.btn{padding:9px 16px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.bp{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.bp:hover{opacity:.9}
+.bs{background:linear-gradient(135deg,#059669,#10b981);color:#fff}
+.bs:hover{opacity:.9}
+.bg{background:rgba(255,255,255,.06);color:#d1d5db;border:1px solid rgba(255,255,255,.12)}
+.br{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.by{background:linear-gradient(135deg,#b45309,#d97706);color:#fff}
+.bh{background:linear-gradient(135deg,#dc2626,#f97316);color:#fff}
+.bblk{width:100%;justify-content:center}
+.bsm{padding:5px 10px;font-size:11px;border-radius:6px}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;display:inline-block}
 @keyframes sp{to{transform:rotate(360deg)}}
-.progress-wrap{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px;margin-bottom:16px;display:none}
-.progress-bar-bg{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:8px}
-.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:3px;transition:width .4s;width:0%}
-.progress-text{font-size:12px;color:#9ca3af}
-.log-wrap{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:9px;padding:12px;height:120px;overflow-y:auto;font-size:12px;color:#6b7280;line-height:1.9;font-family:monospace}
-.log-wrap div{border-bottom:1px solid rgba(255,255,255,.04);padding:1px 0}
-.tag{background:rgba(99,102,241,.15);color:#a78bfa;border:1px solid rgba(99,102,241,.25);padding:2px 9px;border-radius:20px;font-size:11px;white-space:nowrap}
-.tags-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-.seo-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.seo-high{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.3)}
-.seo-mid{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.25)}
-.seo-low{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}
-.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.badge-blue{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
-.badge-yellow{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
-.badge-green{background:rgba(16,185,129,.12);color:#34d399;border:1px solid rgba(16,185,129,.3)}
-.badge-red{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.3)}
-.badge-orange{background:rgba(249,115,22,.12);color:#fb923c;border:1px solid rgba(249,115,22,.3)}
-.queue-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin-bottom:10px;transition:border-color .2s}
-.queue-item:hover{border-color:rgba(99,102,241,.3)}
-.queue-item.posted{opacity:.65}
-.queue-item.error{border-color:rgba(239,68,68,.3)}
-.qi-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
-.qi-title{font-size:14px;font-weight:600;color:#e2e2e2;line-height:1.4;margin-bottom:4px}
-.qi-meta{font-size:12px;color:#6b7280}
-.qi-longtail{font-size:11px;color:#818cf8;margin-top:4px}
-.qi-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
-.history-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:16px;margin-bottom:10px}
-.hi-title{font-size:14px;font-weight:600;color:#e2e2e2;margin-bottom:4px}
-.hi-meta{font-size:12px;color:#6b7280;margin-bottom:6px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;text-align:center}
-.stat-num{font-size:26px;font-weight:700;color:#818cf8;margin-bottom:2px}
-.stat-label{font-size:11px;color:#6b7280}
-.kw-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:9px;margin-bottom:6px}
-.kw-item input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#7c3aed}
-.kw-text{flex:1;font-size:14px;color:#d1d5db}
-.kw-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(99,102,241,.15);color:#a78bfa;border:1px solid rgba(99,102,241,.2)}
-.divider{height:1px;background:rgba(255,255,255,.07);margin:18px 0}
-.empty{text-align:center;padding:50px 20px;color:#6b7280}
-.empty .empty-icon{font-size:40px;margin-bottom:12px}
-.empty p{font-size:14px}
-.token-timer{font-size:12px;margin-top:6px;padding:6px 10px;border-radius:7px;display:inline-block}
-.timer-ok{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2)}
-.timer-warn{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
-.timer-expired{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
-
-/* 핫이슈 trend cards */
-.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-.trend-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:14px;cursor:pointer;transition:all .2s;position:relative}
-.trend-card:hover{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05)}
-.trend-card.selected{border-color:rgba(99,102,241,.5);background:rgba(99,102,241,.08)}
-.trend-card .tc-rank{position:absolute;top:10px;right:12px;font-size:18px;font-weight:700;color:rgba(255,255,255,.15)}
-.trend-card .tc-cat{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:8px}
-.trend-card .tc-original{font-size:13px;font-weight:600;color:#e2e2e2;margin-bottom:4px}
-.trend-card .tc-keyword{font-size:12px;color:#818cf8;margin-bottom:6px}
-.trend-card .tc-reason{font-size:11px;color:#6b7280;line-height:1.5}
-.trend-card .tc-check{width:18px;height:18px;border-radius:4px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;margin-bottom:8px}
-.trend-card.selected .tc-check{background:#6366f1;border-color:#6366f1}
-.trend-actions{display:flex;gap:10px;margin-top:14px;align-items:center}
-.trend-last-update{font-size:11px;color:#6b7280;flex:1}
-
-/* Category colors */
-.cat-ent{background:rgba(236,72,153,.15);color:#f9a8d4;border:1px solid rgba(236,72,153,.25)}
-.cat-eco{background:rgba(16,185,129,.12);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)}
-.cat-sports{background:rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
-.cat-tech{background:rgba(99,102,241,.12);color:#c4b5fd;border:1px solid rgba(99,102,241,.2)}
-.cat-life{background:rgba(251,191,36,.1);color:#fde68a;border:1px solid rgba(251,191,36,.2)}
-.cat-health{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
-.cat-etc{background:rgba(255,255,255,.06);color:#9ca3af;border:1px solid rgba(255,255,255,.12)}
-
-.count-badge{background:#4c1d95;color:#c4b5fd;border-radius:20px;padding:1px 7px;font-size:11px;margin-left:4px}
-
-@media(max-width:600px){
-  .row2,.row3{grid-template-columns:1fr}
-  .stats{grid-template-columns:1fr 1fr}
-  .status-bar{display:none}
-  .tab-btn{padding:12px 12px;font-size:12px}
-  .trend-grid{grid-template-columns:1fr}
-}
+.log{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px;height:110px;overflow-y:auto;font-size:11px;color:#6b7280;font-family:monospace}
+.log div{padding:1px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.tag{background:rgba(99,102,241,.15);color:#a78bfa;border:1px solid rgba(99,102,241,.25);padding:2px 8px;border-radius:20px;font-size:11px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.qi{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;margin-bottom:9px}
+.qi-t{font-size:13px;font-weight:600;color:#e2e2e2;margin-bottom:4px}
+.qi-m{font-size:11px;color:#6b7280}
+.qi-a{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.badge{padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700}
+.bb{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.by2{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.bg2{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.3)}
+.br2{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.seo-h{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.3)}
+.seo-m{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.25)}
+.seo-l{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center}
+.stat-n{font-size:24px;font-weight:700;color:#818cf8}
+.stat-l{font-size:10px;color:#6b7280}
+.empty{text-align:center;padding:40px;color:#6b7280;font-size:13px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.tc-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:12px;cursor:pointer}
+.tc-card.sel{border-color:rgba(99,102,241,.5);background:rgba(99,102,241,.08)}
+.tc-cat{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(99,102,241,.15);color:#a78bfa;border:1px solid rgba(99,102,241,.2);display:inline-block;margin-bottom:6px}
+.tc-orig{font-size:12px;font-weight:600;color:#e2e2e2;margin-bottom:3px}
+.tc-kw{font-size:11px;color:#818cf8;margin-bottom:4px}
+.tc-why{font-size:10px;color:#6b7280}
+.prv-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:300;overflow-y:auto;padding:30px 16px}
+.prv-inner{max-width:760px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden}
+.prv-hdr{background:#1a1a2e;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.prv-body{padding:28px;color:#1a1a1a;font-family:Georgia,serif;line-height:1.8;font-size:15px}
+.prv-body h1{font-size:22px;margin-bottom:8px}
+.prv-body h2{font-size:18px;margin:24px 0 8px}
+.prv-body h3{font-size:16px;margin:16px 0 6px}
+.prv-body img{max-width:100%;border-radius:8px;margin:12px 0}
+.prv-body table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+.prv-body td,.prv-body th{border:1px solid #ddd;padding:8px}
+.prv-body th{background:#f5f5f5}
+.alert-box{padding:10px 13px;border-radius:8px;font-size:12px;margin-bottom:10px;display:none}
+.al-e{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171}
+.al-s{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#34d399}
+.pwmsg{padding:9px 12px;border-radius:8px;font-size:12px;display:none;margin-bottom:10px}
+.div{height:1px;background:rgba(255,255,255,.07);margin:14px 0}
+.prog-bg{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:8px}
+.prog-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:3px;width:0;transition:width .4s}
+.prog-tx{font-size:11px;color:#9ca3af;margin-top:5px}
+.kw-big{font-size:16px!important;padding:12px 15px!important}
+.count-b{background:#4c1d95;color:#c4b5fd;border-radius:20px;padding:1px 6px;font-size:10px;margin-left:3px}
+.hi-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;margin-bottom:9px}
+.hi-t{font-size:13px;font-weight:600;color:#e2e2e2;margin-bottom:3px}
+.hi-m{font-size:11px;color:#6b7280}
+.auto-ok{font-size:11px;color:#34d399;display:none;margin-left:8px}
+@media(max-width:560px){.g2,.g3,.stats,.tgrid{grid-template-columns:1fr}.sb-bar .sb{display:none}}
 </style>
 </head>
 <body>
 
-<div class="header">
+<div class="hdr">
   <div class="logo">
-    <div class="logo-icon">💰</div>
-    <span class="logo-text">AI 블로그 수익화 자동화</span>
-    <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(99,102,241,.2);color:#a78bfa;border:1px solid rgba(99,102,241,.3);margin-left:4px">v1.3.0</span>
+    <div class="logo-ic">&#128176;</div>
+    <span class="logo-tx">AI 블로그 수익화 자동화</span>
+    <span class="ver">v1.3.0</span>
   </div>
-  <div class="status-bar">
-    <span class="sb" id="sb-gemini">❌ Gemini 미설정</span>
-    <span class="sb" id="sb-blog">❌ Blog ID 없음</span>
-    <span class="sb" id="sb-token">❌ 토큰 없음</span>
-    <button onclick="doLogout()" style="background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600">🔒 로그아웃</button>
+  <div class="sb-bar">
+    <span class="sb no" id="sb-g">&#10060; Gemini</span>
+    <span class="sb no" id="sb-b">&#10060; Blog</span>
+    <span class="sb no" id="sb-t">&#10060; Token</span>
+    <button class="logout-btn" onclick="doLogout()">&#128274; 로그아웃</button>
   </div>
 </div>
-
-<div class="global-alert" id="globalAlert"></div>
 
 <div class="tabs">
-  <button class="tab-btn" data-tab="settings" onclick="showTab('settings')">⚙️ 설정</button>
-  <button class="tab-btn active" data-tab="hotissue" onclick="showTab('hotissue')">🔥 핫이슈</button>
-  <button class="tab-btn" data-tab="keywords" onclick="showTab('keywords')">🔑 키워드</button>
-  <button class="tab-btn" data-tab="queue" onclick="showTab('queue')">📋 대기열 <span id="queueCount" class="count-badge">0</span></button>
-  <button class="tab-btn" data-tab="history" onclick="showTab('history')">📊 기록</button>
+  <button class="tb" data-t="settings" onclick="showTab('settings')">&#9881; 설정</button>
+  <button class="tb on" data-t="hotissue" onclick="showTab('hotissue')">&#128293; 핫이슈</button>
+  <button class="tb" data-t="keywords" onclick="showTab('keywords')">&#128273; 키워드</button>
+  <button class="tb" data-t="queue" onclick="showTab('queue')">&#128203; 대기열 <span class="count-b" id="qc">0</span></button>
+  <button class="tb" data-t="history" onclick="showTab('history')">&#128202; 기록</button>
 </div>
 
-<!-- ===== SETTINGS ===== -->
-<div id="tab-settings" class="tab-content">
-<div class="container">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-    <span style="font-size:12px;color:#6b7280">입력 즉시 자동 저장됩니다</span>
-    <span id="autoSaveStatus" style="font-size:12px;color:#34d399;display:none">✅ 저장됨</span>
-  </div>
+<!-- 알림 -->
+<div id="gAlert" style="position:fixed;top:66px;left:50%;transform:translateX(-50%);padding:11px 22px;border-radius:9px;font-size:13px;font-weight:600;z-index:200;display:none;min-width:240px;text-align:center;transition:opacity .3s"></div>
+
+<!-- ===== 설정 ===== -->
+<div id="tc-settings" class="tc">
+<div class="wrap">
+
+  <div style="font-size:11px;color:#9ca3af;margin-bottom:12px;display:flex;align-items:center">입력 즉시 자동 저장 <span class="auto-ok" id="autoOk">&#10003; 저장됨</span></div>
+
   <div class="card">
-    <div class="card-title">🔑 비밀번호 변경</div>
-    <div class="fg">
-      <label>현재 비밀번호</label>
-      <input type="password" id="pwCurrent" placeholder="현재 비밀번호">
-    </div>
-    <div class="fg">
-      <label>새 비밀번호</label>
-      <input type="password" id="pwNew" placeholder="새 비밀번호 (6자 이상)">
-    </div>
-    <div class="fg">
-      <label>새 비밀번호 확인</label>
-      <input type="password" id="pwConfirm" placeholder="새 비밀번호 재입력">
-    </div>
-    <div id="pwMsg" style="display:none;font-size:13px;padding:10px 14px;border-radius:9px;margin-bottom:12px"></div>
-    <button class="btn btn-primary btn-block" onclick="changePw()" style="padding:13px">🔐 비밀번호 변경</button>
-    <p style="font-size:11px;color:#6b7280;margin-top:10px;text-align:center">기본 비밀번호: blog2024</p>
+    <div class="ct">&#128204; 비밀번호 변경</div>
+    <div class="fg"><label>현재 비밀번호</label><input type="password" id="pwCur" placeholder="현재 비밀번호"></div>
+    <div class="fg"><label>새 비밀번호</label><input type="password" id="pwNew" placeholder="새 비밀번호 (6자 이상)"></div>
+    <div class="fg"><label>새 비밀번호 확인</label><input type="password" id="pwCf" placeholder="다시 입력"></div>
+    <div class="pwmsg" id="pwMsg"></div>
+    <button class="btn bp bblk" onclick="changePw()" style="padding:11px">&#128274; 비밀번호 변경</button>
+    <p class="hint" style="text-align:center;margin-top:8px">기본 비밀번호: blog2024</p>
   </div>
 
   <div class="card">
-    <div class="card-title">🤖 AI 설정 (Gemini — 무료)</div>
+    <div class="ct">&#129302; AI 설정 (Gemini — 무료)</div>
     <div class="fg">
-      <label>GEMINI API 키</label>
-      <input type="password" id="geminiKey" placeholder="AIzaSy..." oninput="autoSave()">
-      <p class="hint">👉 <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a> 에서 무료 발급 · 하루 1,500회 무료</p>
+      <label>Gemini API 키</label>
+      <input type="password" id="gemKey" placeholder="AIzaSy..." oninput="autoSave()">
+      <p class="hint">&#128073; <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a> 무료 발급 · 하루 1,500회</p>
     </div>
   </div>
+
   <div class="card">
-    <div class="card-title">📝 Blogger 연동</div>
+    <div class="ct">&#128221; Blogger 연동</div>
     <div class="fg">
       <label>블로그 ID</label>
       <input type="text" id="blogId" placeholder="예: 1234567890123456789" oninput="autoSave()">
-      <p class="hint">Blogger 대시보드 URL → blogger.com/blog/posts/<strong>이 숫자</strong></p>
+      <p class="hint">Blogger URL → blogger.com/blog/posts/<strong>이 숫자</strong></p>
     </div>
 
-    <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;color:#34d399;margin-bottom:10px">✅ 영구 자동 갱신 (권장) — 한 번만 설정하면 끝!</div>
-      <div class="fg">
-        <label>Google Client ID</label>
-        <input type="text" id="googleClientId" placeholder="xxxxx.apps.googleusercontent.com" oninput="autoSave()">
-      </div>
-      <div class="fg">
-        <label>Google Client Secret</label>
-        <input type="password" id="googleClientSecret" placeholder="GOCSPX-xxxxx" oninput="autoSave()">
-      </div>
-      <div class="fg" style="margin-bottom:0">
-        <label>Refresh Token</label>
-        <input type="password" id="refreshToken" placeholder="1//xxxxx" oninput="autoSave()">
-      </div>
-      <div class="infobox" style="margin-top:12px">
-        <h4>📋 한 번만 설정하는 방법</h4>
+    <div class="gbox">
+      <div class="gbox-t">&#10003; 영구 자동 갱신 (권장) — 한 번만 설정!</div>
+      <div class="fg"><label>Google Client ID</label><input type="text" id="gClientId" placeholder="xxxxx.apps.googleusercontent.com" oninput="autoSave()"></div>
+      <div class="fg"><label>Google Client Secret</label><input type="password" id="gClientSec" placeholder="GOCSPX-xxxxx" oninput="autoSave()"></div>
+      <div class="fg" style="margin-bottom:0"><label>Refresh Token</label><input type="password" id="refToken" placeholder="1//xxxxx" oninput="autoSave()"></div>
+      <div class="ibox">
+        <h4>&#128203; 한 번만 설정하는 방법</h4>
         <ol>
-          <li><a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#818cf8">Google Cloud Console</a> → OAuth 2.0 클라이언트 ID 생성</li>
-          <li>애플리케이션 유형: <strong>웹 애플리케이션</strong> 선택</li>
-          <li>Client ID, Client Secret 복사해서 위에 입력</li>
-          <li><a href="https://developers.google.com/oauthplayground/" target="_blank" style="color:#818cf8">OAuth Playground</a> → ⚙️ 설정 → "Use your own OAuth credentials" 체크</li>
-          <li>내 Client ID/Secret 입력 → Blogger API v3 선택 → Authorize</li>
-          <li>Exchange authorization code for tokens → <strong>Refresh token 복사</strong></li>
-          <li>위 Refresh Token 칸에 붙여넣기 → 이제 영구 자동 갱신!</li>
+          <li><a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#818cf8">Google Cloud Console</a> → OAuth 2.0 클라이언트 ID 생성 (웹 애플리케이션)</li>
+          <li>Client ID, Client Secret 복사</li>
+          <li><a href="https://developers.google.com/oauthplayground/" target="_blank" style="color:#818cf8">OAuth Playground</a> → &#9881; → "Use your own OAuth credentials" 체크 → 내 Client ID/Secret 입력</li>
+          <li>Blogger API v3 선택 → Authorize → Exchange → <strong>Refresh token 복사</strong></li>
         </ol>
       </div>
     </div>
 
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px">
-      <div style="font-size:12px;font-weight:700;color:#9ca3af;margin-bottom:10px">⏱ 임시 토큰 (1시간마다 수동 갱신)</div>
-      <div class="fg" style="margin-bottom:0">
-        <label>Access Token (Refresh Token 없을 때만 사용)</label>
-        <input type="password" id="oauthToken" placeholder="ya29.xxxxx..." oninput="startTokenTimer();autoSave()">
-        <div id="tokenTimerEl" style="margin-top:6px"></div>
-      </div>
+    <div class="div"></div>
+    <div class="fg">
+      <label>Access Token (임시, 1시간)</label>
+      <input type="password" id="accToken" placeholder="ya29.xxxxx..." oninput="autoSave()">
+      <div id="tkTimer" style="margin-top:5px;font-size:11px;color:#6b7280"></div>
     </div>
   </div>
+
   <div class="card">
-    <div class="card-title">⚙️ 포스팅 설정</div>
-    <div class="row3">
+    <div class="ct">&#9881; 포스팅 설정</div>
+    <div class="g3">
       <div class="fg">
         <label>글 스타일</label>
-        <select id="defaultTone" onchange="autoSave()">
-          <option value="정보전달형 SEO 최적화">📚 정보전달 (SEO)</option>
-          <option value="리뷰/후기">⭐ 리뷰 / 후기</option>
-          <option value="튜토리얼">🛠️ 튜토리얼</option>
-          <option value="트렌드 분석">📰 트렌드 분석</option>
+        <select id="tone" onchange="autoSave()">
+          <option value="정보전달형 SEO 최적화">정보전달 (SEO)</option>
+          <option value="리뷰/후기">리뷰 / 후기</option>
+          <option value="튜토리얼">튜토리얼</option>
+          <option value="트렌드 분석">트렌드 분석</option>
         </select>
       </div>
       <div class="fg">
         <label>포스팅 간격 (초)</label>
-        <input type="number" id="postDelay" value="30" min="10" max="300" oninput="autoSave()">
-        <p class="hint">스팸 방지: 최소 10초 이상</p>
+        <input type="number" id="delay" value="30" min="10" max="300" oninput="autoSave()">
       </div>
       <div class="fg">
         <label>이미지 스타일</label>
-        <select id="imageStyle" onchange="autoSave()">
-          <option value="realistic photo, professional photography, high quality">사실적 사진</option>
-          <option value="flat illustration, modern design, colorful">일러스트</option>
-          <option value="minimalist, clean design, white background">미니멀</option>
-          <option value="watercolor painting, artistic, beautiful">수채화</option>
+        <select id="imgStyle" onchange="autoSave()">
+          <option value="realistic photo, professional photography">사실적 사진</option>
+          <option value="flat illustration, modern design">일러스트</option>
+          <option value="minimalist, clean design">미니멀</option>
         </select>
       </div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:12px;margin-top:8px"><span id="autoSaveStatus" style="font-size:12px;color:#34d399;display:none">✅ 자동 저장됨</span></div>
+
 </div>
 </div>
 
-<!-- ===== HOT ISSUE ===== -->
-<div id="tab-hotissue" class="tab-content active">
-<div class="container">
-
-  <div class="card card-hot">
-    <div class="card-title" style="color:#fb923c">🔥 오늘의 핫이슈 — 실시간 트렌드 분석</div>
-    <p style="font-size:13px;color:#9ca3af;margin-bottom:16px">구글 트렌드 + AI 분석으로 오늘 가장 수익성 높은 블로그 주제를 자동으로 찾아드려요</p>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <button class="btn btn-hot" id="trendBtn" onclick="fetchTrends()">
-        🔥 오늘의 핫이슈 가져오기
-      </button>
-      <select id="trendCountry" style="width:auto;padding:10px 14px">
-        <option value="KR">🇰🇷 한국</option>
-        <option value="US">🇺🇸 미국</option>
-        <option value="JP">🇯🇵 일본</option>
+<!-- ===== 핫이슈 ===== -->
+<div id="tc-hotissue" class="tc on">
+<div class="wrap">
+  <div class="card" style="background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(251,191,36,.06));border-color:rgba(239,68,68,.2)">
+    <div class="ct" style="color:#fb923c">&#128293; 오늘의 핫이슈 — 실시간 트렌드 분석</div>
+    <p style="font-size:12px;color:#9ca3af;margin-bottom:14px">구글 트렌드 + AI 분석으로 수익성 높은 블로그 주제 자동 발굴</p>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn bh" id="trendBtn" onclick="fetchTrends()">&#128293; 오늘의 핫이슈 가져오기</button>
+      <select id="trendCo" style="width:auto;padding:9px 12px">
+        <option value="KR">&#127472;&#127479; 한국</option>
+        <option value="US">&#127482;&#127480; 미국</option>
+        <option value="JP">&#127471;&#127477; 일본</option>
       </select>
-      <span id="trendLastUpdate" style="font-size:11px;color:#6b7280"></span>
+      <span id="trendUpdated" style="font-size:11px;color:#6b7280"></span>
     </div>
   </div>
 
-  <div id="trendResultArea" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:600;color:#e2e2e2">
-        AI 분석 완료 — 수익성 높은 주제 선택
-        <span id="selectedCount" style="font-size:12px;color:#a78bfa;margin-left:8px"></span>
+  <div id="trendLoad" style="display:none" class="card">
+    <div style="text-align:center;padding:20px">
+      <div class="spin" style="width:28px;height:28px;border-width:3px;margin:0 auto 12px"></div>
+      <p id="trendLoadTx" style="font-size:13px;color:#9ca3af">분석 중...</p>
+    </div>
+  </div>
+
+  <div id="trendResult" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:600;color:#e2e2e2">수익성 분석 완료 <span id="selCount" style="font-size:11px;color:#a78bfa"></span></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn bg bsm" onclick="selAll()">전체 선택</button>
+        <button class="btn bg bsm" onclick="deselAll()">해제</button>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-sm btn-ghost" onclick="selectAllTrends()">전체 선택</button>
-        <button class="btn btn-sm btn-ghost" onclick="deselectAllTrends()">전체 해제</button>
-      </div>
     </div>
-
-    <div class="trend-grid" id="trendGrid"></div>
-
-    <div class="trend-actions" style="margin-top:16px">
-      <button class="btn btn-primary" id="addTrendsBtn" onclick="addTrendKeywords()">
-        ✅ 선택한 주제 키워드로 추가
-      </button>
-      <button class="btn btn-success" id="generateTrendsBtn" onclick="generateFromTrends()">
-        ✨ 바로 글 생성하기
-      </button>
+    <div class="tgrid" id="trendGrid"></div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn bp" style="flex:1;justify-content:center" onclick="addTrends()">&#10003; 키워드로 추가</button>
+      <button class="btn bs" style="flex:1;justify-content:center" onclick="genFromTrends()">&#10024; 바로 글 생성</button>
     </div>
   </div>
 
-  <div id="trendLoading" style="display:none">
-    <div class="card" style="text-align:center;padding:40px">
-      <div class="spin" style="margin:0 auto 16px;width:32px;height:32px;border-width:3px"></div>
-      <p id="trendLoadingText" style="color:#9ca3af;font-size:14px">구글 트렌드 데이터 분석 중...</p>
-    </div>
-  </div>
-
+  <div id="trendErr" style="display:none" class="alert-box al-e"></div>
 </div>
 </div>
 
-<!-- ===== KEYWORDS ===== -->
-<div id="tab-keywords" class="tab-content">
-<div class="container">
-
+<!-- ===== 키워드 ===== -->
+<div id="tc-keywords" class="tc">
+<div class="wrap">
   <div class="card">
-    <div class="card-title">🔍 키워드 자동 확장</div>
-    <p style="font-size:13px;color:#9ca3af;margin-bottom:14px">메인 키워드 하나 입력 → 롱테일 키워드 10개 자동 추천</p>
+    <div class="ct">&#128269; 키워드 자동 확장</div>
     <div style="display:flex;gap:10px">
-      <input type="text" id="mainKeyword" placeholder="예: 제주도 여행, 다이어트 식단..." style="flex:1" onkeydown="if(event.key==='Enter')expandKeywords()">
-      <button class="btn btn-yellow" onclick="expandKeywords()" id="expandBtn">🔍 키워드 확장</button>
+      <input type="text" id="mainKw" placeholder="예: 제주도 여행, 주식 투자..." style="flex:1" onkeydown="if(event.key==='Enter')expandKw()">
+      <button class="btn by" id="expandBtn" onclick="expandKw()">&#128269; 확장</button>
     </div>
     <div id="expandResult"></div>
   </div>
 
   <div class="card">
-    <div class="card-title">📝 생성할 키워드 목록</div>
+    <div class="ct">&#128221; 생성할 키워드 목록</div>
     <div class="fg">
-      <label>키워드 직접 입력 (한 줄에 하나씩)</label>
-      <textarea id="keywordsInput" rows="7" placeholder="제주도 3박4일 혼자 여행 코스 비용&#10;제주도 맛집 현지인 추천&#10;제주도 숙소 가성비"></textarea>
-      <p class="hint">한 줄에 키워드 하나 · Gemini 무료: 하루 1,500회</p>
+      <label>한 줄에 키워드 하나씩</label>
+      <textarea id="kwInput" rows="6" placeholder="제주도 3박4일 혼자 여행 비용&#10;제주도 현지인 맛집&#10;..."></textarea>
     </div>
-
-    <div id="genProgress" class="progress-wrap">
-      <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
-      <div class="progress-text" id="progressText">준비 중...</div>
+    <div id="genProg" style="display:none">
+      <div class="prog-bg"><div class="prog-bar" id="progBar"></div></div>
+      <div class="prog-tx" id="progTx">준비 중...</div>
     </div>
-
-    <button class="btn btn-primary btn-block" id="genBtn" onclick="startGeneration()" style="padding:14px;font-size:15px">
-      ✨ AI 블로그 글 생성 시작
-    </button>
-
-    <div class="divider"></div>
-    <label style="margin-bottom:8px">활동 로그</label>
-    <div class="log-wrap" id="activityLog"><div style="color:#4b5563">대기 중...</div></div>
+    <button class="btn bp bblk" id="genBtn" onclick="startGen()" style="padding:12px;font-size:14px">&#10024; AI 블로그 글 생성 시작</button>
+    <div class="div"></div>
+    <label style="margin-bottom:6px">활동 로그</label>
+    <div class="log" id="actLog"><div style="color:#4b5563">대기 중...</div></div>
   </div>
-
 </div>
 </div>
 
-<!-- ===== QUEUE ===== -->
-<div id="tab-queue" class="tab-content">
-<div class="container">
+<!-- ===== 대기열 ===== -->
+<div id="tc-queue" class="tc">
+<div class="wrap">
   <div class="stats">
-    <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-label">전체</div></div>
-    <div class="stat"><div class="stat-num" id="stat-ready" style="color:#60a5fa">0</div><div class="stat-label">포스팅 대기</div></div>
-    <div class="stat"><div class="stat-num" id="stat-posted" style="color:#34d399">0</div><div class="stat-label">완료</div></div>
-    <div class="stat"><div class="stat-num" id="stat-error" style="color:#f87171">0</div><div class="stat-label">오류</div></div>
+    <div class="stat"><div class="stat-n" id="st-tot">0</div><div class="stat-l">전체</div></div>
+    <div class="stat"><div class="stat-n" id="st-rdy" style="color:#60a5fa">0</div><div class="stat-l">대기</div></div>
+    <div class="stat"><div class="stat-n" id="st-don" style="color:#34d399">0</div><div class="stat-l">완료</div></div>
+    <div class="stat"><div class="stat-n" id="st-err" style="color:#f87171">0</div><div class="stat-l">오류</div></div>
   </div>
-  <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-    <button class="btn btn-success" id="postAllBtn" onclick="postAll()" style="flex:1;justify-content:center;padding:13px">🚀 대기 중인 글 전체 포스팅</button>
-    <button class="btn btn-danger btn-sm" onclick="clearQueue()">🗑️ 초기화</button>
+  <div style="display:flex;gap:10px;margin-bottom:16px">
+    <button class="btn bs" id="postAllBtn" onclick="postAll()" style="flex:1;justify-content:center;padding:12px">&#128640; 전체 포스팅</button>
+    <button class="btn br bsm" onclick="clearQ()">&#128465; 초기화</button>
   </div>
-  <div id="queueList"><div class="empty"><div class="empty-icon">📭</div><p>생성된 글이 없습니다</p></div></div>
+  <div class="alert-box" id="qAlert"></div>
+  <div id="qList"><div class="empty">글이 없습니다. 키워드 탭에서 생성해 주세요.</div></div>
 </div>
 </div>
 
-<!-- ===== HISTORY ===== -->
-<div id="tab-history" class="tab-content">
-<div class="container">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-    <div style="font-size:14px;color:#9ca3af">총 <span id="historyCountText">0</span>개 포스팅 완료</div>
-    <button class="btn btn-danger btn-sm" onclick="clearHistory()">🗑️ 기록 삭제</button>
+<!-- ===== 기록 ===== -->
+<div id="tc-history" class="tc">
+<div class="wrap">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div style="font-size:13px;color:#9ca3af">총 <span id="hiCnt">0</span>개 포스팅</div>
+    <button class="btn br bsm" onclick="clearHi()">&#128465; 기록 삭제</button>
   </div>
-  <div id="historyList"><div class="empty"><div class="empty-icon">📊</div><p>포스팅 기록이 없습니다</p></div></div>
+  <div id="hiList"><div class="empty">기록이 없습니다.</div></div>
 </div>
 </div>
 
-<!-- Preview Modal -->
-<div id="previewModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:300;overflow-y:auto;padding:40px 20px">
-  <div style="max-width:800px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden">
-    <div style="background:#1a1a2e;padding:16px 24px;display:flex;justify-content:space-between;align-items:center">
-      <span style="color:#a78bfa;font-size:14px;font-weight:600">미리보기</span>
-      <button class="btn btn-sm btn-ghost" onclick="closePreview()">✕ 닫기</button>
+<!-- 미리보기 -->
+<div class="prv-modal" id="prvModal">
+  <div class="prv-inner">
+    <div class="prv-hdr">
+      <span style="color:#a78bfa;font-size:13px;font-weight:600">미리보기</span>
+      <button class="btn bg bsm" onclick="closePrv()">&#10005; 닫기</button>
     </div>
-    <div id="previewContent" style="padding:32px;color:#1a1a1a;font-family:Georgia,serif;line-height:1.8"></div>
+    <div class="prv-body" id="prvBody"></div>
   </div>
 </div>
 
 <script>
+var SALT = 'yblog_salt_2024';
+var DEF_HASH = 'af176805df287cd3b56f650be6d6d30e2ffe88fa724b37121c51d79d87d1de58';
 
-(function(){if(!sessionStorage.getItem('yblog_auth'))window.location.href='index.html';})();
+// ---- 안전한 스토리지 ----
+function lsGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+function ssGet(k) { try { return sessionStorage.getItem(k); } catch(e) { return null; } }
+function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch(e) {} }
+function ssRem(k) { try { sessionStorage.removeItem(k); } catch(e) {} }
 
-const SALT='yblog_salt_2024';
-const DEFAULT_HASH='af176805df287cd3b56f650be6d6d30e2ffe88fa724b37121c51d79d87d1de58';
+// ---- 세션 체크 ----
+(function() {
+  try {
+    if (!ssGet('yblog_auth')) {
+      try { window.location.replace('index.html'); } catch(e) {}
+    }
+  } catch(e) {}
+})();
 
-async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));var arr = Array.from(new Uint8Array(b));
-  var hex = '';
-  for (var xi = 0; xi < arr.length; xi++) { hex += arr[xi].toString(16).padStart(2,'0'); }
-  return hex;}
-
-function doLogout(){sessionStorage.removeItem('yblog_auth');window.location.href='index.html';}
-
-async function changePw(){
-  const cur=document.getElementById('pwCurrent').value;
-  const nw=document.getElementById('pwNew').value;
-  const cf=document.getElementById('pwConfirm').value;
-  const msg=document.getElementById('pwMsg');
-  function show(text,ok){msg.style.display='block';msg.style.background=ok?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)';msg.style.border='1px solid '+(ok?'rgba(16,185,129,.3)':'rgba(239,68,68,.3)');msg.style.color=ok?'#34d399':'#f87171';msg.textContent=text;}
-  if(!cur||!nw||!cf){show('모든 필드를 입력해 주세요',false);return;}
-  if(nw.length<6){show('새 비밀번호는 6자 이상이어야 합니다',false);return;}
-  if(nw!==cf){show('새 비밀번호가 일치하지 않습니다',false);return;}
-  const stored=localStorage.getItem('yblog_pw_hash')||DEFAULT_HASH;
-  const curHash=await sha256(cur+SALT);
-  if(curHash!==stored){show('현재 비밀번호가 올바르지 않습니다',false);return;}
-  const newHash=await sha256(nw+SALT);
-  localStorage.setItem('yblog_pw_hash',newHash);
-  show('✅ 비밀번호가 변경되었습니다',true);
-  document.getElementById('pwCurrent').value='';
-  document.getElementById('pwNew').value='';
-  document.getElementById('pwConfirm').value='';
-}
-
-const state = {
-  settings: JSON.parse(localStorage.getItem('ys2_settings') || '{"postDelay":30}'),
-  queue: JSON.parse(localStorage.getItem('ys2_queue') || '[]'),
-  history: JSON.parse(localStorage.getItem('ys2_history') || '[]'),
+// ---- 상태 ----
+var state = {
+  s: JSON.parse(lsGet('ys3_s') || '{"delay":30}'),
+  q: JSON.parse(lsGet('ys3_q') || '[]'),
+  h: JSON.parse(lsGet('ys3_h') || '[]'),
   trends: [],
-  isGenerating: false,
-  isPosting: false
+  isGen: false,
+  isPost: false
 };
 
 function save() {
-  localStorage.setItem('ys2_settings', JSON.stringify(state.settings));
-  localStorage.setItem('ys2_queue', JSON.stringify(state.queue));
-  localStorage.setItem('ys2_history', JSON.stringify(state.history));
+  lsSet('ys3_s', JSON.stringify(state.s));
+  lsSet('ys3_q', JSON.stringify(state.q));
+  lsSet('ys3_h', JSON.stringify(state.h));
 }
 
+// ---- SHA256 ----
+function sha256(str) {
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf) {
+    var arr = new Uint8Array(buf);
+    var hex = '';
+    for (var i = 0; i < arr.length; i++) {
+      var b = arr[i].toString(16);
+      hex += b.length === 1 ? '0' + b : b;
+    }
+    return hex;
+  });
+}
+
+// ---- 탭 전환 ----
 function showTab(name) {
-  try {
-    var tabs = document.getElementsByClassName('tab-content');
-    for (var i = 0; i < tabs.length; i++) {
-      tabs[i].style.display = 'none';
-    }
-    var btns = document.getElementsByClassName('tab-btn');
-    for (var j = 0; j < btns.length; j++) {
-      btns[j].classList.remove('active');
-    }
-    var tabEl = document.getElementById('tab-' + name);
-    if (tabEl) tabEl.style.display = 'block';
-    var allBtns = document.getElementsByClassName('tab-btn');
-    for (var k = 0; k < allBtns.length; k++) {
-      if (allBtns[k].getAttribute('data-tab') === name) {
-        allBtns[k].classList.add('active');
-      }
-    }
-  } catch(e) {
-    var panel = document.getElementById('debugPanel');
-    if (panel) { panel.style.display='block'; panel.innerHTML += '<div>showTab 오류: ' + e.message + '</div>'; }
-  }
+  var allTc = document.querySelectorAll('.tc');
+  for (var i = 0; i < allTc.length; i++) { allTc[i].className = 'tc'; }
+  var allTb = document.querySelectorAll('.tb');
+  for (var j = 0; j < allTb.length; j++) { allTb[j].className = 'tb'; }
+  var tcEl = document.getElementById('tc-' + name);
+  if (tcEl) tcEl.className = 'tc on';
+  var tbEl = document.querySelector('[data-t="' + name + '"]');
+  if (tbEl) tbEl.className = 'tb on';
 }
 
-function saveSettings() {
-  state.settings = {
-    geminiKey: document.getElementById('geminiKey').value.trim(),
-    blogId: document.getElementById('blogId').value.trim(),
-    oauthToken: document.getElementById('oauthToken').value.trim(),
-    postDelay: parseInt(document.getElementById('postDelay').value) || 30,
-    defaultTone: document.getElementById('defaultTone').value,
-    imageStyle: document.getElementById('imageStyle').value
+// ---- 자동 저장 ----
+function autoSave() {
+  state.s = {
+    gemKey: val('gemKey'),
+    blogId: val('blogId'),
+    gClientId: val('gClientId'),
+    gClientSec: val('gClientSec'),
+    refToken: val('refToken'),
+    accToken: val('accToken'),
+    tkExpiry: state.s.tkExpiry || 0,
+    tone: val('tone'),
+    delay: parseInt(val('delay')) || 30,
+    imgStyle: val('imgStyle')
   };
   save();
-  updateStatusBar();
-  showAlert('설정 저장 완료 ✅', 'success');
-}
-
-function updateStatusBar() {
-  const s = state.settings;
-  function set(id, ok, okText, noText) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = ok ? okText : noText;
-    el.className = 'sb ' + (ok ? 'ok' : 'no');
+  updateSb();
+  var ok = document.getElementById('autoOk');
+  if (ok) {
+    ok.style.display = 'inline';
+    clearTimeout(ok._t);
+    ok._t = setTimeout(function() { ok.style.display = 'none'; }, 1500);
   }
-  set('sb-gemini', s.geminiKey, '✅ Gemini 연결됨', '❌ Gemini 미설정');
-  set('sb-blog', s.blogId, '✅ Blog ID 설정됨', '❌ Blog ID 없음');
-  const hasRefresh = s.refreshToken && s.googleClientId && s.googleClientSecret;
-  const hasAccess = s.oauthToken;
-  set('sb-token', hasRefresh || hasAccess,
-    hasRefresh ? '🔄 자동 갱신 설정됨' : '⏱ 임시 토큰 있음',
-    '❌ 토큰 없음');
 }
 
-let timerInterval = null, tokenExpiry = null;
-function startTokenTimer() {
-  if (timerInterval) clearInterval(timerInterval);
-  const token = document.getElementById('oauthToken').value.trim();
-  if (!token) { document.getElementById('tokenTimerEl').innerHTML = ''; return; }
-  tokenExpiry = Date.now() + 3600000;
-  timerInterval = setInterval(updateTimer, 1000);
-  updateTimer();
-}
-function updateTimer() {
-  const left = Math.max(0, tokenExpiry - Date.now());
-  const m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
-  const cls = left > 1800000 ? 'timer-ok' : left > 300000 ? 'timer-warn' : 'timer-expired';
-  const text = left > 0 ? ('⏱ 만료까지 ' + m + '분 ' + s + '초') : '⚠️ 토큰 만료 — 새로 발급받아 주세요';
-  document.getElementById('tokenTimerEl').innerHTML = '<span class="token-timer ' + cls + '">' + text + '</span>';
-  if (left === 0) clearInterval(timerInterval);
+function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+// ---- 상태바 업데이트 ----
+function updateSb() {
+  var s = state.s;
+  setSb('sb-g', !!s.gemKey, '&#10003; Gemini', '&#10060; Gemini');
+  setSb('sb-b', !!s.blogId, '&#10003; Blog', '&#10060; Blog');
+  var hasToken = (s.refToken && s.gClientId && s.gClientSec) || s.accToken;
+  setSb('sb-t', hasToken, s.refToken ? '&#128260; 자동갱신' : '&#10003; Token', '&#10060; Token');
 }
 
-async function callGemini(prompt, maxTokens) {
-  maxTokens = maxTokens || 4096;
-  const key = state.settings.geminiKey;
-  if (!key) throw new Error('Gemini API 키가 없습니다. 설정에서 입력해 주세요.');
-  const res = await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.75, maxOutputTokens: maxTokens, thinkingConfig: { thinkingBudget: 0 } }
-      })
+function setSb(id, ok, okTx, noTx) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = ok ? okTx : noTx;
+  el.className = ok ? 'sb ok' : 'sb no';
+}
+
+// ---- 알림 ----
+function showAlert(msg, type) {
+  var el = document.getElementById('gAlert');
+  if (!el) return;
+  el.innerHTML = msg;
+  el.style.display = 'block';
+  el.style.background = type === 'success' ? '#065f46' : '#7f1d1d';
+  el.style.color = type === 'success' ? '#6ee7b7' : '#fca5a5';
+  el.style.border = '1px solid ' + (type === 'success' ? '#10b981' : '#ef4444');
+  el.style.borderRadius = '9px';
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.style.display = 'none'; }, type === 'error' ? 6000 : 4000);
+}
+
+// ---- Gemini 호출 ----
+function callGemini(prompt, maxTok) {
+  var key = state.s.gemKey;
+  if (!key) return Promise.reject(new Error('Gemini API 키를 설정에서 입력해 주세요'));
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.75, maxOutputTokens: maxTok || 4096, thinkingConfig: { thinkingBudget: 0 } }
+    })
+  }).then(function(r) {
+    return r.json();
+  }).then(function(d) {
+    if (!d.candidates || !d.candidates[0]) throw new Error('Gemini 응답 없음: ' + JSON.stringify(d).slice(0, 100));
+    var parts = d.candidates[0].content.parts;
+    var tx = '';
+    for (var i = 0; i < parts.length; i++) { if (!parts[i].thought) tx += (parts[i].text || ''); }
+    return tx || parts[0].text || '';
+  });
+}
+
+// ---- 토큰 갱신 ----
+function refreshToken() {
+  var s = state.s;
+  if (!s.gClientId || !s.gClientSec || !s.refToken) return Promise.resolve(null);
+  var body = 'client_id=' + encodeURIComponent(s.gClientId) +
+    '&client_secret=' + encodeURIComponent(s.gClientSec) +
+    '&refresh_token=' + encodeURIComponent(s.refToken) +
+    '&grant_type=refresh_token';
+  return fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.access_token) {
+      state.s.accToken = d.access_token;
+      state.s.tkExpiry = Date.now() + ((d.expires_in || 3600) * 1000);
+      save();
+      addLog('&#128260; 토큰 자동 갱신됨');
+      return d.access_token;
     }
-  );
-  if (!res.ok) {
-    const e = await res.json();
-    throw new Error(e.error ? e.error.message : ('Gemini API 오류 ' + res.status));
-  }
-  const data = await res.json();
-  if (!data.candidates || !data.candidates[0]) throw new Error('응답 없음: ' + JSON.stringify(data));
-  const parts = data.candidates[0].content.parts;
-  const textPart = parts.find(function(p){ return !p.thought; }) || parts[0];
-  return textPart.text;
+    return null;
+  }).catch(function() { return null; });
 }
 
-// ===== HOT ISSUE =====
-async function fetchTrends() {
-  if (!state.settings.geminiKey) { showAlert('Gemini API 키를 먼저 설정해 주세요', 'error'); showTab('settings'); return; }
+function getToken() {
+  var s = state.s;
+  var hasRefresh = s.refToken && s.gClientId && s.gClientSec;
+  if (s.accToken && s.tkExpiry && Date.now() < s.tkExpiry - 300000) return Promise.resolve(s.accToken);
+  if (hasRefresh) return refreshToken().then(function(t) { return t || s.accToken || null; });
+  return Promise.resolve(s.accToken || null);
+}
 
-  const btn = document.getElementById('trendBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spin"></div> 분석 중...';
-  document.getElementById('trendLoading').style.display = 'block';
-  document.getElementById('trendResultArea').style.display = 'none';
-
-  const country = document.getElementById('trendCountry').value;
-  const countryName = { KR: '한국', US: '미국', JP: '일본' }[country] || '한국';
-
-  let rawTrends = [];
-
-  // Step 1: Try Google Trends RSS via CORS proxy
-  try {
-    document.getElementById('trendLoadingText').textContent = '구글 트렌드 데이터 수집 중...';
-    const proxyUrl = 'https://api.allorigins.win/get?url=';
-    const rssUrl = encodeURIComponent('https://trends.google.com/trends/trendingsearches/daily/rss?geo=' + country);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(function(){ controller.abort(); }, 8000);
-    const res = await fetch(proxyUrl + rssUrl, { signal: controller.signal });
-    clearTimeout(timeoutId);
-    const data = await res.json();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, 'text/xml');
-    const items = xml.querySelectorAll('item');
-    rawTrends = Array.from(items).slice(0, 25).map(function(item) {
-      const title = item.querySelector('title');
-      const traffic = item.querySelector('ht\\:approx_traffic, approx_traffic');
-      return {
-        title: title ? title.textContent : '',
-        traffic: traffic ? traffic.textContent : ''
-      };
-    }).filter(function(t) { return t.title; });
-  } catch(e) {
-    rawTrends = [];
+// ---- 비밀번호 변경 ----
+function changePw() {
+  var cur = document.getElementById('pwCur').value;
+  var nw = document.getElementById('pwNew').value;
+  var cf = document.getElementById('pwCf').value;
+  var msg = document.getElementById('pwMsg');
+  function show(tx, ok) {
+    msg.style.display = 'block';
+    msg.style.background = ok ? 'rgba(16,185,129,.1)' : 'rgba(239,68,68,.1)';
+    msg.style.border = '1px solid ' + (ok ? 'rgba(16,185,129,.3)' : 'rgba(239,68,68,.3)');
+    msg.style.color = ok ? '#34d399' : '#f87171';
+    msg.textContent = tx;
   }
+  if (!cur || !nw || !cf) { show('모든 필드를 입력해 주세요', false); return; }
+  if (nw.length < 6) { show('새 비밀번호는 6자 이상', false); return; }
+  if (nw !== cf) { show('새 비밀번호가 일치하지 않습니다', false); return; }
+  var stored = lsGet('yblog_pw_hash') || DEF_HASH;
+  sha256(cur + SALT).then(function(h) {
+    if (h !== stored) { show('현재 비밀번호가 틀렸습니다', false); return; }
+    return sha256(nw + SALT).then(function(nh) {
+      lsSet('yblog_pw_hash', nh);
+      show('&#10003; 비밀번호가 변경되었습니다', true);
+      document.getElementById('pwCur').value = '';
+      document.getElementById('pwNew').value = '';
+      document.getElementById('pwCf').value = '';
+    });
+  }).catch(function(e) { show('오류: ' + e.message, false); });
+}
 
-  // Step 2: Gemini analysis
-  try {
-    document.getElementById('trendLoadingText').textContent = 'AI가 수익성 분석 중...';
+// ---- 로그아웃 ----
+function doLogout() {
+  ssRem('yblog_auth');
+  try { window.location.href = 'index.html'; } catch(e) {}
+}
 
-    const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+// ---- 핫이슈 ----
+function fetchTrends() {
+  if (!state.s.gemKey) { showAlert('설정에서 Gemini API 키를 먼저 입력해 주세요', 'error'); showTab('settings'); return; }
+  var btn = document.getElementById('trendBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> 분석 중...';
+  document.getElementById('trendLoad').style.display = 'block';
+  document.getElementById('trendResult').style.display = 'none';
+  document.getElementById('trendErr').style.display = 'none';
+  var co = document.getElementById('trendCo').value;
+  var coName = { KR: '한국', US: '미국', JP: '일본' }[co] || '한국';
+  var today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+  var rawTrends = [];
 
-    let prompt;
+  function doGemini() {
+    document.getElementById('trendLoadTx').textContent = 'AI가 수익성 분석 중...';
+    var prompt;
     if (rawTrends.length > 0) {
-      prompt = '오늘(' + today + ') ' + countryName + ' 구글 트렌드 검색어:\n' +
-        rawTrends.map(function(t, i) { return (i+1) + '. ' + t.title + (t.traffic ? ' (' + t.traffic + ')' : ''); }).join('\n') +
-        '\n\n위 트렌드 중 블로그 애드센스 수익화에 가장 적합한 주제 10개를 선택하고 분석해주세요.\n선택 기준: 검색량, 광고 단가, 정보성, 독자 체류시간\n\n반드시 JSON만 응답 (마크다운 없이):\n{"trends":[{"rank":1,"original":"원본 키워드","blog_keyword":"구체적인 블로그 포스팅 키워드","category":"카테고리(엔터/경제/스포츠/테크/라이프/건강/기타 중 하나)","reason":"수익화 적합 이유 (20자 내외)","ad_cpc":"예상 광고단가(높음/보통/낮음)"}]}';
+      var kwList = '';
+      for (var i = 0; i < rawTrends.length; i++) { kwList += (i+1) + '. ' + rawTrends[i].title + (rawTrends[i].traffic ? ' (' + rawTrends[i].traffic + ')' : '') + '\n'; }
+      prompt = '오늘(' + today + ') ' + coName + ' 구글 트렌드:\n' + kwList + '\n블로그 애드센스 수익화에 가장 적합한 주제 10개를 선택 분석해주세요.\n반드시 JSON만 (마크다운 없이):\n{"trends":[{"rank":1,"original":"키워드","blog_keyword":"블로그 포스팅 키워드","category":"엔터/경제/스포츠/테크/라이프/건강/기타","reason":"이유 20자","ad_cpc":"높음/보통/낮음"}]}';
     } else {
-      prompt = '오늘(' + today + ') ' + countryName + '에서 가장 핫한 이슈와 트렌드를 분석해서 블로그 애드센스 수익화에 적합한 주제 10개를 추천해주세요.\n최근 뉴스, 시즌 이슈, 사회 트렌드를 반영해서 추천해 주세요.\n\n반드시 JSON만 응답 (마크다운 없이):\n{"trends":[{"rank":1,"original":"이슈 키워드","blog_keyword":"구체적인 블로그 포스팅 키워드","category":"카테고리(엔터/경제/스포츠/테크/라이프/건강/기타 중 하나)","reason":"수익화 적합 이유 (20자 내외)","ad_cpc":"예상 광고단가(높음/보통/낮음)"}]}';
+      prompt = '오늘(' + today + ') ' + coName + '에서 핫한 이슈 기반으로 블로그 수익화 주제 10개 추천.\n반드시 JSON만:\n{"trends":[{"rank":1,"original":"이슈","blog_keyword":"블로그 키워드","category":"카테고리","reason":"이유","ad_cpc":"높음/보통/낮음"}]}';
     }
-
-    const text = await callGemini(prompt, 2048);
-    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-    state.trends = parsed.trends;
-    displayTrends(parsed.trends);
-
-    document.getElementById('trendLastUpdate').textContent = '최근 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
-  } catch(err) {
-    showAlert('트렌드 분석 오류: ' + err.message, 'error');
-    document.getElementById('trendLoading').style.display = 'none';
-    document.getElementById('trendResultArea').innerHTML = '<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:16px;color:#f87171;font-size:13px">❌ 오류: ' + err.message + '<br><br>확인사항:<br>1. Gemini API 키가 올바른지 확인<br>2. <a href=\"https://aistudio.google.com/app/apikey\" target=\"_blank\" style=\"color:#f87171\">aistudio.google.com</a>에서 키 재발급 시도<br>3. 인터넷 연결 확인</div>';
-    document.getElementById('trendResultArea').style.display = 'block';
+    callGemini(prompt, 2048).then(function(text) {
+      var clean = text.replace(/```json|```/g, '').trim();
+      var parsed = JSON.parse(clean);
+      state.trends = parsed.trends;
+      renderTrends(parsed.trends);
+      document.getElementById('trendUpdated').textContent = '업데이트: ' + new Date().toLocaleTimeString('ko-KR');
+    }).catch(function(e) {
+      var errEl = document.getElementById('trendErr');
+      errEl.style.display = 'block';
+      errEl.innerHTML = '&#10060; 오류: ' + e.message + '<br><br>확인사항:<br>1. Gemini API 키 확인<br>2. 인터넷 연결 확인';
+    }).finally(function() {
+      btn.disabled = false;
+      btn.innerHTML = '&#128260; 새로고침';
+      document.getElementById('trendLoad').style.display = 'none';
+    });
   }
 
-  btn.disabled = false;
-  btn.innerHTML = '🔄 새로고침';
-  document.getElementById('trendLoading').style.display = 'none';
+  // CORS 프록시로 구글 트렌드 시도
+  document.getElementById('trendLoadTx').textContent = '구글 트렌드 수집 중...';
+  var proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://trends.google.com/trends/trendingsearches/daily/rss?geo=' + co);
+  var xhr = new XMLHttpRequest();
+  xhr.timeout = 7000;
+  xhr.open('GET', proxyUrl, true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status === 200) {
+      try {
+        var data = JSON.parse(xhr.responseText);
+        var parser = new DOMParser();
+        var xml = parser.parseFromString(data.contents, 'text/xml');
+        var items = xml.querySelectorAll('item');
+        rawTrends = [];
+        for (var i = 0; i < Math.min(items.length, 25); i++) {
+          var titleEl = items[i].querySelector('title');
+          var traffEl = items[i].querySelector('approx_traffic');
+          if (titleEl && titleEl.textContent) {
+            rawTrends.push({ title: titleEl.textContent, traffic: traffEl ? traffEl.textContent : '' });
+          }
+        }
+      } catch(e) { rawTrends = []; }
+    }
+    doGemini();
+  };
+  xhr.ontimeout = function() { doGemini(); };
+  xhr.onerror = function() { doGemini(); };
+  xhr.send();
 }
 
-function getCatClass(cat) {
-  if (!cat) return 'cat-etc';
-  cat = cat.toLowerCase();
-  if (cat.includes('엔터') || cat.includes('연예')) return 'cat-ent';
-  if (cat.includes('경제') || cat.includes('금융') || cat.includes('주식')) return 'cat-eco';
-  if (cat.includes('스포츠')) return 'cat-sports';
-  if (cat.includes('테크') || cat.includes('기술') || cat.includes('it')) return 'cat-tech';
-  if (cat.includes('라이프') || cat.includes('생활') || cat.includes('여행') || cat.includes('음식')) return 'cat-life';
-  if (cat.includes('건강') || cat.includes('의료') || cat.includes('헬스')) return 'cat-health';
-  return 'cat-etc';
+function renderTrends(trends) {
+  var grid = document.getElementById('trendGrid');
+  var html = '';
+  for (var i = 0; i < trends.length; i++) {
+    var t = trends[i];
+    var cpcColor = t.ad_cpc && t.ad_cpc.indexOf('높') >= 0 ? 'color:#34d399' : t.ad_cpc && t.ad_cpc.indexOf('보') >= 0 ? 'color:#fbbf24' : 'color:#9ca3af';
+    html += '<div class="tc-card" id="tcc-' + i + '" onclick="togTrend(' + i + ')">';
+    html += '<span class="tc-cat">' + (t.category || '일반') + '</span>';
+    html += '<div class="tc-orig">&#128293; ' + (t.original || '') + '</div>';
+    html += '<div class="tc-kw">&#8594; ' + (t.blog_keyword || '') + '</div>';
+    html += '<div class="tc-why">' + (t.reason || '') + '</div>';
+    if (t.ad_cpc) html += '<div style="font-size:10px;margin-top:4px;' + cpcColor + '">&#128176; ' + t.ad_cpc + '</div>';
+    html += '</div>';
+  }
+  grid.innerHTML = html;
+  document.getElementById('trendResult').style.display = 'block';
+  updateSelCount();
 }
 
-function getCpcColor(cpc) {
-  if (!cpc) return '';
-  if (cpc.includes('높')) return 'color:#34d399';
-  if (cpc.includes('보통')) return 'color:#fbbf24';
-  return 'color:#9ca3af';
+function togTrend(i) {
+  var el = document.getElementById('tcc-' + i);
+  if (!el) return;
+  if (el.className.indexOf('sel') >= 0) { el.className = 'tc-card'; }
+  else { el.className = 'tc-card sel'; }
+  updateSelCount();
 }
 
-function displayTrends(trends) {
-  const grid = document.getElementById('trendGrid');
-  grid.innerHTML = trends.map(function(t, i) {
-    const catClass = getCatClass(t.category);
-    const cpcStyle = getCpcColor(t.ad_cpc);
-    return '<div class="trend-card" id="tc_' + i + '" onclick="toggleTrend(' + i + ')">' +
-      '<div class="tc-rank">' + (t.rank || (i+1)) + '</div>' +
-      '<div class="tc-check" id="check_' + i + '"></div>' +
-      '<span class="tc-cat ' + catClass + '">' + (t.category || '일반') + '</span>' +
-      '<div class="tc-original">🔥 ' + (t.original || '') + '</div>' +
-      '<div class="tc-keyword">→ ' + (t.blog_keyword || '') + '</div>' +
-      '<div class="tc-reason">' + (t.reason || '') + '</div>' +
-      (t.ad_cpc ? '<div style="font-size:11px;margin-top:6px;' + cpcStyle + '">💰 광고단가: ' + t.ad_cpc + '</div>' : '') +
-      '</div>';
-  }).join('');
-
-  document.getElementById('trendResultArea').style.display = 'block';
-  updateSelectedCount();
+function selAll() {
+  for (var i = 0; i < state.trends.length; i++) {
+    var el = document.getElementById('tcc-' + i);
+    if (el) el.className = 'tc-card sel';
+  }
+  updateSelCount();
 }
 
-function toggleTrend(i) {
-  const card = document.getElementById('tc_' + i);
-  const check = document.getElementById('check_' + i);
-  const selected = card.classList.toggle('selected');
-  check.textContent = selected ? '✓' : '';
-  updateSelectedCount();
+function deselAll() {
+  for (var i = 0; i < state.trends.length; i++) {
+    var el = document.getElementById('tcc-' + i);
+    if (el) el.className = 'tc-card';
+  }
+  updateSelCount();
 }
 
-function selectAllTrends() {
-  state.trends.forEach(function(_, i) {
-    const card = document.getElementById('tc_' + i);
-    const check = document.getElementById('check_' + i);
-    if (card) { card.classList.add('selected'); check.textContent = '✓'; }
-  });
-  updateSelectedCount();
+function updateSelCount() {
+  var sel = document.querySelectorAll('.tc-card.sel');
+  var sc = document.getElementById('selCount');
+  if (sc) sc.textContent = sel.length > 0 ? '(' + sel.length + '개 선택)' : '';
 }
 
-function deselectAllTrends() {
-  state.trends.forEach(function(_, i) {
-    const card = document.getElementById('tc_' + i);
-    const check = document.getElementById('check_' + i);
-    if (card) { card.classList.remove('selected'); check.textContent = ''; }
-  });
-  updateSelectedCount();
+function getSelTrends() {
+  var kws = [];
+  for (var i = 0; i < state.trends.length; i++) {
+    var el = document.getElementById('tcc-' + i);
+    if (el && el.className.indexOf('sel') >= 0) kws.push(state.trends[i].blog_keyword);
+  }
+  return kws;
 }
 
-function updateSelectedCount() {
-  const count = document.querySelectorAll('.trend-card.selected').length;
-  document.getElementById('selectedCount').textContent = count > 0 ? '(' + count + '개 선택됨)' : '';
-}
-
-function getSelectedTrendKeywords() {
-  return state.trends.filter(function(_, i) {
-    const card = document.getElementById('tc_' + i);
-    return card && card.classList.contains('selected');
-  }).map(function(t) { return t.blog_keyword; });
-}
-
-function addTrendKeywords() {
-  const kws = getSelectedTrendKeywords();
+function addTrends() {
+  var kws = getSelTrends();
   if (!kws.length) { showAlert('주제를 선택해 주세요', 'error'); return; }
-  const existing = document.getElementById('keywordsInput').value.trim();
-  document.getElementById('keywordsInput').value = (existing ? existing + '\n' : '') + kws.join('\n');
-  showAlert(kws.length + '개 키워드 추가 완료!', 'success');
+  var ex = document.getElementById('kwInput').value.trim();
+  document.getElementById('kwInput').value = ex ? ex + '\n' + kws.join('\n') : kws.join('\n');
+  showAlert(kws.length + '개 키워드 추가!', 'success');
   showTab('keywords');
 }
 
-async function generateFromTrends() {
-  const kws = getSelectedTrendKeywords();
+function genFromTrends() {
+  var kws = getSelTrends();
   if (!kws.length) { showAlert('주제를 선택해 주세요', 'error'); return; }
-  document.getElementById('keywordsInput').value = kws.join('\n');
+  document.getElementById('kwInput').value = kws.join('\n');
   showTab('keywords');
-  await sleep(300);
-  startGeneration();
+  setTimeout(startGen, 300);
 }
 
-// ===== KEYWORD EXPANSION =====
-async function expandKeywords() {
-  const main = document.getElementById('mainKeyword').value.trim();
+// ---- 키워드 확장 ----
+function expandKw() {
+  var main = document.getElementById('mainKw').value.trim();
   if (!main) return;
-  if (!state.settings.geminiKey) { showAlert('Gemini API 키를 먼저 설정해 주세요', 'error'); showTab('settings'); return; }
-
-  const btn = document.getElementById('expandBtn');
+  var btn = document.getElementById('expandBtn');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spin"></div> 분석 중...';
-
-  try {
-    const prompt = '한국 블로그 SEO 전문가로서 키워드 "' + main + '"의 롱테일 키워드 10개를 추천해주세요.\n기준: 검색량 있고 경쟁 낮음, 구매/비교 의도, 구체적\n\nJSON만 응답:\n{"keywords":["키워드1","키워드2","키워드3","키워드4","키워드5","키워드6","키워드7","키워드8","키워드9","키워드10"]}';
-    const text = await callGemini(prompt, 1024);
-    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-
-    document.getElementById('expandResult').innerHTML = '<div style="margin-top:14px">' +
-      '<div style="font-size:12px;color:#9ca3af;margin-bottom:8px;font-weight:600">✨ AI 추천 롱테일 키워드</div>' +
-      parsed.keywords.map(function(kw, i) {
-        return '<div class="kw-item"><input type="checkbox" id="ekw_' + i + '" checked><label for="ekw_' + i + '" class="kw-text" style="cursor:pointer">' + kw + '</label><span class="kw-badge">롱테일</span></div>';
-      }).join('') +
-      '<button class="btn btn-primary" onclick="addExpandedKws(' + JSON.stringify(parsed.keywords).replace(/"/g, "'") + ')" style="margin-top:10px;width:100%;justify-content:center">✅ 선택한 키워드 추가</button></div>';
-
-    window._expandedKws = parsed.keywords;
-  } catch(err) {
-    showAlert('키워드 확장 오류: ' + err.message, 'error');
-  } finally {
+  btn.innerHTML = '<span class="spin"></span>';
+  var prompt = '한국 블로그 SEO 전문가: "' + main + '" 롱테일 키워드 10개.\n기준: 검색량 있음, 경쟁 낮음, 구매의도 포함.\nJSON만:\n{"keywords":["키워드1","키워드2","키워드3","키워드4","키워드5","키워드6","키워드7","키워드8","키워드9","키워드10"]}';
+  callGemini(prompt, 1024).then(function(text) {
+    var parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+    var kws = parsed.keywords;
+    var html = '<div style="margin-top:12px"><div style="font-size:11px;color:#9ca3af;margin-bottom:7px;font-weight:600">&#10024; AI 추천 롱테일 키워드</div>';
+    for (var i = 0; i < kws.length; i++) {
+      html += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:7px;margin-bottom:5px">';
+      html += '<input type="checkbox" id="ekw' + i + '" checked style="width:15px;height:15px;accent-color:#7c3aed;flex-shrink:0">';
+      html += '<label for="ekw' + i + '" style="font-size:13px;color:#d1d5db;cursor:pointer;flex:1;margin:0">' + kws[i] + '</label></div>';
+    }
+    html += '<button class="btn bp bblk" onclick="addExpandKws(' + JSON.stringify(kws).replace(/"/g, "'") + ')" style="margin-top:8px;padding:10px">&#10003; 선택 키워드 추가</button></div>';
+    document.getElementById('expandResult').innerHTML = html;
+  }).catch(function(e) {
+    showAlert('확장 오류: ' + e.message, 'error');
+  }).finally(function() {
     btn.disabled = false;
-    btn.innerHTML = '🔍 키워드 확장';
-  }
-}
-
-function addExpandedKws(kws) {
-  const selected = kws.filter(function(_, i) { const cb = document.getElementById('ekw_' + i); return cb && cb.checked; });
-  const existing = document.getElementById('keywordsInput').value.trim();
-  document.getElementById('keywordsInput').value = (existing ? existing + '\n' : '') + selected.join('\n');
-  document.getElementById('expandResult').innerHTML = '<p style="color:#34d399;font-size:13px;margin-top:10px">✅ ' + selected.length + '개 키워드가 추가되었습니다</p>';
-  showAlert(selected.length + '개 키워드 추가 완료!', 'success');
-}
-
-// ===== CONTENT GENERATION =====
-async function generatePost(keyword) {
-  const tone = state.settings.defaultTone || '정보전달형 SEO 최적화';
-  const imageStyle = state.settings.imageStyle || 'realistic photo, professional photography, high quality';
-
-  const prompt = '구글 SEO 전문 한국어 블로그 작가로서 수익화 최적화 블로그 글을 작성하세요.\n\n키워드: "' + keyword + '"\n스타일: ' + tone + '\n\n요구사항:\n- 제목: 검색 클릭률 높은 SEO 제목 (40-60자, 숫자/연도 포함 권장)\n- 본문: 2,000자 이상, HTML 형식\n  <h2> 소제목 4-5개, <h3> 세부소제목, <p> 단락, <ul><li> 목록, <strong> 강조, <table> 비교표 1개 이상\n- 각 <h2> 소제목 바로 아래에 반드시 [IMG:영어이미지설명] 마커 삽입 (소제목별 이미지, 총 4-5개)\n- 키워드를 자연스럽게 3-5회 포함\n- 독자 체류시간 늘리는 스토리텔링\n- 메타 설명: 140-160자\n\n[IMG:...] 마커 예시:\n<h2>제목</h2>\n[IMG:Korean economy investment US dollars financial chart realistic photo]\n<p>내용...</p>\n\n반드시 JSON만 응답 (마크다운 없이):\n{"title":"제목","meta_description":"메타설명","content":"HTML본문([IMG:...] 마커 포함)","tags":["태그1","태그2","태그3","태그4","태그5"],"next_keywords":["키워드1","키워드2","키워드3"]}';
-
-  const text = await callGemini(prompt, 4096);
-  const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-
-  // [IMG:...] 마커를 실제 이미지 태그로 교체
-  parsed.content = parsed.content.replace(/\[IMG:([^\]]+)\]/g, function(match, imgPrompt) {
-    const style = state.settings.imageStyle || 'realistic photo, professional photography, high quality';
-    const fullPrompt = imgPrompt.trim() + ', ' + style;
-    const imgUrl = getImageUrl(fullPrompt);
-    return '<figure style="margin:20px 0 28px;text-align:center">' +
-      '<img src="' + imgUrl + '" alt="' + imgPrompt.trim() + '" ' +
-      'style="width:100%;max-width:860px;height:auto;border-radius:12px;display:inline-block" ' +
-      'loading="lazy" onerror="this.style.display='none'">' +
-      '<figcaption style="font-size:12px;color:#9ca3af;margin-top:8px">' + imgPrompt.trim() + '</figcaption>' +
-      '</figure>';
+    btn.innerHTML = '&#128269; 확장';
   });
-
-  return parsed;
 }
 
-function getImageUrl(prompt) {
+function addExpandKws(kws) {
+  var sel = [];
+  for (var i = 0; i < kws.length; i++) {
+    var cb = document.getElementById('ekw' + i);
+    if (cb && cb.checked) sel.push(kws[i]);
+  }
+  var ex = document.getElementById('kwInput').value.trim();
+  document.getElementById('kwInput').value = ex ? ex + '\n' + sel.join('\n') : sel.join('\n');
+  document.getElementById('expandResult').innerHTML = '<p style="color:#34d399;font-size:12px;margin-top:8px">&#10003; ' + sel.length + '개 추가됨</p>';
+  showAlert(sel.length + '개 추가!', 'success');
+}
+
+// ---- 이미지 URL ----
+function getImgUrl(prompt) {
   var seed = 0;
-  for (var pi = 0; pi < prompt.length; pi++) { seed = ((seed<<5)-seed+prompt.charCodeAt(pi))|0; }
-  seed = Math.abs(seed);
-  var _unused = seed;
-  return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=1200&height=630&nologo=true&seed=' + seed;
+  for (var i = 0; i < prompt.length; i++) { seed = ((seed << 5) - seed + prompt.charCodeAt(i)) | 0; }
+  if (seed < 0) seed = -seed;
+  var style = state.s.imgStyle || 'realistic photo, professional photography';
+  return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt + ', ' + style) + '?width=1200&height=630&nologo=true&seed=' + seed;
 }
 
+// ---- SEO 점수 ----
 function seoScore(post) {
-  let s = 0;
-  const plain = post.content.replace(/<[^>]*>/g, '');
+  var s = 0;
+  var plain = post.content.replace(/<[^>]*>/g, '');
   if (post.title.length >= 30 && post.title.length <= 60) s += 25; else if (post.title.length > 15) s += 12;
   if (plain.length >= 2000) s += 30; else if (plain.length >= 1000) s += 15;
-  if (post.meta_description && post.meta_description.length >= 100) s += 20;
+  if (post.meta && post.meta.length >= 100) s += 20;
   if (post.tags && post.tags.length >= 5) s += 15;
-  if (post.content.includes('<h2') && post.content.includes('<h3')) s += 10;
+  if (post.content.indexOf('<h2') >= 0 && post.content.indexOf('<h3') >= 0) s += 10;
   return s;
 }
 
-async function startGeneration() {
-  if (state.isGenerating) return;
-  if (!state.settings.geminiKey) { showAlert('Gemini API 키를 설정해 주세요', 'error'); showTab('settings'); return; }
+// ---- 글 생성 ----
+function generatePost(keyword) {
+  var tone = state.s.tone || '정보전달형 SEO 최적화';
+  var prompt = '구글 SEO 전문 한국어 블로그 작가: 키워드 "' + keyword + '" 스타일 ' + tone + '.\n\n조건:\n- 제목: SEO 최적화 (40-60자)\n- 본문: 2000자 이상 HTML\n- <h2> 소제목 4-5개, 각 <h2> 바로 아래 [IMG:영어설명] 마커\n- <h3>, <p>, <ul><li>, <strong>, <table> 포함\n- 메타 설명 140-160자\n\nJSON만 (마크다운 없이):\n{"title":"제목","meta":"메타설명","content":"HTML본문([IMG:...] 포함)","tags":["태그1","태그2","태그3","태그4","태그5"],"next":["키워드1","키워드2","키워드3"]}';
+  return callGemini(prompt, 4096).then(function(text) {
+    var parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+    parsed.content = parsed.content.replace(/\[IMG:([^\]]+)\]/g, function(m, p) {
+      var url = getImgUrl(p.trim());
+      return '<figure style="margin:16px 0 24px;text-align:center"><img src="' + url + '" alt="' + p.trim() + '" style="width:100%;max-width:860px;height:auto;border-radius:10px;display:inline-block" loading="lazy"></figure>';
+    });
+    return parsed;
+  });
+}
 
-  const kwText = document.getElementById('keywordsInput').value.trim();
+// ---- 배치 생성 ----
+function startGen() {
+  if (state.isGen) return;
+  if (!state.s.gemKey) { showAlert('Gemini API 키를 설정해 주세요', 'error'); showTab('settings'); return; }
+  var kwText = document.getElementById('kwInput').value.trim();
   if (!kwText) { showAlert('키워드를 입력해 주세요', 'error'); return; }
-
-  var kwSet = {}; var keywords = [];
-  kwText.split('\n').forEach(function(k){ var t=k.trim(); if(t && !kwSet[t]){kwSet[t]=1;keywords.push(t);} });
-  state.isGenerating = true;
-
-  const btn = document.getElementById('genBtn');
+  var kwSet = {};
+  var keywords = [];
+  var lines = kwText.split('\n');
+  for (var li = 0; li < lines.length; li++) {
+    var t = lines[li].trim();
+    if (t && !kwSet[t]) { kwSet[t] = 1; keywords.push(t); }
+  }
+  if (!keywords.length) return;
+  state.isGen = true;
+  var btn = document.getElementById('genBtn');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spin"></div> 생성 중...';
-
-  const prog = document.getElementById('genProgress');
-  prog.style.display = 'block';
-  addLog('▶ ' + keywords.length + '개 키워드 생성 시작');
-
-  for (let i = 0; i < keywords.length; i++) {
-    const kw = keywords[i];
-    updateProgress(i, keywords.length, kw);
-    addLog('📝 "' + kw + '" 생성 중...');
-
-    try {
-      const gen = await generatePost(kw);
-      const post = {
-        id: Date.now() + i,
-        keyword: kw,
-        title: gen.title,
-        meta_description: gen.meta_description,
-        content: gen.content,
-        tags: gen.tags || [],
-        next_keywords: gen.next_keywords || [],
-        status: 'ready',
-        createdAt: new Date().toISOString()
+  btn.innerHTML = '<span class="spin"></span> 생성 중...';
+  document.getElementById('genProg').style.display = 'block';
+  addLog('▶ ' + keywords.length + '개 생성 시작');
+  var idx = 0;
+  function doNext() {
+    if (idx >= keywords.length) {
+      state.isGen = false;
+      btn.disabled = false;
+      btn.innerHTML = '&#10024; AI 블로그 글 생성 시작';
+      setTimeout(function() { document.getElementById('genProg').style.display = 'none'; }, 2000);
+      showAlert(keywords.length + '개 완료!', 'success');
+      showTab('queue');
+      return;
+    }
+    var kw = keywords[idx];
+    setProg(idx, keywords.length, kw);
+    addLog('&#128221; "' + kw + '" 생성 중...');
+    generatePost(kw).then(function(gen) {
+      var post = {
+        id: Date.now() + idx,
+        kw: kw, title: gen.title, meta: gen.meta,
+        content: gen.content, tags: gen.tags || [],
+        next: gen.next || [], status: 'ready',
+        created: new Date().toISOString()
       };
       post.score = seoScore(post);
-
-      state.queue.push(post);
+      state.q.push(post);
       save();
-      renderQueue();
-      updateQueueCount();
-      addLog('✅ "' + kw + '" 완료 · SEO ' + post.score + '점');
-      if (gen.next_keywords && gen.next_keywords.length) addLog('💡 다음 추천: ' + gen.next_keywords.join(', '));
-    } catch(err) {
-      addLog('❌ "' + kw + '" 실패: ' + err.message);
-    }
-
-    if (i < keywords.length - 1) await sleep(3500);
-  }
-
-  updateProgress(keywords.length, keywords.length, '완료!');
-  state.isGenerating = false;
-  btn.disabled = false;
-  btn.innerHTML = '✨ AI 블로그 글 생성 시작';
-  setTimeout(function(){ prog.style.display = 'none'; }, 2000);
-  showAlert(keywords.length + '개 완료! 🎉', 'success');
-  showTab('queue');
-}
-
-// ===== POSTING =====
-async function refreshAccessToken() {
-  var googleClientId = state.settings.googleClientId;
-  var googleClientSecret = state.settings.googleClientSecret;
-  var refreshToken = state.settings.refreshToken;
-  if (!googleClientId || !googleClientSecret || !refreshToken) return null;
-  try {
-    const res = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: googleClientId,
-        client_secret: googleClientSecret,
-        refresh_token: refreshToken,
-        grant_type: 'refresh_token'
-      })
+      renderQ();
+      updateQc();
+      addLog('&#10003; "' + kw + '" 완료 SEO ' + post.score + '점');
+      if (gen.next && gen.next.length) addLog('&#128161; 다음 추천: ' + gen.next.join(', '));
+    }).catch(function(e) {
+      addLog('&#10060; "' + kw + '" 실패: ' + e.message);
+    }).finally(function() {
+      idx++;
+      setTimeout(doNext, 3500);
     });
-    const data = await res.json();
-    if (data.access_token) {
-      state.settings.oauthToken = data.access_token;
-      state.settings.tokenExpiry = Date.now() + ((data.expires_in || 3600) * 1000);
-      save();
-      document.getElementById('oauthToken').value = data.access_token;
-      addLog('🔄 액세스 토큰 자동 갱신 완료');
-      return data.access_token;
-    }
-  } catch(e) { addLog('⚠️ 토큰 갱신 실패: ' + e.message); }
-  return null;
+  }
+  doNext();
 }
 
-async function getValidToken() {
-  const s = state.settings;
-  const hasRefresh = s.refreshToken && s.googleClientId && s.googleClientSecret;
-  // 토큰이 5분 이상 남아 있으면 그대로 사용
-  if (s.oauthToken && s.tokenExpiry && Date.now() < s.tokenExpiry - 300000) {
-    return s.oauthToken;
-  }
-  // Refresh Token이 있으면 자동 갱신
-  if (hasRefresh) {
-    const newToken = await refreshAccessToken();
-    if (newToken) return newToken;
-  }
-  // 임시 토큰 사용
-  if (s.oauthToken) return s.oauthToken;
-  return null;
+function setProg(done, total, tx) {
+  document.getElementById('progBar').style.width = (done / total * 100) + '%';
+  document.getElementById('progTx').textContent = '(' + done + '/' + total + ') ' + tx;
 }
 
-async function postToBlogger(post) {
-  const blogId = state.settings.blogId;
-  if (!blogId) throw new Error('Blog ID를 설정해 주세요');
-  const token = await getValidToken();
-  if (!token) throw new Error('토큰이 없습니다. 설정에서 Refresh Token 또는 Access Token을 입력해 주세요');
-  const res = await fetch('https://www.googleapis.com/blogger/v3/blogs/' + blogId + '/posts/', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title: post.title, content: post.content, labels: post.tags })
+function addLog(msg) {
+  var log = document.getElementById('actLog');
+  if (!log) return;
+  var t = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  log.innerHTML = '<div>' + t + ' ' + msg + '</div>' + log.innerHTML;
+}
+
+// ---- 포스팅 ----
+function postToBlogger(post) {
+  var blogId = state.s.blogId;
+  if (!blogId) return Promise.reject(new Error('Blog ID를 설정해 주세요'));
+  return getToken().then(function(token) {
+    if (!token) throw new Error('토큰이 없습니다. 설정에서 입력해 주세요');
+    return fetch('https://www.googleapis.com/blogger/v3/blogs/' + blogId + '/posts/', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: post.title, content: post.content, labels: post.tags })
+    }).then(function(r) {
+      return r.json().then(function(d) {
+        if (!r.ok) {
+          var msg = (d.error && d.error.message) ? d.error.message : 'HTTP ' + r.status;
+          if (r.status === 401) msg = '토큰 만료. Refresh Token 설정 시 자동 갱신됩니다.';
+          throw new Error(msg);
+        }
+        return d;
+      });
+    });
   });
-  if (!res.ok) {
-    const e = await res.json();
-    let msg = (e.error && e.error.message) ? e.error.message : ('HTTP ' + res.status);
-    if (/401|invalid.cred/i.test(msg)) {
-      // 401이면 강제 갱신 시도
-      const newToken = await refreshAccessToken();
-      if (newToken) return await postToBlogger(post); // 재시도
-      msg = 'Refresh Token을 설정하면 자동 갱신됩니다.';
-    }
-    throw new Error(msg);
-  }
-  return await res.json();
 }
 
-async function postSingle(index) {
-  if (state.isPosting) return;
-  if (!state.settings.oauthToken) { showAlert('토큰을 먼저 설정해 주세요', 'error'); showTab('settings'); return; }
-  state.isPosting = true;
-  const post = state.queue[index];
+function postOne(idx) {
+  if (state.isPost) return;
+  state.isPost = true;
+  var post = state.q[idx];
+  if (!post) { state.isPost = false; return; }
   post.status = 'posting';
-  renderQueue();
-  try {
-    const result = await postToBlogger(post);
-    post.status = 'posted'; post.postedAt = new Date().toISOString(); post.url = result.url;
-    state.history.unshift(Object.assign({}, post));
-    save(); renderQueue(); renderHistory(); updateQueueCount();
-    showAlert('포스팅 완료! 🎉', 'success');
-    addLog('✅ "' + post.title + '" 포스팅 완료');
-  } catch(err) {
-    post.status = 'error'; post.error = err.message; save(); renderQueue();
-    showAlert('오류: ' + err.message, 'error');
-  }
-  state.isPosting = false;
+  renderQ();
+  postToBlogger(post).then(function(result) {
+    post.status = 'posted';
+    post.postedAt = new Date().toISOString();
+    post.url = result.url;
+    state.h.unshift(Object.assign({}, post));
+    save(); renderQ(); renderHi(); updateQc();
+    showAlert('포스팅 완료!', 'success');
+    addLog('&#10003; "' + post.title + '" 포스팅됨');
+  }).catch(function(e) {
+    post.status = 'error';
+    post.err = e.message;
+    save(); renderQ();
+    showAlert('오류: ' + e.message, 'error');
+    addLog('&#10060; 실패: ' + e.message);
+  }).finally(function() { state.isPost = false; });
 }
 
-async function postAll() {
-  if (state.isPosting) return;
-  const ready = state.queue.filter(function(p){ return p.status === 'ready'; });
+function postAll() {
+  if (state.isPost) return;
+  var ready = [];
+  for (var i = 0; i < state.q.length; i++) { if (state.q[i].status === 'ready') ready.push(i); }
   if (!ready.length) { showAlert('포스팅할 글이 없습니다', 'error'); return; }
-  if (!state.settings.oauthToken) { showAlert('토큰을 먼저 설정해 주세요', 'error'); showTab('settings'); return; }
-
-  state.isPosting = true;
-  const btn = document.getElementById('postAllBtn');
+  if (!state.s.blogId) { showAlert('Blog ID를 설정해 주세요', 'error'); showTab('settings'); return; }
+  var btn = document.getElementById('postAllBtn');
   btn.disabled = true;
-
-  const delay = (state.settings.postDelay || 30) * 1000;
-  addLog('▶ ' + ready.length + '개 순차 포스팅 시작');
-
-  for (let i = 0; i < ready.length; i++) {
-    const qPost = state.queue.find(function(p){ return p.id === ready[i].id; });
-    if (!qPost || qPost.status !== 'ready') continue;
-
-    qPost.status = 'posting'; renderQueue();
-    btn.innerHTML = '<div class="spin"></div> (' + (i+1) + '/' + ready.length + ') 포스팅 중...';
-    addLog('📤 "' + qPost.title + '" 포스팅 중...');
-
-    try {
-      const result = await postToBlogger(qPost);
-      qPost.status = 'posted'; qPost.postedAt = new Date().toISOString(); qPost.url = result.url;
-      state.history.unshift(Object.assign({}, qPost));
-      save(); renderQueue(); renderHistory(); updateQueueCount();
-      addLog('✅ "' + qPost.title + '" 완료');
-    } catch(err) {
-      qPost.status = 'error'; qPost.error = err.message; save(); renderQueue();
-      addLog('❌ 실패: ' + err.message);
+  var delay = (state.s.delay || 30) * 1000;
+  var ri = 0;
+  function doOne() {
+    if (ri >= ready.length) {
+      btn.disabled = false;
+      btn.innerHTML = '&#128640; 전체 포스팅';
+      showAlert('전체 완료!', 'success');
+      return;
     }
-
-    if (i < ready.length - 1) { addLog('⏱ ' + state.settings.postDelay + '초 대기...'); await sleep(delay); }
+    var qIdx = ready[ri];
+    var post = state.q[qIdx];
+    if (!post || post.status !== 'ready') { ri++; doOne(); return; }
+    btn.innerHTML = '<span class="spin"></span> (' + (ri+1) + '/' + ready.length + ')';
+    post.status = 'posting'; renderQ();
+    state.isPost = true;
+    postToBlogger(post).then(function(result) {
+      post.status = 'posted';
+      post.postedAt = new Date().toISOString();
+      post.url = result.url;
+      state.h.unshift(Object.assign({}, post));
+      save(); renderQ(); renderHi(); updateQc();
+      addLog('&#10003; "' + post.title + '" 완료');
+    }).catch(function(e) {
+      post.status = 'error'; post.err = e.message;
+      save(); renderQ();
+      addLog('&#10060; 실패: ' + e.message);
+    }).finally(function() {
+      state.isPost = false;
+      ri++;
+      if (ri < ready.length) {
+        addLog('&#9203; ' + state.s.delay + '초 대기...');
+        setTimeout(doOne, delay);
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '&#128640; 전체 포스팅';
+        showAlert('전체 완료!', 'success');
+      }
+    });
   }
-
-  state.isPosting = false;
-  btn.disabled = false;
-  btn.innerHTML = '🚀 대기 중인 글 전체 포스팅';
-  showAlert('전체 포스팅 완료! 🎉', 'success');
+  doOne();
 }
 
-// ===== RENDER =====
-function renderQueue() {
-  const el = document.getElementById('queueList');
-  const stats = { total: state.queue.length, ready: 0, posted: 0, error: 0 };
-  state.queue.forEach(function(p){ if(p.status==='ready')stats.ready++; else if(p.status==='posted')stats.posted++; else if(p.status==='error')stats.error++; });
-  document.getElementById('stat-total').textContent = stats.total;
-  document.getElementById('stat-ready').textContent = stats.ready;
-  document.getElementById('stat-posted').textContent = stats.posted;
-  document.getElementById('stat-error').textContent = stats.error;
+// ---- 렌더링 ----
+function statusBadge(s) {
+  if (s === 'ready') return '<span class="badge bb">&#8987; 대기</span>';
+  if (s === 'posting') return '<span class="badge by2">&#128228; 포스팅중</span>';
+  if (s === 'posted') return '<span class="badge bg2">&#10003; 완료</span>';
+  if (s === 'error') return '<span class="badge br2">&#10060; 오류</span>';
+  return '';
+}
 
-  if (!state.queue.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>생성된 글이 없습니다<br>키워드 탭에서 글을 생성해 주세요</p></div>';
-    return;
+function seoClass(n) { return n >= 80 ? 'seo-h' : n >= 50 ? 'seo-m' : 'seo-l'; }
+
+function renderQ() {
+  var tot = state.q.length, rdy = 0, don = 0, err = 0;
+  for (var i = 0; i < state.q.length; i++) {
+    if (state.q[i].status === 'ready') rdy++;
+    else if (state.q[i].status === 'posted') don++;
+    else if (state.q[i].status === 'error') err++;
   }
-  el.innerHTML = state.queue.map(function(p, i) {
-    const seoClass = p.score >= 80 ? 'seo-high' : p.score >= 50 ? 'seo-mid' : 'seo-low';
-    return '<div class="queue-item ' + p.status + '">' +
-      '<div class="qi-header"><div style="flex:1">' +
-      '<div class="qi-title">' + p.title + '</div>' +
-      '<div class="qi-meta" style="margin-top:4px">🔑 ' + p.keyword + ' &nbsp;·&nbsp; <span class="seo-badge ' + seoClass + '">SEO ' + p.score + '점</span> &nbsp;·&nbsp; ' + new Date(p.createdAt).toLocaleDateString('ko-KR') + '</div>' +
-      (p.next_keywords && p.next_keywords.length ? '<div class="qi-longtail" style="margin-top:5px">💡 다음 추천: ' + p.next_keywords.join(' · ') + '</div>' : '') +
-      (p.error ? '<div style="color:#f87171;font-size:12px;margin-top:4px">⚠️ ' + p.error + '</div>' : '') +
-      '</div><div>' + getStatusBadge(p.status) + '</div></div>' +
-      '<div class="tags-row">' + (p.tags||[]).map(function(t){return '<span class="tag">#'+t+'</span>';}).join('') + '</div>' +
-      '<div class="qi-actions">' +
-      (p.status==='ready'?'<button class="btn btn-sm btn-primary" onclick="postSingle('+i+')">📤 포스팅</button>':'') +
-      (p.status==='error'?'<button class="btn btn-sm btn-yellow" onclick="retryPost('+i+')">🔄 재시도</button>':'') +
-      (p.url?'<a href="'+p.url+'" target="_blank" class="btn btn-sm btn-ghost">🔗 확인</a>':'') +
-      '<button class="btn btn-sm btn-ghost" onclick="previewPost('+i+')">👁 미리보기</button>' +
-      '<button class="btn btn-sm btn-danger" onclick="removeQueue('+i+')">🗑</button>' +
-      '</div></div>';
-  }).join('');
-}
-
-function renderHistory() {
-  const el = document.getElementById('historyList');
-  document.getElementById('historyCountText').textContent = state.history.length;
-  if (!state.history.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><p>포스팅 기록이 없습니다</p></div>';
-    return;
+  document.getElementById('st-tot').textContent = tot;
+  document.getElementById('st-rdy').textContent = rdy;
+  document.getElementById('st-don').textContent = don;
+  document.getElementById('st-err').textContent = err;
+  var el = document.getElementById('qList');
+  if (!state.q.length) { el.innerHTML = '<div class="empty">글이 없습니다. 키워드 탭에서 생성해 주세요.</div>'; return; }
+  var html = '';
+  for (var j = 0; j < state.q.length; j++) {
+    var p = state.q[j];
+    html += '<div class="qi">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
+    html += '<div style="flex:1"><div class="qi-t">' + p.title + '</div>';
+    html += '<div class="qi-m" style="margin-top:3px">&#128273; ' + p.kw + ' &nbsp;&#183;&nbsp; <span class="' + seoClass(p.score) + '">SEO ' + p.score + '점</span>';
+    html += ' &nbsp;&#183;&nbsp; ' + new Date(p.created).toLocaleDateString('ko-KR') + '</div>';
+    if (p.next && p.next.length) html += '<div style="font-size:10px;color:#818cf8;margin-top:3px">&#128161; ' + p.next.join(' · ') + '</div>';
+    if (p.err) html += '<div style="font-size:11px;color:#f87171;margin-top:3px">&#9888; ' + p.err + '</div>';
+    html += '</div>' + statusBadge(p.status) + '</div>';
+    html += '<div class="tags">';
+    for (var ti = 0; ti < p.tags.length; ti++) html += '<span class="tag">#' + p.tags[ti] + '</span>';
+    html += '</div><div class="qi-a">';
+    if (p.status === 'ready') html += '<button class="btn bp bsm" onclick="postOne(' + j + ')">&#128228; 포스팅</button>';
+    if (p.status === 'error') html += '<button class="btn by bsm" onclick="retryPost(' + j + ')">&#128260; 재시도</button>';
+    if (p.url) html += '<a href="' + p.url + '" target="_blank" class="btn bg bsm">&#128279; 확인</a>';
+    html += '<button class="btn bg bsm" onclick="prvPost(' + j + ')">&#128065; 미리보기</button>';
+    html += '<button class="btn br bsm" onclick="delQ(' + j + ')">&#128465;</button>';
+    html += '</div></div>';
   }
-  el.innerHTML = state.history.map(function(p) {
-    return '<div class="history-item">' +
-      '<div class="hi-title">' + p.title + '</div>' +
-      '<div class="hi-meta">🔑 ' + p.keyword + ' &nbsp;·&nbsp; 📅 ' + new Date(p.postedAt).toLocaleString('ko-KR') + '</div>' +
-      '<div class="tags-row">' + (p.tags||[]).map(function(t){return '<span class="tag">#'+t+'</span>';}).join('') + '</div>' +
-      (p.url?'<div style="margin-top:10px"><a href="'+p.url+'" target="_blank" class="btn btn-sm btn-ghost">🔗 블로그에서 보기</a></div>':'') +
-      '</div>';
-  }).join('');
+  el.innerHTML = html;
 }
 
-function getStatusBadge(s) {
-  const map = { ready: '<span class="badge badge-blue">⏳ 대기</span>', posting: '<span class="badge badge-yellow">📤 포스팅 중</span>', posted: '<span class="badge badge-green">✅ 완료</span>', error: '<span class="badge badge-red">❌ 오류</span>' };
-  return map[s] || '';
+function renderHi() {
+  var el = document.getElementById('hiList');
+  document.getElementById('hiCnt').textContent = state.h.length;
+  if (!state.h.length) { el.innerHTML = '<div class="empty">기록이 없습니다.</div>'; return; }
+  var html = '';
+  for (var i = 0; i < state.h.length; i++) {
+    var p = state.h[i];
+    html += '<div class="hi-item"><div class="hi-t">' + p.title + '</div>';
+    html += '<div class="hi-m">&#128273; ' + p.kw + ' &nbsp;&#183;&nbsp; ' + new Date(p.postedAt).toLocaleString('ko-KR') + '</div>';
+    html += '<div class="tags" style="margin-top:6px">';
+    for (var ti = 0; ti < p.tags.length; ti++) html += '<span class="tag">#' + p.tags[ti] + '</span>';
+    html += '</div>';
+    if (p.url) html += '<div style="margin-top:8px"><a href="' + p.url + '" target="_blank" class="btn bg bsm">&#128279; 보기</a></div>';
+    html += '</div>';
+  }
+  el.innerHTML = html;
 }
 
-function previewPost(i) {
-  const p = state.queue[i];
-  document.getElementById('previewContent').innerHTML = '<h1 style="font-size:24px;margin-bottom:8px;line-height:1.4">' + p.title + '</h1><p style="color:#888;font-size:13px;margin-bottom:6px">키워드: ' + p.keyword + ' | SEO: ' + p.score + '점</p><p style="color:#555;font-size:13px;font-style:italic;margin-bottom:24px;padding:10px;background:#f5f5f5;border-radius:6px">📌 ' + p.meta_description + '</p>' + p.content + '<div style="margin-top:32px;padding-top:16px;border-top:1px solid #eee">' + (p.tags||[]).map(function(t){return '<span style="background:#f0f0f0;padding:3px 10px;border-radius:20px;font-size:12px;margin-right:6px;font-family:sans-serif">#'+t+'</span>';}).join('') + '</div>';
-  document.getElementById('previewModal').style.display = 'block';
-  document.body.style.overflow = 'hidden';
+function updateQc() {
+  document.getElementById('qc').textContent = state.q.length;
 }
 
-function closePreview() { document.getElementById('previewModal').style.display = 'none'; document.body.style.overflow = ''; }
-async function retryPost(i) { state.queue[i].status = 'ready'; save(); await postSingle(i); }
-function removeQueue(i) { if(confirm('삭제할까요?')){ state.queue.splice(i,1); save(); renderQueue(); updateQueueCount(); } }
-function clearQueue() { if(confirm('대기열을 모두 삭제할까요?')){ state.queue=[]; save(); renderQueue(); updateQueueCount(); } }
-function clearHistory() { if(confirm('기록을 모두 삭제할까요?')){ state.history=[]; save(); renderHistory(); } }
-function updateQueueCount() { document.getElementById('queueCount').textContent = state.queue.length; }
-function updateProgress(done, total, text) { document.getElementById('progressBar').style.width = (done/total*100)+'%'; document.getElementById('progressText').textContent = '('+done+'/'+total+') '+text; }
-function addLog(msg) { const log=document.getElementById('activityLog'); const t=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); log.innerHTML='<div>'+t+' '+msg+'</div>'+log.innerHTML; }
-function showAlert(msg, type) { const el=document.getElementById('globalAlert'); el.textContent=msg; el.className='global-alert '+type; el.style.display='block'; setTimeout(function(){el.style.display='none';},4000); }
-function sleep(ms) { return new Promise(function(r){setTimeout(r,ms);}); }
-
-
-function autoSave() {
-  state.settings = {
-    geminiKey: document.getElementById('geminiKey').value.trim(),
-    blogId: document.getElementById('blogId').value.trim(),
-    googleClientId: document.getElementById('googleClientId').value.trim(),
-    googleClientSecret: document.getElementById('googleClientSecret').value.trim(),
-    refreshToken: document.getElementById('refreshToken').value.trim(),
-    oauthToken: document.getElementById('oauthToken').value.trim(),
-    tokenExpiry: state.settings.tokenExpiry || 0,
-    postDelay: parseInt(document.getElementById('postDelay').value) || 30,
-    defaultTone: document.getElementById('defaultTone').value,
-    imageStyle: document.getElementById('imageStyle').value
-  };
-  save();
-  updateStatusBar();
-  const el = document.getElementById('autoSaveStatus');
-  if (el) { el.style.display = 'inline'; clearTimeout(el._t); el._t = setTimeout(function(){ el.style.display='none'; }, 2000); }
+function prvPost(i) {
+  var p = state.q[i];
+  document.getElementById('prvBody').innerHTML = '<h1>' + p.title + '</h1><p style="color:#888;font-size:12px;margin-bottom:8px">&#128273; ' + p.kw + ' | SEO ' + p.score + '점</p><p style="color:#555;font-size:12px;font-style:italic;margin-bottom:20px;background:#f5f5f5;padding:8px;border-radius:5px">&#128204; ' + (p.meta || '') + '</p>' + p.content;
+  document.getElementById('prvModal').style.display = 'block';
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  const s = state.settings;
-  if (s.geminiKey) document.getElementById('geminiKey').value = s.geminiKey;
-  if (s.blogId) document.getElementById('blogId').value = s.blogId;
-  if (s.googleClientId) document.getElementById('googleClientId').value = s.googleClientId;
-  if (s.googleClientSecret) document.getElementById('googleClientSecret').value = s.googleClientSecret;
-  if (s.refreshToken) document.getElementById('refreshToken').value = s.refreshToken;
-  if (s.oauthToken) document.getElementById('oauthToken').value = s.oauthToken;
-  if (s.postDelay) document.getElementById('postDelay').value = s.postDelay;
-  if (s.defaultTone) document.getElementById('defaultTone').value = s.defaultTone;
-  if (s.imageStyle) document.getElementById('imageStyle').value = s.imageStyle;
-  updateStatusBar();
-  renderQueue();
-  renderHistory();
-  updateQueueCount();
-  // 초기 탭 표시
-  showTab('hotissue');
-});
+function closePrv() { document.getElementById('prvModal').style.display = 'none'; }
+
+function retryPost(i) { state.q[i].status = 'ready'; save(); postOne(i); }
+function delQ(i) { if (confirm('삭제?')) { state.q.splice(i, 1); save(); renderQ(); updateQc(); } }
+function clearQ() { if (confirm('전체 삭제?')) { state.q = []; save(); renderQ(); updateQc(); } }
+function clearHi() { if (confirm('기록 삭제?')) { state.h = []; save(); renderHi(); } }
+
+// ---- 초기화 ----
+function init() {
+  var s = state.s;
+  function setVal(id, v) { var el = document.getElementById(id); if (el && v) el.value = v; }
+  setVal('gemKey', s.gemKey);
+  setVal('blogId', s.blogId);
+  setVal('gClientId', s.gClientId);
+  setVal('gClientSec', s.gClientSec);
+  setVal('refToken', s.refToken);
+  setVal('accToken', s.accToken);
+  setVal('delay', s.delay);
+  if (s.tone) { var el = document.getElementById('tone'); if (el) el.value = s.tone; }
+  if (s.imgStyle) { var el2 = document.getElementById('imgStyle'); if (el2) el2.value = s.imgStyle; }
+  updateSb();
+  renderQ();
+  renderHi();
+  updateQc();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
-<div id="debugPanel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a0000;border-top:2px solid #ef4444;padding:10px;z-index:9999;max-height:40vh;overflow-y:auto;font-family:monospace;font-size:12px;color:#fca5a5"></div>
-
 </body>
 </html>
