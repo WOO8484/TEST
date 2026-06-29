@@ -174,6 +174,29 @@ textarea{resize:vertical;line-height:1.7}
 <!-- ===== SETTINGS ===== -->
 <div id="tab-settings" class="tab-content">
 <div class="container">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <span style="font-size:12px;color:#6b7280">입력 즉시 자동 저장됩니다</span>
+    <span id="autoSaveStatus" style="font-size:12px;color:#34d399;display:none">✅ 저장됨</span>
+  </div>
+  <div class="card">
+    <div class="card-title">🔑 비밀번호 변경</div>
+    <div class="fg">
+      <label>현재 비밀번호</label>
+      <input type="password" id="pwCurrent" placeholder="현재 비밀번호">
+    </div>
+    <div class="fg">
+      <label>새 비밀번호</label>
+      <input type="password" id="pwNew" placeholder="새 비밀번호 (6자 이상)">
+    </div>
+    <div class="fg">
+      <label>새 비밀번호 확인</label>
+      <input type="password" id="pwConfirm" placeholder="새 비밀번호 재입력">
+    </div>
+    <div id="pwMsg" style="display:none;font-size:13px;padding:10px 14px;border-radius:9px;margin-bottom:12px"></div>
+    <button class="btn btn-primary btn-block" onclick="changePw()" style="padding:13px">🔐 비밀번호 변경</button>
+    <p style="font-size:11px;color:#6b7280;margin-top:10px;text-align:center">기본 비밀번호: blog2024</p>
+  </div>
+
   <div class="card">
     <div class="card-title">🤖 AI 설정 (Gemini — 무료)</div>
     <div class="fg">
@@ -701,10 +724,25 @@ async function generatePost(keyword) {
   const tone = state.settings.defaultTone || '정보전달형 SEO 최적화';
   const imageStyle = state.settings.imageStyle || 'realistic photo, professional photography, high quality';
 
-  const prompt = '구글 SEO 전문 한국어 블로그 작가로서 수익화 최적화 블로그 글을 작성하세요.\n\n키워드: "' + keyword + '"\n스타일: ' + tone + '\n\n요구사항:\n- 제목: 검색 클릭률 높은 SEO 제목 (40-60자, 숫자/연도 포함 권장)\n- 본문: 2,000자 이상, HTML 형식\n  <h2> 소제목 4-5개, <h3> 세부소제목, <p> 단락, <ul><li> 목록, <strong> 강조\n- 키워드를 자연스럽게 3-5회 포함\n- 독자 체류시간 늘리는 스토리텔링\n- 메타 설명: 140-160자\n- 이미지 프롬프트: 영어, ' + imageStyle + ' 스타일\n\n반드시 JSON만 응답 (마크다운 없이):\n{"title":"제목","meta_description":"메타설명","content":"HTML본문","image_prompt":"영어이미지프롬프트","tags":["태그1","태그2","태그3","태그4","태그5"],"next_keywords":["키워드1","키워드2","키워드3"]}';
+  const prompt = '구글 SEO 전문 한국어 블로그 작가로서 수익화 최적화 블로그 글을 작성하세요.\n\n키워드: "' + keyword + '"\n스타일: ' + tone + '\n\n요구사항:\n- 제목: 검색 클릭률 높은 SEO 제목 (40-60자, 숫자/연도 포함 권장)\n- 본문: 2,000자 이상, HTML 형식\n  <h2> 소제목 4-5개, <h3> 세부소제목, <p> 단락, <ul><li> 목록, <strong> 강조, <table> 비교표 1개 이상\n- 각 <h2> 소제목 바로 아래에 반드시 [IMG:영어이미지설명] 마커 삽입 (소제목별 이미지, 총 4-5개)\n- 키워드를 자연스럽게 3-5회 포함\n- 독자 체류시간 늘리는 스토리텔링\n- 메타 설명: 140-160자\n\n[IMG:...] 마커 예시:\n<h2>제목</h2>\n[IMG:Korean economy investment US dollars financial chart realistic photo]\n<p>내용...</p>\n\n반드시 JSON만 응답 (마크다운 없이):\n{"title":"제목","meta_description":"메타설명","content":"HTML본문([IMG:...] 마커 포함)","tags":["태그1","태그2","태그3","태그4","태그5"],"next_keywords":["키워드1","키워드2","키워드3"]}';
 
   const text = await callGemini(prompt, 4096);
-  return JSON.parse(text.replace(/```json|```/g, '').trim());
+  const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+  // [IMG:...] 마커를 실제 이미지 태그로 교체
+  parsed.content = parsed.content.replace(/\[IMG:([^\]]+)\]/g, function(match, imgPrompt) {
+    const style = state.settings.imageStyle || 'realistic photo, professional photography, high quality';
+    const fullPrompt = imgPrompt.trim() + ', ' + style;
+    const imgUrl = getImageUrl(fullPrompt);
+    return '<figure style="margin:20px 0 28px;text-align:center">' +
+      '<img src="' + imgUrl + '" alt="' + imgPrompt.trim() + '" ' +
+      'style="width:100%;max-width:860px;height:auto;border-radius:12px;display:inline-block" ' +
+      'loading="lazy" onerror="this.style.display='none'">' +
+      '<figcaption style="font-size:12px;color:#9ca3af;margin-top:8px">' + imgPrompt.trim() + '</figcaption>' +
+      '</figure>';
+  });
+
+  return parsed;
 }
 
 function getImageUrl(prompt) {
@@ -748,18 +786,14 @@ async function startGeneration() {
 
     try {
       const gen = await generatePost(kw);
-      const imgUrl = getImageUrl(gen.image_prompt || kw);
-      const contentWithImg = '<img src="' + imgUrl + '" alt="' + gen.title + '" style="width:100%;max-width:900px;height:auto;margin:0 0 28px 0;border-radius:10px;display:block"><br>\n' + gen.content;
-
       const post = {
         id: Date.now() + i,
         keyword: kw,
         title: gen.title,
         meta_description: gen.meta_description,
-        content: contentWithImg,
+        content: gen.content,
         tags: gen.tags || [],
         next_keywords: gen.next_keywords || [],
-        imageUrl: imgUrl,
         status: 'ready',
         createdAt: new Date().toISOString()
       };
