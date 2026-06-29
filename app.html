@@ -151,12 +151,13 @@ textarea{resize:vertical;line-height:1.7}
   <div class="logo">
     <div class="logo-icon">💰</div>
     <span class="logo-text">AI 블로그 수익화 자동화</span>
+    <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(99,102,241,.2);color:#a78bfa;border:1px solid rgba(99,102,241,.3);margin-left:4px">v1.2.0</span>
   </div>
   <div class="status-bar">
     <span class="sb" id="sb-gemini">❌ Gemini 미설정</span>
     <span class="sb" id="sb-blog">❌ Blog ID 없음</span>
     <span class="sb" id="sb-token">❌ 토큰 없음</span>
-    <button onclick="logout()" style="background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:inherit">🔒 로그아웃</button>
+    <button onclick="doLogout()" style="background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600">🔒 로그아웃</button>
   </div>
 </div>
 
@@ -370,17 +371,33 @@ textarea{resize:vertical;line-height:1.7}
 
 <script>
 
-// 로그인 세션 체크
-(function() {
-  var auth = sessionStorage.getItem('yblog_auth');
-  if (!auth) {
-    window.location.href = 'index.html';
-  }
-})();
+(function(){if(!sessionStorage.getItem('yblog_auth'))window.location.href='index.html';})();
 
-function logout() {
-  sessionStorage.removeItem('yblog_auth');
-  window.location.href = 'index.html';
+const SALT='yblog_salt_2024';
+const DEFAULT_HASH='af176805df287cd3b56f650be6d6d30e2ffe88fa724b37121c51d79d87d1de58';
+
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+
+function doLogout(){sessionStorage.removeItem('yblog_auth');window.location.href='index.html';}
+
+async function changePw(){
+  const cur=document.getElementById('pwCurrent').value;
+  const nw=document.getElementById('pwNew').value;
+  const cf=document.getElementById('pwConfirm').value;
+  const msg=document.getElementById('pwMsg');
+  function show(text,ok){msg.style.display='block';msg.style.background=ok?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)';msg.style.border='1px solid '+(ok?'rgba(16,185,129,.3)':'rgba(239,68,68,.3)');msg.style.color=ok?'#34d399':'#f87171';msg.textContent=text;}
+  if(!cur||!nw||!cf){show('모든 필드를 입력해 주세요',false);return;}
+  if(nw.length<6){show('새 비밀번호는 6자 이상이어야 합니다',false);return;}
+  if(nw!==cf){show('새 비밀번호가 일치하지 않습니다',false);return;}
+  const stored=localStorage.getItem('yblog_pw_hash')||DEFAULT_HASH;
+  const curHash=await sha256(cur+SALT);
+  if(curHash!==stored){show('현재 비밀번호가 올바르지 않습니다',false);return;}
+  const newHash=await sha256(nw+SALT);
+  localStorage.setItem('yblog_pw_hash',newHash);
+  show('✅ 비밀번호가 변경되었습니다',true);
+  document.getElementById('pwCurrent').value='';
+  document.getElementById('pwNew').value='';
+  document.getElementById('pwConfirm').value='';
 }
 
 const state = {
