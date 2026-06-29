@@ -351,14 +351,7 @@ function ssGet(k) { try { return sessionStorage.getItem(k); } catch(e) { return 
 function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch(e) {} }
 function ssRem(k) { try { sessionStorage.removeItem(k); } catch(e) {} }
 
-// ---- 세션 체크 ----
-(function() {
-  try {
-    if (!ssGet('yblog_auth')) {
-      try { window.location.replace('index.html'); } catch(e) {}
-    }
-  } catch(e) {}
-})();
+// 세션 체크 제거됨
 
 // ---- 상태 ----
 var state = {
@@ -543,7 +536,9 @@ function changePw() {
 // ---- 로그아웃 ----
 function doLogout() {
   ssRem('yblog_auth');
-  try { window.location.href = 'index.html'; } catch(e) {}
+  try { window.location.href = 'index.html'; } catch(e) {
+    showAlert('로그아웃됨', 'success');
+  }
 }
 
 // ---- 핫이슈 ----
