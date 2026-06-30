@@ -1,0 +1,22 @@
+# wrangler-example.toml
+# Cloudflare Worker 배포를 위한 예시 설정 파일입니다.
+# 실제 계정명, API 키, 비밀번호는 절대 이 파일에 적지 마세요.
+# 이 파일을 복사해서 wrangler.toml로 이름을 바꾼 뒤 본인 환경에 맞게 수정하세요.
+
+name = "blogspot-profit-writer-worker"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# 아래 값들은 Secret으로 등록합니다. (이 파일에는 절대 실제 값을 적지 않습니다)
+# 터미널에서 아래 명령어로 하나씩 등록하세요.
+#
+#   wrangler secret put NAVER_CLIENT_ID
+#   wrangler secret put NAVER_CLIENT_SECRET
+#   wrangler secret put AI_API_KEY
+#   wrangler secret put AI_PROVIDER
+#   wrangler secret put AI_MODEL
+#   wrangler secret put GOOGLE_CLIENT_ID
+#   wrangler secret put GOOGLE_CLIENT_SECRET
+#   wrangler secret put GOOGLE_REFRESH_TOKEN
+#   wrangler secret put BLOGGER_BLOG_ID
+#   wrangler secret put ADMIN_PASSWORD
