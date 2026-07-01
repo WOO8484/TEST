@@ -340,6 +340,13 @@ async function handleGeneratePost(){
     document.getElementById('editor-result-card').style.display = 'block';
     document.getElementById('editor-title-preview').textContent = enrichedPost.title;
     renderGenerationSourceBadge(result);
+    // r7: 자동작성 화면 내 메타/라벨 미리보기 표시
+    const metaArea   = document.getElementById('autowrite-result-meta');
+    const metaPreEl  = document.getElementById('autowrite-meta-preview');
+    const labelPreEl = document.getElementById('autowrite-labels-preview');
+    if (metaArea) metaArea.style.display = 'block';
+    if (metaPreEl)  metaPreEl.textContent  = enrichedPost.metaDescription || enrichedPost.summary || '(없음)';
+    if (labelPreEl) labelPreEl.textContent = Array.isArray(enrichedPost.labels) ? enrichedPost.labels.join(', ') : '(없음)';
 
     if(result.blocked){
       showToast(result.blockReason || '잠시 후 다시 시도해주세요');

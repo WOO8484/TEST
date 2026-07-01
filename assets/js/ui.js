@@ -50,16 +50,15 @@ function safeGoScreen(name){
 
 // 화면 진입 시 데이터 새로고침
 function refreshCurrentScreen(name){
-  if(name === 'keyword')   refreshKeywordScreen();
-  if(name === 'editor')    refreshEditorScreen();
-  if(name === 'quality')   refreshQualityScreen();
+  if(name === 'keyword')   refreshKeywordScreen && refreshKeywordScreen();
+  if(name === 'editor')    refreshEditorScreen && refreshEditorScreen();
+  if(name === 'quality')   refreshQualityScreen && refreshQualityScreen();
   if(name === 'preview')   refreshPreviewScreen();
   if(name === 'blogger')   typeof refreshBloggerScreen === 'function' && refreshBloggerScreen();
   if(name === 'publish')   typeof refreshPublishScreen === 'function' && refreshPublishScreen();
-  if(name === 'briefing')  refreshBriefingScreen();
-  if(name === 'settings')  refreshSettingsScreen();
+  if(name === 'briefing')  refreshBriefingScreen && refreshBriefingScreen();
+  if(name === 'settings')  { refreshSettingsScreen(); typeof refreshSettingsScreenExtra === 'function' && refreshSettingsScreenExtra(); }
   if(name === 'dashboard') refreshDashboard();
-  // r6 새 화면
   if(name === 'hotissue')  typeof refreshHotissueScreen  === 'function' && refreshHotissueScreen();
   if(name === 'autowrite') typeof refreshAutowriteScreen === 'function' && refreshAutowriteScreen();
   if(name === 'pubmgmt')   typeof refreshPubmgmtScreen   === 'function' && refreshPubmgmtScreen();

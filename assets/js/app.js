@@ -436,3 +436,254 @@ function refreshPubmgmtScreen() {
   // 최근 생성 글
   if (typeof renderRecentPostsList === 'function') renderRecentPostsList();
 }
+
+/* ============================================================
+   v0.1.0-test-r7-operation 핸들러 추가
+   ============================================================ */
+
+// ── 자동작성 화면 옵션 토글 ──
+function toggleWriteOptions() {
+  const b = document.getElementById('write-options-body');
+  const t = document.getElementById('write-options-toggle');
+  if (!b) return;
+  const v = b.style.display !== 'none';
+  b.style.display = v ? 'none' : 'block';
+  if (t) t.textContent = v ? '펼치기 ▼' : '접기 ▲';
+}
+function toggleMaterialOptions() {
+  const b = document.getElementById('material-options-body');
+  const t = document.getElementById('material-options-toggle');
+  if (!b) return;
+  const v = b.style.display !== 'none';
+  b.style.display = v ? 'none' : 'block';
+  if (t) t.textContent = v ? '펼치기 ▼' : '접기 ▲';
+}
+function toggleManualCopy() {
+  const b = document.getElementById('manual-copy-body');
+  const t = document.getElementById('manual-copy-toggle');
+  if (!b) return;
+  const v = b.style.display !== 'none';
+  b.style.display = v ? 'none' : 'block';
+  if (t) t.textContent = v ? '펼치기 ▼' : '접기 ▲';
+}
+
+// ── 자동작성 탭 글 생성: 결과를 자동작성 화면에 바로 표시 ──
+function handleGeneratePostFromAutowrite() {
+  const awKw = document.getElementById('autowrite-keyword');
+  const edKw = document.getElementById('editor-keyword');
+  if (awKw && edKw && awKw.value.trim()) edKw.value = awKw.value.trim();
+  if (typeof handleGeneratePost === 'function') {
+    handleGeneratePost();
+  } else {
+    showToast('글 생성 함수를 찾을 수 없습니다');
+  }
+}
+
+function refreshAutowriteScreen() {
+  const edKw = document.getElementById('editor-keyword');
+  const awKw = document.getElementById('autowrite-keyword');
+  if (edKw && awKw && edKw.value && !awKw.value) awKw.value = edKw.value;
+  // 이미 글이 생성돼 있으면 결과 카드 표시
+  const post = loadLocal(STORAGE_KEYS.CURRENT_POST, null);
+  const card = document.getElementById('editor-result-card');
+  if (post && card && card.style.display === 'none') {
+    // 기존 결과가 있으면 표시
+    const titleEl = document.getElementById('editor-title-preview');
+    if (titleEl && !titleEl.textContent) titleEl.textContent = post.title || '';
+    card.style.display = 'block';
+    // 메타/라벨 미리보기
+    const metaArea   = document.getElementById('autowrite-result-meta');
+    const metaPreEl  = document.getElementById('autowrite-meta-preview');
+    const labelPreEl = document.getElementById('autowrite-labels-preview');
+    if (metaArea && (post.metaDescription || post.labels?.length)) {
+      metaArea.style.display = 'block';
+      if (metaPreEl)  metaPreEl.textContent  = post.metaDescription || '(없음)';
+      if (labelPreEl) labelPreEl.textContent = Array.isArray(post.labels) ? post.labels.join(', ') : '(없음)';
+    }
+  }
+  // 품질검수 결과가 있으면 표시
+  const score  = loadLocal(STORAGE_KEYS.QUALITY_SCORE, null);
+  const checks = loadLocal(STORAGE_KEYS.QUALITY_CHECKS, null);
+  if (score !== null && checks && typeof renderQualityResult === 'function') {
+    renderQualityResult(score, checks);
+  }
+}
+
+// ── 핫이슈 화면 refresh ──
+function refreshHotissueScreen() {
+  const kwEl = document.getElementById('hotissue-keyword');
+  if (kwEl && kwEl.value.trim() && typeof onHotissueKeywordInput === 'function') {
+    onHotissueKeywordInput();
+  }
+}
+
+// ── syncAutowriteKeyword ──
+function syncAutowriteKeyword() {
+  const hot = document.getElementById('hotissue-keyword');
+  const aw  = document.getElementById('autowrite-keyword');
+  if (hot && aw && hot.value.trim()) {
+    aw.value = hot.value.trim();
+    const edKw = document.getElementById('editor-keyword');
+    if (edKw) edKw.value = hot.value.trim();
+    showToast('핫이슈 키워드를 가져왔습니다');
+  } else {
+    showToast('핫이슈 탭에서 키워드를 먼저 입력해주세요');
+    safeGoScreen('hotissue');
+  }
+}
+
+// ── 발행 전 체크리스트 렌더링 ──
+function renderPubmgmtChecklist(post, score, connected) {
+  const el = document.getElementById('pubmgmt-checklist-list');
+  if (!el) return;
+
+  const dateVal = document.getElementById('schedule-date')?.value || '';
+  const timeVal = document.getElementById('schedule-time')?.value || '';
+  let schedFuture = false;
+  if (dateVal && timeVal) {
+    const st = new Date(`${dateVal}T${timeVal}:00`);
+    schedFuture = st.getTime() > Date.now();
+  }
+
+  const items = [
+    { label: 'Blogger 연결됨',      ok: connected },
+    { label: '글 생성 완료',         ok: !!(post && post.title && post.html) },
+    { label: '품질검수 완료',         ok: score !== null },
+    { label: '품질점수 50점 이상',    ok: score !== null && score >= 50 },
+    { label: '품질점수 70점 이상 (예약발행)', ok: score !== null && score >= 70 },
+    { label: '제목 있음',             ok: !!(post && post.title) },
+    { label: '본문 있음',             ok: !!(post && (post.html || post.contentHtml)) },
+    { label: '메타 설명 있음',        ok: !!(post && post.metaDescription && post.metaDescription.length >= 20) },
+    { label: '라벨 있음',             ok: !!(post && Array.isArray(post.labels) && post.labels.length > 0) },
+    { label: '예약 시간이 미래',       ok: schedFuture }
+  ];
+
+  el.innerHTML = items.map(it =>
+    `<div style="display:flex;gap:6px;align-items:center;font-size:12px;padding:3px 0;">
+      <span>${it.ok ? '✅' : '⚪'}</span>
+      <span style="color:${it.ok ? '#374151' : '#9ca3af'};">${it.label}</span>
+    </div>`
+  ).join('');
+}
+
+// ── 발행관리 화면 refresh ──
+function refreshPubmgmtScreen() {
+  const connected    = loadLocal(STORAGE_KEYS.BLOGGER_CONNECTED, false);
+  const connMode     = loadLocal(STORAGE_KEYS.BLOGGER_CONNECTION_MODE, API_MODE.MOCK);
+  const failReason   = loadLocal(STORAGE_KEYS.BLOGGER_FAIL_REASON, '');
+  const blogName     = loadLocal('bloggerBlogName', '');
+  const statusEl     = document.getElementById('pubmgmt-blogger-status');
+  const failBox      = document.getElementById('pubmgmt-fail-box');
+  const failReasonEl = document.getElementById('pubmgmt-fail-reason');
+  const blogNameEl   = document.getElementById('pubmgmt-blogger-blog-name');
+
+  if (statusEl) {
+    if (connected && connMode === API_MODE.WORKER) {
+      statusEl.textContent = '연결됨'; statusEl.className = 'badge success';
+      if (failBox) failBox.style.display = 'none';
+      if (blogNameEl && blogName) { blogNameEl.textContent = `블로그: ${blogName}`; blogNameEl.style.display = 'block'; }
+    } else if (failReason) {
+      statusEl.textContent = '연결 실패'; statusEl.className = 'badge';
+      if (failBox)      failBox.style.display = 'block';
+      if (failReasonEl) failReasonEl.textContent = failReason;
+      if (blogNameEl)   blogNameEl.style.display = 'none';
+    } else {
+      statusEl.textContent = '미연결'; statusEl.className = 'badge';
+      if (failBox)   failBox.style.display = 'none';
+      if (blogNameEl) blogNameEl.style.display = 'none';
+    }
+  }
+
+  const post        = loadLocal(STORAGE_KEYS.CURRENT_POST, null);
+  const emptyCard   = document.getElementById('pubmgmt-empty-card');
+  const contentArea = document.getElementById('pubmgmt-content-area');
+  if (!post) {
+    if (emptyCard)   emptyCard.style.display   = 'block';
+    if (contentArea) contentArea.style.display = 'none';
+    return;
+  }
+  if (emptyCard)   emptyCard.style.display   = 'none';
+  if (contentArea) contentArea.style.display = 'block';
+
+  const titleEl = document.getElementById('pubmgmt-title');
+  if (titleEl) titleEl.textContent = post.title || '(제목 없음)';
+
+  const score      = loadLocal(STORAGE_KEYS.QUALITY_SCORE, null);
+  const scoreEl    = document.getElementById('pubmgmt-score');
+  const infoEl     = document.getElementById('pubmgmt-score-info');
+  const draftBtn   = document.getElementById('btn-draft-save');
+  const schedBtn   = document.getElementById('btn-schedule-save');
+  const dailyLimit = typeof getDailyPublishLimit === 'function' ? getDailyPublishLimit() : DAILY_PUBLISH_LIMIT;
+  const todayCount = typeof getTodaySavedCount   === 'function' ? getTodaySavedCount()   : 0;
+  const overLimit  = todayCount >= dailyLimit;
+
+  if (scoreEl) scoreEl.textContent = score !== null ? score + '점' : '검수 전';
+
+  const dis = () => { if(draftBtn) draftBtn.className='btn btn-disabled'; if(schedBtn) schedBtn.className='btn btn-disabled'; };
+
+  if (!connected)       { if(infoEl) infoEl.textContent = 'Blogger를 먼저 연결해주세요.'; dis(); }
+  else if (overLimit)   { if(infoEl) infoEl.textContent = `오늘 발행 제한(${dailyLimit}건)을 초과했습니다.`; dis(); }
+  else if (score===null){ if(infoEl) infoEl.textContent = '품질검수를 먼저 진행해주세요. (자동작성 탭)'; dis(); }
+  else if (score < QUALITY_DRAFT_MIN_SCORE) {
+    if(infoEl) infoEl.textContent = `${score}점: ${QUALITY_DRAFT_MIN_SCORE}점 미만이라 저장 제한됩니다.`; dis();
+  } else if (score < QUALITY_SCHEDULE_MIN_SCORE) {
+    if(infoEl) infoEl.textContent = `${score}점: 임시저장만 가능합니다. (오늘 ${todayCount}/${dailyLimit}건)`;
+    if(draftBtn) draftBtn.className = 'btn btn-primary';
+    if(schedBtn) schedBtn.className = 'btn btn-disabled';
+  } else {
+    if(infoEl) infoEl.textContent = `${score}점: 임시저장·예약발행 모두 가능합니다. (오늘 ${todayCount}/${dailyLimit}건)`;
+    if(draftBtn) draftBtn.className = 'btn btn-primary';
+    if(schedBtn) schedBtn.className = 'btn btn-success';
+  }
+
+  // 발행 전 체크리스트
+  renderPubmgmtChecklist(post, score, connected && connMode === API_MODE.WORKER);
+
+  // 이미지 프롬프트
+  const imgEl = document.getElementById('pubmgmt-img-prompt');
+  if (imgEl) {
+    const pr = post.imagePrompts?.mainPrompt ||
+      (typeof generateImagePrompts==='function' ? generateImagePrompts(post.keyword||'',post.title||'',post.summary||'')?.mainPrompt : '');
+    imgEl.textContent = pr || '(이미지 프롬프트 없음)';
+  }
+
+  if (typeof renderRecentPostsList === 'function') renderRecentPostsList();
+}
+
+function handleBloggerConnectFromPubmgmt() {
+  if (typeof handleBloggerConnect === 'function') {
+    handleBloggerConnect().then(() => refreshPubmgmtScreen()).catch(() => refreshPubmgmtScreen());
+  }
+}
+
+// ── 저장 결과 표시 (임시저장/예약발행 성공 후) ──
+function showPubmgmtSaveResult(result, type) {
+  const card    = document.getElementById('pubmgmt-save-result');
+  const content = document.getElementById('pubmgmt-save-result-content');
+  if (!card || !content) return;
+  card.style.display = 'block';
+  const typeLabel = type === 'draft' ? '임시저장' : '예약발행';
+  const now = new Date().toLocaleString('ko-KR');
+  const postId = result?.postId || result?.id || '';
+  const url    = result?.url    || '';
+  const score  = loadLocal(STORAGE_KEYS.QUALITY_SCORE, null);
+  content.innerHTML = `
+    <div style="color:#16a34a;font-weight:700;margin-bottom:8px;">✅ ${typeLabel} 완료</div>
+    <div class="row-between small-sub"><span>저장 시간</span><span>${now}</span></div>
+    ${score !== null ? `<div class="row-between small-sub" style="margin-top:4px;"><span>품질점수</span><span>${score}점</span></div>` : ''}
+    ${postId ? `<div class="row-between small-sub" style="margin-top:4px;"><span>postId</span><span style="font-size:10px;word-break:break-all;">${postId}</span></div>` : ''}
+    ${url ? `<div style="margin-top:8px;"><a href="${url}" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:#2563eb;">📎 원문/관리 링크 ↗</a></div>` : ''}
+  `;
+}
+
+// ── 설정 화면 refresh (Worker 버전 표시 추가) ──
+function refreshSettingsScreenExtra() {
+  const verEl = document.getElementById('settings-worker-version');
+  const aiEl  = document.getElementById('settings-ai-provider');
+  const status = loadLocal(STORAGE_KEYS.WORKER_STATUS, null);
+  if (verEl && status?.version) verEl.textContent = status.version;
+  if (aiEl && status?.aiProviders) {
+    const connected = Object.entries(status.aiProviders).filter(([,v])=>v).map(([k])=>k);
+    aiEl.textContent = connected.length ? connected.join(', ') : '연결 안 됨';
+  }
+}

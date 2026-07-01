@@ -201,9 +201,9 @@ async function handleSaveDraft(){
   if(canUseWorker){
     showToast('Blogger에 임시저장하는 중입니다...');
     const result = await saveBloggerDraft({
-      title: post.title,
-      html: post.html,
-      labels: [],
+      title:        post.title,
+      html:         post.html,
+      labels:       Array.isArray(post.labels) && post.labels.length ? post.labels : [post.keyword || '정보', '생활정보'],
       qualityScore: score
     });
 
@@ -285,9 +285,9 @@ async function handleSchedule(){
     showToast('Blogger에 예약발행을 등록하는 중입니다...');
 
     const result = await scheduleBloggerPost({
-      title: post.title,
-      html: post.html,
-      labels: [],
+      title:        post.title,
+      html:         post.html,
+      labels:       Array.isArray(post.labels) && post.labels.length ? post.labels : [post.keyword || '정보', '생활정보'],
       qualityScore: score,
       scheduledAt: scheduledAtISO
     });
