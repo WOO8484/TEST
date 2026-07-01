@@ -349,12 +349,13 @@ function isSafeBloggerUrl(url){
 function renderBloggerSavedList(){
   const saved = loadLocal(STORAGE_KEYS.SAVED_POSTS, []);
   const listEl = document.getElementById('blogger-saved-list');
+  if(!listEl) return;
   if(saved.length === 0){
-    listEl.innerHTML = '<p class="small-sub">아직 저장된 글이 없습니다.</p>';
+    listEl.innerHTML = '<p class="small-sub">아직 저장된 글이 없습니다. 임시저장 또는 예약발행 후 여기에 표시됩니다.</p>';
     return;
   }
   listEl.innerHTML = saved.map(p => {
-    const viaLabel = p.savedVia === SAVE_VIA.BLOGGER ? '실제 Blogger' : 'Mock';
+    const viaLabel = p.savedVia === SAVE_VIA.BLOGGER ? '실제 Blogger' : '로컬 저장';
     const viaBadge = `<span class="badge ${p.savedVia === SAVE_VIA.BLOGGER ? 'success' : 'mock'}">${viaLabel}</span>`;
     const postIdLine = p.postId ? `<div class="small-sub">postId: ${escapeHtml(p.postId)}</div>` : '';
     const linkLine = (p.url && isSafeBloggerUrl(p.url))
@@ -378,6 +379,57 @@ function renderBloggerSavedList(){
       </div>
     `;
   }).join('');
+}
+
+// Worker /blogger/list 호출 후 목록 렌더링 (r5 활성화)
+async function handleLoadBloggerList(){
+  const listEl = document.getElementById('blogger-saved-list');
+  if(!listEl) return;
+
+  const mode = getApiMode();
+  const workerUrl = getWorkerUrl();
+
+  if(mode !== API_MODE.WORKER || !workerUrl){
+    showToast('Worker 모드가 아닙니다. 설정에서 Worker 연결 테스트를 먼저 해주세요.');
+    return;
+  }
+
+  listEl.innerHTML = '<p class="small-sub">목록을 불러오는 중...</p>';
+
+  try {
+    const result = await listBloggerPosts();
+    if(result && result.ok && Array.isArray(result.result && result.result.items)){
+      const items = result.result.items;
+      if(!items.length){
+        listEl.innerHTML = '<p class="small-sub">Blogger에 저장된 글이 없습니다.</p>';
+        return;
+      }
+      listEl.innerHTML = items.map(item => {
+        const statusLabel = item.status === 'DRAFT' || item.status === 'draft' ? '임시저장' : item.status === 'LIVE' ? '발행됨' : item.status || '알 수 없음';
+        const statusClass = item.status === 'DRAFT' || item.status === 'draft' ? 'status-draft' : 'status-scheduled';
+        const link = item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">링크 ↗</a>` : '';
+        return `
+          <div class="list-item">
+            <div class="row-between">
+              <b style="font-size:13px;">${escapeHtml(item.title || '(제목 없음)')}</b>
+              <span class="status-tag ${statusClass}">${statusLabel}</span>
+            </div>
+            <div class="small-sub" style="margin-top:4px;">
+              <span class="badge success" style="font-size:10px;">실제 Blogger</span>
+              ${item.published ? ' · ' + new Date(item.published).toLocaleDateString('ko-KR') : ''}
+              ${link ? ' · ' + link : ''}
+            </div>
+          </div>`;
+      }).join('');
+      showToast(`Blogger 글 ${items.length}건을 불러왔습니다`);
+    } else {
+      listEl.innerHTML = '<p class="small-sub">목록 조회에 실패했습니다. Blogger 연결 상태를 확인해주세요.</p>';
+      showToast('Blogger 목록 조회 실패');
+    }
+  } catch(e) {
+    listEl.innerHTML = '<p class="small-sub">목록 조회 중 오류가 발생했습니다.</p>';
+    showToast('오류: ' + (e.message || '알 수 없는 오류'));
+  }
 }
 
 function refreshDashboard(){
