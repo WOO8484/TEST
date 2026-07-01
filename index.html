@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  BPW — BlogSpot Profit Writer (v0.1.0-test-r7-operation)
+  BPW — BlogSpot Profit Writer (v0.1.0-test-r8-mobile-operation)
   GitHub Pages 배포용. 실제 Secret 값은 절대 포함하지 않습니다.
   모든 API Key / OAuth Token은 Cloudflare Worker Secret으로만 관리합니다.
 -->
@@ -8,11 +8,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>BPW — BlogSpot 자동화 (v0.1.0-test-r7-operation)</title>
-<link rel="stylesheet" href="./assets/css/style.css?v=0.1.0-r7-operation">
+<title>BPW — BlogSpot 자동화 (v0.1.0-test-r8-mobile-operation)</title>
+<link rel="stylesheet" href="./assets/css/style.css?v=r9-3">
 </head>
 <body>
 <div id="app">
+<!-- r8: 상단 한 줄 상태바 — 로그인 화면에서는 CSS로 숨김 -->
+<div id="status-bar" class="status-bar-hidden">
+  <span id="sb-mode">Mock</span>
+  <span id="sb-current-screen" style="color:#93c5fd;font-size:10px;"></span>
+  <span id="sb-indicators" style="display:flex;gap:6px;align-items:center;cursor:pointer;" onclick="typeof showConnectionPanel==='function'&&showConnectionPanel()" title="연결 상태 보기">
+    <span id="sb-worker" title="Worker">⚪W</span>
+    <span id="sb-ai"     title="AI">⚪AI</span>
+    <span id="sb-blogger-ind" title="Blogger">⚪B</span>
+    <span id="sb-naver"  title="Naver">⚪N</span>
+  </span>
+</div>
 
 <!-- =========================================
      화면 1. 로그인
@@ -31,17 +42,17 @@
      ========================================= -->
 <div class="screen" id="screen-dashboard">
   <div class="topbar" style="margin:-18px -16px 16px -16px;">
-    <h1>BPW <small style="font-size:12px;font-weight:500;color:#6b7280;">v0.1.0-r7-op</small></h1>
+    <h1>BPW <small style="font-size:12px;font-weight:500;color:#6b7280;">v0.1.1-r9-mobile-ui-polish-3</small></h1>
     <span class="badge mock" id="dash-mode-badge">Mock 모드</span>
   </div>
 
   <div class="card" style="background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1.5px solid #bfdbfe;text-align:center;padding:20px 16px;">
-    <p style="font-size:15px;font-weight:800;color:#1e3a5f;margin:0 0 6px;">핫이슈를 찾고, 글을 만들고,<br>Blogger 저장까지 한 번에 진행합니다.</p>
-    <p class="small-sub" style="margin:0;">Worker가 연결되면 모든 과정이 자동으로 진행됩니다.</p>
+    <p style="font-size:15px;font-weight:800;color:#1e3a5f;margin:0 0 4px;">핫이슈 → 자동작성 → Blogger 발행</p>
+    <p class="small-sub" style="margin:0;font-size:12px;">Worker 연결 후 세 단계로 자동 완성됩니다.</p>
   </div>
 
-  <div class="card">
-    <h2>📡 연결 상태</h2>
+  <div class="card" style="margin-top:0;">
+    <h2 style="margin-bottom:8px;">📡 연결 상태</h2>
     <div class="status-grid">
       <div class="status-mini-card"><span class="mini-label">Worker</span><span class="mini-value" id="dash-status-worker"><span class="status-dot off"></span>미확인</span></div>
       <div class="status-mini-card"><span class="mini-label">네이버</span><span class="mini-value" id="dash-status-naver"><span class="status-dot off"></span>대기</span></div>
@@ -302,33 +313,35 @@
   <div id="pubmgmt-content-area" style="display:none;">
 
     <!-- 현재 글 요약 -->
-    <div class="card">
-      <h2>📄 현재 글</h2>
-      <p id="pubmgmt-title" style="font-weight:700;font-size:14px;line-height:1.5;"></p>
-      <div class="row-between small-sub" style="margin-top:6px;">
+    <div class="card" style="padding:10px 14px;">
+      <div class="row-between" style="margin-bottom:5px;">
+        <h2 style="margin:0;font-size:13px;">📄 현재 글</h2>
+        <button class="btn btn-ghost" style="min-height:28px;font-size:11px;padding:0 8px;margin:0;" onclick="goScreen('preview')">🔍 미리보기</button>
+      </div>
+      <p id="pubmgmt-title" style="font-weight:700;font-size:13px;line-height:1.4;margin:0 0 4px;"></p>
+      <div class="row-between small-sub">
         <span>품질점수</span><b id="pubmgmt-score">—</b>
       </div>
-      <p id="pubmgmt-score-info" class="hint" style="margin-top:4px;"></p>
-      <button class="btn btn-ghost" style="font-size:12px;margin-top:8px;" onclick="goScreen('preview')">🔍 미리보기</button>
+      <p id="pubmgmt-score-info" class="hint" style="margin-top:2px;"></p>
     </div>
 
     <!-- 발행 전 체크리스트 -->
-    <div class="card" id="pubmgmt-checklist-card">
-      <h2>✅ 발행 전 체크리스트</h2>
+    <div class="card" id="pubmgmt-checklist-card" style="padding:10px 14px;">
+      <h2 style="margin-bottom:6px;">✅ 발행 전 체크</h2>
       <div id="pubmgmt-checklist-list" style="display:flex;flex-direction:column;gap:4px;font-size:12px;"></div>
     </div>
 
     <!-- Blogger 발행 -->
     <div class="card">
       <h2>💾 Blogger 발행</h2>
-      <button class="btn btn-disabled" id="btn-draft-save" onclick="handleSaveDraft()" style="margin-bottom:8px;">💾 임시저장 (50점 이상)</button>
-      <label style="margin-top:10px;display:block;">예약 날짜 / 시간</label>
+      <button class="btn btn-disabled" id="btn-draft-save" onclick="handleSaveDraft()" style="margin-bottom:6px;margin-top:0;">💾 임시저장 (50점 이상)</button>
+      <label style="margin-top:8px;display:block;font-size:12px;">예약 날짜 / 시간</label>
       <div class="field-row">
         <div><input type="date" id="schedule-date"></div>
         <div><input type="time" id="schedule-time"></div>
       </div>
       <button class="btn btn-disabled" id="btn-schedule-save" onclick="handleSchedule()">📅 예약발행 (70점 이상)</button>
-      <p class="hint">⚠️ 바로 발행 기능은 없습니다. 임시저장 또는 예약발행만 지원합니다.</p>
+      <p class="hint" style="margin-top:4px;">⚠️ 임시저장·예약발행만 지원합니다.</p>
     </div>
 
     <!-- 저장 결과 -->
@@ -343,7 +356,7 @@
         <h2 style="margin:0;">📋 수동 복사 (보조)</h2>
         <span id="manual-copy-toggle" style="color:#6b7280;font-size:13px;">펼치기 ▼</span>
       </div>
-      <p class="small-sub" style="margin-top:6px;">HTML 복사는 자동발행이 실패했을 때 사용하는 보조 기능입니다.</p>
+      <p class="hint" style="margin-top:4px;">자동발행 실패 시 사용하는 보조 기능입니다.</p>
       <div id="manual-copy-body" style="display:none;margin-top:12px;">
         <div style="display:flex;flex-direction:column;gap:8px;">
           <button class="btn btn-secondary" onclick="handleCopyTitle()">제목 복사</button>
@@ -384,32 +397,21 @@
   <div class="topbar" style="margin:-18px -16px 16px -16px;"><h1>⚙️ 설정</h1></div>
 
   <div class="card">
-    <h2>Cloudflare Worker URL</h2>
-    <label>Worker URL</label>
-    <input type="text" id="setting-worker-url" placeholder="https://your-worker.your-name.workers.dev">
-    <button class="btn btn-primary" onclick="saveWorkerUrl()">Worker URL 저장</button>
+    <h2>⚙️ Worker 연결</h2>
+    <input type="text" id="setting-worker-url" placeholder="https://your-worker.workers.dev" style="font-size:12px;">
+    <div style="display:flex;gap:6px;margin-top:6px;">
+      <button class="btn btn-primary" style="flex:1;min-height:38px;font-size:13px;" onclick="saveWorkerUrl()">URL 저장</button>
+      <button class="btn btn-secondary" style="flex:1;min-height:38px;font-size:13px;" onclick="handleWorkerConnectionTest()">연결 테스트</button>
+    </div>
     <p class="hint" id="worker-saved-hint" style="display:none;color:#16a34a;">저장되었습니다 ✅</p>
-  </div>
-
-  <div class="card">
-    <h2>🔗 Worker 연결 상태</h2>
-    <div class="row-between small-sub">
-      <span>현재 Worker URL</span><b id="worker-status-url" style="word-break:break-all;text-align:right;">(미입력)</b>
+    <p class="hint" id="settings-worker-mode-hint" style="display:none;color:#d97706;">⚠️ 연결 테스트를 해주세요.</p>
+    <div style="margin-top:8px;display:flex;flex-direction:column;gap:2px;">
+      <div class="row-between small-sub"><span>연결 상태</span><span id="worker-status-badge" class="badge">미확인</span></div>
+      <div class="row-between small-sub"><span>동작 모드</span><span id="worker-status-mode">Mock 모드</span></div>
+      <div class="row-between small-sub"><span>마지막 테스트</span><span id="worker-status-last-checked">없음</span></div>
+      <div class="row-between small-sub"><span>URL</span><b id="worker-status-url" style="font-size:11px;word-break:break-all;text-align:right;max-width:60%;">(미입력)</b></div>
+      <div class="row-between small-sub" style="display:none;"><span>로그인</span><span id="login-mode-info">Worker /auth/login</span></div>
     </div>
-    <div class="row-between small-sub" style="margin-top:6px;">
-      <span>연결 상태</span><span id="worker-status-badge" class="badge">미확인</span>
-    </div>
-    <div class="row-between small-sub" style="margin-top:6px;">
-      <span>마지막 테스트</span><span id="worker-status-last-checked">아직 없음</span>
-    </div>
-    <div class="row-between small-sub" style="margin-top:6px;">
-      <span>동작 모드</span><span id="worker-status-mode">Mock 모드</span>
-    </div>
-    <div class="row-between small-sub" style="margin-top:6px;">
-      <span>로그인 방식</span><span id="login-mode-info">Worker /auth/login</span>
-    </div>
-    <button class="btn btn-secondary" onclick="handleWorkerConnectionTest()">Worker 연결 테스트</button>
-    <p class="hint" id="settings-worker-mode-hint" style="display:none;color:#d97706;">⚠️ Worker URL은 저장됐지만 아직 연결 테스트를 하지 않았습니다.</p>
   </div>
 
   <div class="card">
@@ -428,10 +430,10 @@
   </div>
 
   <div class="card">
-    <h2>앱 정보</h2>
-    <div class="row-between small-sub"><span>앱 버전</span><span>v0.1.0-test-r7-operation</span></div>
-    <div class="row-between small-sub" style="margin-top:4px;"><span>Worker 버전</span><span id="settings-worker-version">—</span></div>
-    <div class="row-between small-sub" style="margin-top:4px;"><span>AI Provider</span><span id="settings-ai-provider">—</span></div>
+    <h2>ℹ️ 앱 정보</h2>
+    <div class="row-between small-sub"><span>앱</span><span>v0.1.1-r9-mobile-ui-polish-3</span></div>
+    <div class="row-between small-sub"><span>Worker</span><span id="settings-worker-version">—</span></div>
+    <div class="row-between small-sub"><span>AI</span><span id="settings-ai-provider">—</span></div>
   </div>
 
   <div class="card">
@@ -439,7 +441,9 @@
     <button class="btn btn-danger" onclick="resetAllData()">전체 초기화</button>
   </div>
 
-  <!-- 로그아웃 (설정 화면 안으로 이동) -->
+  <!-- r8: setting-tone hidden (JS 참조용) -->
+<input type="hidden" id="setting-tone">
+<!-- 로그아웃 (설정 화면 안으로 이동) -->
   <div class="card">
     <button class="btn btn-ghost" onclick="handleLogout()" style="width:100%;color:#dc2626;">🚪 로그아웃</button>
   </div>
@@ -477,18 +481,24 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<!-- r8: 바텀시트 공통 (dismiss 가능) -->
+<div id="bottom-sheet-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:300;" onclick="uiCloseBottomSheet()"></div>
+<div id="bottom-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 32px;z-index:301;max-height:80vh;overflow-y:auto;">
+  <div style="width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 16px;"></div>
+  <div id="bottom-sheet-content"></div>
+</div>
 </div><!-- /app -->
 
-<script src="./assets/js/config.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/storage.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/ui.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/auth.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/editor.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/quality-check.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/hero-image.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/hotissue.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/blogger.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/api.js?v=0.1.0-r7-operation"></script>
-<script src="./assets/js/app.js?v=0.1.0-r7-operation"></script>
+<script src="./assets/js/config.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/storage.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/ui.js?v=r9-2-guard"></script>
+<script src="./assets/js/auth.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/editor.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/quality-check.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/hero-image.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/hotissue.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/blogger.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/api.js?v=0.1.0-r8-mo"></script>
+<script src="./assets/js/app.js?v=0.1.0-r8-mo"></script>
 </body>
 </html>
