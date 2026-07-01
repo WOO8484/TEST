@@ -26,6 +26,7 @@
 html {
   overflow-x: hidden;
   width: 100%;
+  height: 100%;
 }
 body {
   overflow-x: hidden;
@@ -33,16 +34,15 @@ body {
   max-width: 100%;
 }
 
-/* r8: 상단 상태바 (BPW r8 | 현재메뉴 | ⚪W ⚪AI ⚪B ⚪N) */
+/* r9-gui-one-screen-base: 상단 상태바 — 고정 오버레이 대신 flex 상단 행으로 배치 */
 #status-bar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
+  flex: 0 0 auto;
   z-index: 200;
   background: #1e3a5f;
   color: #fff;
   font-size: 11px;
   font-weight: 600;
-  height: 48px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -66,7 +66,8 @@ body{
   color:var(--color-text);
   letter-spacing:-0.1px;
   width:100%; max-width:100%;
-  overflow-x:hidden;
+  height:100dvh; max-height:100dvh;
+  overflow:hidden;
 }
 body.login-open{
   overflow:hidden;
@@ -76,30 +77,45 @@ body.login-open{
 #app{
   width:100%; max-width:480px;
   margin:0 auto;
-  min-height:100vh;
+  height:100dvh; max-height:100dvh;
   display:flex; flex-direction:column;
   background:var(--color-bg);
-  overflow-x:hidden;
+  overflow:hidden;
   position:relative;
 }
 
 /* ============================================================
    화면 전환 — !important로 Safari 우선순위 확보
+   r9-gui-one-screen-fix1: screen 자체는 절대 스크롤되지 않는다.
+   (body 전체 스크롤 금지 + screen 자체 스크롤 금지 — 이중 고정)
+   내부의 긴 목록/결과만 .compact-list 영역에서 개별적으로 스크롤한다.
    ============================================================ */
 .screen{
   display:none !important;
   flex-direction:column;
-  /* 하단 tabbar + iPhone 홈바 여백 */
-  padding:18px 16px calc(var(--tabbar-h) + 44px + env(safe-area-inset-bottom)) 16px;
+  flex:1 1 auto;
+  min-height:0;
+  padding:12px 14px 12px 14px;
   animation:fadeIn .2s ease;
   width:100%; max-width:100%;
-  overflow-x:hidden;
-  min-height:100vh;
+  overflow:hidden;
 }
 .screen.active{
   display:flex !important;
 }
 @keyframes fadeIn{ from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
+
+/* r9-gui-one-screen-fix1: screen 내부에서 개별적으로 스크롤을 허용하는 유일한 영역.
+   화면 자체는 절대 스크롤되지 않고, 길어질 수 있는 목록/상세만 이 클래스로 감싸서
+   자체 max-height 안에서 스크롤한다. */
+.compact-list{
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  max-height:132px;
+}
+.compact-list.compact-list-sm{ max-height:88px; }
+.compact-list.compact-list-lg{ max-height:180px; }
 
 /* ============================================================
    로그인 화면 — 100dvh 전체 중앙 고정, 패딩 없음
@@ -142,18 +158,17 @@ body.login-open{
 }
 
 /* ============================================================
-   하단 탭바 — position:fixed, safe-area
+   하단 탭바 — r9-gui-one-screen-base: flex 하단 행으로 배치 (겹침 없음)
    ============================================================ */
 .tabbar{
-  position:fixed; bottom:0; left:0; right:0;
-  max-width:480px; margin:0 auto;
+  flex:0 0 auto;
   background:rgba(255,255,255,0.97);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
   border-top:1px solid var(--color-border);
   display:flex;
   overflow-x:auto;
-  z-index:9999;
+  z-index:50;
   /* iPhone 홈바 영역 확보 */
   padding-bottom:env(safe-area-inset-bottom);
   height:calc(var(--tabbar-h) + env(safe-area-inset-bottom));
@@ -399,9 +414,8 @@ th{ background:var(--color-primary-light); }
    r8-mobile-operation 추가 스타일
    ============================================================ */
 
-/* 상태바(48px) 공간 확보 — 로그인은 제외 */
-.screen { padding-top: 52px; }
-#screen-login { padding-top: 0; }
+/* r9-gui-one-screen-base: 상태바가 flex 상단 행이 되어 더 이상 콘텐츠를 가리지 않으므로
+   기존 상태바 여백 보정(padding-top)은 제거되었습니다. */
 
 /* 바텀시트 애니메이션 */
 #bottom-sheet {
@@ -462,9 +476,8 @@ th{ background:var(--color-primary-light); }
 .tabbar {
   padding-bottom: max(env(safe-area-inset-bottom), 6px);
 }
-.screen {
-  padding-bottom: calc(64px + max(env(safe-area-inset-bottom), 6px));
-}
+/* r9-gui-one-screen-base: 탭바가 flex 하단 행이 되어 더 이상 콘텐츠를 가리지 않으므로
+   기존 탭바 여백 보정(padding-bottom)은 제거되었습니다. */
 
 /* 발행관리 저장 결과 카드 */
 #pubmgmt-save-result {
@@ -706,3 +719,113 @@ img { max-width: 100%; height: auto; }
   min-width: 0;
 }
 #worker-status-url { max-width: 55%; }
+
+/* ============================================================
+   r9-gui-one-screen-fix1: screen 자체 스크롤 제거에 따른 전면 압축
+   ============================================================ */
+
+/* 카드 기본 패딩/여백 추가 축소 (screen 전체를 스크롤 없이 담기 위함) */
+.card { padding: 10px 12px; margin-bottom: 8px; }
+.card h2 { font-size: 13px; margin: 0 0 6px 0; }
+.screen > .card:last-child { margin-bottom: 0; }
+
+/* ── 홈: 현재 상태를 compact-row로, 카드 수를 최소화 ───────── */
+#screen-dashboard .card { padding: 10px 12px; margin-bottom: 7px; }
+#screen-dashboard .topbar { margin-bottom: 8px !important; }
+#dash-recent-list { max-height: 96px; }
+#screen-dashboard .btn[style*="text-align:left"] {
+  padding: 8px 12px !important;
+  min-height: 40px;
+}
+
+/* ── 자동작성: 생성 모드를 3열 컴팩트 그리드로, 각 카드 최소화 ── */
+#screen-autowrite .card { padding: 8px 12px; margin-bottom: 6px; }
+.mode-select-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+}
+.mode-option {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 6px 4px;
+  gap: 2px;
+}
+.mode-option input { display: none; }
+.mode-option .mode-title { font-size: 11px; line-height: 1.3; }
+.mode-option .mode-desc { font-size: 9.5px; margin-top: 0; }
+#autowrite-ai-fail-card { padding: 8px 12px; margin-bottom: 6px; }
+#autowrite-ai-fail-card h2 { font-size: 12.5px; margin-bottom: 3px; }
+#autowrite-ai-fail-card p { font-size: 11.5px; margin: 0 0 6px 0; }
+#autowrite-ai-fail-card .btn { min-height: 34px; font-size: 12px; margin-top: 0; }
+#autowrite-result-meta { padding: 6px 8px !important; }
+#quality-result-card, #editor-result-card { padding: 8px 12px; }
+#quality-checklist { max-height: 120px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#quality-gap-list { max-height: 110px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── 핫이슈: 결과 목록만 내부 스크롤, screen 자체는 고정 ────── */
+#screen-hotissue .card { padding: 8px 12px; margin-bottom: 6px; }
+#hotissue-expand-list { max-height: 78px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#hotissue-result-area { max-height: 260px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#hotissue-raw-blog, #hotissue-raw-web { max-height: 140px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── 발행관리: 핵심만 표시, 목록류는 compact-list ───────────── */
+#screen-pubmgmt .card { padding: 8px 12px; margin-bottom: 6px; }
+#blogger-saved-list { max-height: 140px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#recent-posts-list { max-height: 110px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#pubmgmt-save-result-content { max-height: 120px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── 설정: compact-row 메뉴 형태 ─────────────────────────────── */
+#screen-settings .card { padding: 8px 12px; margin-bottom: 6px; }
+.settings-menu-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 2px; border-bottom: 1px solid #f1f5f9;
+  cursor: pointer; min-height: 40px;
+}
+.settings-menu-row:last-child { border-bottom: none; }
+.settings-menu-row .smr-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+.settings-menu-row .smr-label { flex: 1; font-weight: 700; font-size: 13px; color: #1c2434; }
+.settings-menu-row .smr-value { font-size: 11.5px; color: #6b7280; max-width: 45%; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.settings-menu-row .smr-arrow { color: #9ca3af; font-size: 13px; flex-shrink: 0; }
+
+/* 목록/상세를 여는 공통 바텀시트 안에서 쓰는 폼 요소 컴팩트화 */
+#bottom-sheet input[type="text"],
+#bottom-sheet textarea,
+#bottom-sheet input[type="number"] { font-size: 14px; padding: 9px 11px; }
+#bottom-sheet .card { background: #f8fafc; }
+
+/* ============================================================
+   r9-gui-one-screen-fix2: 자동작성/발행관리 화면 구성 자체를 축소
+   (스크롤 차단만으로는 부족 — 카드 수/높이를 실제로 줄임)
+   ============================================================ */
+
+/* screen 좌우/상하 여백 추가 축소 */
+.screen{ padding: 10px 12px 10px 12px; }
+
+/* 카드 사이 간격을 더 좁혀 화면 전체 높이를 절약 */
+.card{ margin-bottom: 6px; }
+.screen > .card:last-child,
+#pubmgmt-content-area > .card:last-child { margin-bottom: 0; }
+
+/* compact-row를 좁은 화면에서도 촘촘하게 (터치 영역은 38px 이상 유지) */
+.settings-menu-row{ padding: 7px 2px; min-height: 38px; }
+
+/* 자동작성: 생성모드/키워드/실행 카드 상하 여백 최소화 */
+#screen-autowrite .card{ padding: 7px 12px; margin-bottom: 6px; }
+#screen-autowrite .mode-select-group{ margin-top: 2px; }
+#screen-autowrite .btn{ margin-top: 0; }
+#screen-autowrite #btn-generate-post{ margin-top: 0; }
+#screen-autowrite #btn-cancel-generate{ margin-top: 6px; }
+
+/* 발행관리: 카드 상하 여백 최소화, 예약 필드 촘촘하게 */
+#screen-pubmgmt .card{ padding: 7px 12px; margin-bottom: 6px; }
+#screen-pubmgmt .field-row{ margin: 4px 0; }
+#screen-pubmgmt label{ margin-top: 4px; margin-bottom: 3px; }
+#screen-pubmgmt .btn{ margin-top: 0; }
+#screen-pubmgmt #btn-draft-save,
+#screen-pubmgmt #btn-schedule-save{ margin-top: 0; }
+
+/* 결과/상태 요약 텍스트는 한 줄로 말줄임 처리해 세로 공간 절약 */
+#pubmgmt-score-info{ overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
