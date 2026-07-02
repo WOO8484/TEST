@@ -16,38 +16,101 @@ function refreshSettingsScreen(){
   refreshWorkerStatusCard();
 }
 
-// r9-gui-one-screen-fix1: 설정 화면 compact-row 아코디언 — 한 번에 하나만 펼쳐서
-// screen 자체가 스크롤 없이 한 화면 안에 고정되도록 보장합니다.
-function toggleSettingsSection(sectionId){
-  const target = document.getElementById(sectionId);
-  if (!target) return;
-  const willOpen = target.style.display === 'none';
+// r9-gui-popup-menu-fix1: 설정 화면 본문은 메뉴 버튼만 남기고,
+// 상세 내용은 각각 바텀시트로 연다. 바텀시트 내부는 스크롤을 만들지 않고
+// 짧은 콘텐츠만 담는다. 저장/테스트 로직은 기존 함수를 그대로 재사용한다.
+// r9-gui-popup-menu-fix2: 연결 설정 첫 화면은 Worker/AI/Blogger/Naver 상태 요약 +
+// 핵심 버튼만 표시한다. Worker URL 입력은 별도 바텀시트(showWorkerUrlSheet)로 분리한다.
+function showConnectionSettingsSheet() {
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">연결 설정</h3>` +
+    `<div style="display:flex;flex-direction:column;gap:2px;">
+      <div class="row-between small-sub"><span>Worker</span><span id="worker-status-badge" class="badge">미확인</span></div>
+      <div class="row-between small-sub"><span>AI Provider</span><span id="settings-ai-provider-inline">—</span></div>
+      <div class="row-between small-sub"><span>Blogger</span><span id="settings-blogger-status-badge" class="badge">미확인</span></div>
+      <div class="row-between small-sub"><span>Naver</span><span id="settings-naver-status-badge" class="badge">미확인</span></div>
+    </div>` +
+    `<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+      <button class="btn btn-secondary" onclick="showWorkerUrlSheet()">Worker URL 설정</button>
+      <button class="btn btn-secondary" onclick="handleBloggerConnectFromSettings()">Blogger 연결 확인</button>
+      <button class="btn btn-ghost" onclick="typeof reconnectAllFromStatusBar==='function'&&reconnectAllFromStatusBar()">전체 연결 재확인</button>
+    </div>`
+  );
+  refreshWorkerStatusCard();
+  refreshSettingsScreenExtra();
+}
 
-  document.querySelectorAll('#screen-settings [id^="set-sec-"]').forEach(el => {
-    if (el.id.endsWith('-arrow')) return;
-    el.style.display = 'none';
-  });
-  document.querySelectorAll('#screen-settings .smr-arrow[id^="set-sec-"]').forEach(el => {
-    el.textContent = '▼';
-  });
+// r9-gui-popup-menu-fix2: Worker URL 입력/테스트/상세 상태는 별도 단계 화면으로 분리
+function showWorkerUrlSheet() {
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">Worker URL 설정</h3>` +
+    `<input type="text" id="setting-worker-url" placeholder="https://your-worker.workers.dev" style="font-size:16px;">
+    <div style="display:flex;gap:6px;margin-top:6px;">
+      <button class="btn btn-primary" style="flex:1;min-height:38px;font-size:13px;" onclick="saveWorkerUrl()">URL 저장</button>
+      <button class="btn btn-secondary" style="flex:1;min-height:38px;font-size:13px;" onclick="handleWorkerConnectionTest()">연결 테스트</button>
+    </div>
+    <p class="hint" id="worker-saved-hint" style="display:none;color:#16a34a;">저장되었습니다</p>
+    <p class="hint" id="settings-worker-mode-hint" style="display:none;color:#d97706;">연결 테스트를 해주세요.</p>
+    <div style="margin-top:8px;display:flex;flex-direction:column;gap:2px;">
+      <div class="row-between small-sub"><span>동작 모드</span><span id="worker-status-mode">Mock 모드</span></div>
+      <div class="row-between small-sub"><span>마지막 테스트</span><span id="worker-status-last-checked">없음</span></div>
+      <div class="row-between small-sub"><span>URL</span><b id="worker-status-url" style="font-size:11px;word-break:break-all;text-align:right;max-width:60%;">(미입력)</b></div>
+      <div class="row-between small-sub" style="display:none;"><span>로그인</span><span id="login-mode-info">Worker /auth/login</span></div>
+    </div>` +
+    `<button class="btn btn-ghost" style="margin-top:10px;" onclick="uiCloseBottomSheet();showConnectionSettingsSheet();">← 연결 설정으로</button>`
+  );
+  const workerUrlEl = document.getElementById('setting-worker-url');
+  if (workerUrlEl) workerUrlEl.value = loadLocal(STORAGE_KEYS.WORKER_URL, '') || DEFAULT_WORKER_URL;
+  refreshWorkerStatusCard();
+}
 
-  if (willOpen) {
-    target.style.display = 'block';
-    const arrow = document.getElementById(sectionId + '-arrow');
-    if (arrow) arrow.textContent = '▲';
-  }
+function showWritingDefaultsSheet() {
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1c2434;">글쓰기 기본값</h3>` +
+    `<p class="desc" style="margin-top:0;">쉼표(,)로 구분해서 입력하세요.</p>
+    <textarea id="setting-banned-words" placeholder="예: 100% 효과, 무조건 보장" style="min-height:70px;"></textarea>
+    <button class="btn btn-secondary" onclick="saveBannedWords()">저장하기</button>`
+  );
+  const bannedEl = document.getElementById('setting-banned-words');
+  if (bannedEl) bannedEl.value = loadLocal(STORAGE_KEYS.BANNED_WORDS, '');
+}
+
+function showPublishSettingsSheet() {
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1c2434;">발행 설정</h3>` +
+    `<label style="margin-top:0;">최대 건수 (1~10)</label>
+    <input type="number" id="setting-daily-limit" min="1" max="10" value="3">
+    <button class="btn btn-secondary" onclick="saveDailyLimitSetting()">하루 제한 저장</button>
+    <p class="hint">초기 운영 권장: 하루 3~5건</p>`
+  );
+  const dailyEl = document.getElementById('setting-daily-limit');
+  if (dailyEl) dailyEl.value = getDailyPublishLimit();
+}
+
+function showDataManagementSheet() {
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1c2434;">데이터 관리</h3>` +
+    `<div class="row-between small-sub"><span>앱</span><span>${typeof APP_DISPLAY_VERSION !== 'undefined' ? APP_DISPLAY_VERSION : '—'}</span></div>
+    <div class="row-between small-sub"><span>Worker</span><span id="settings-worker-version">—</span></div>
+    <div class="row-between small-sub"><span>AI</span><span id="settings-ai-provider">—</span></div>
+    <button class="btn btn-danger" style="margin-top:10px;" onclick="resetAllData()">전체 초기화</button>`
+  );
+  refreshSettingsScreenExtra();
 }
 
 function saveWorkerUrl(){
-  const rawUrl = document.getElementById('setting-worker-url').value;
-  const url = normalizeWorkerUrl(rawUrl);
+  const inputEl = document.getElementById('setting-worker-url');
+  if (!inputEl) return;
+  const url = normalizeWorkerUrl(inputEl.value);
   saveLocal(STORAGE_KEYS.WORKER_URL, url);
   // 저장 후 입력창에도 정리된(끝 슬래시 제거된) URL을 다시 표시합니다.
-  document.getElementById('setting-worker-url').value = url;
+  inputEl.value = url;
   const hint = document.getElementById('worker-saved-hint');
-  hint.style.display = 'block';
+  if (hint) {
+    hint.style.display = 'block';
+    setTimeout(()=> hint.style.display = 'none', 2000);
+  }
   showToast('Worker URL이 저장되었습니다');
-  setTimeout(()=> hint.style.display = 'none', 2000);
   refreshWorkerStatusCard();
 }
 
@@ -58,7 +121,9 @@ function saveTone(){
 }
 
 function saveBannedWords(){
-  saveLocal(STORAGE_KEYS.BANNED_WORDS, document.getElementById('setting-banned-words').value.trim());
+  const el = document.getElementById('setting-banned-words');
+  if (!el) return;
+  saveLocal(STORAGE_KEYS.BANNED_WORDS, el.value.trim());
   showToast('금지어 목록이 저장되었습니다');
 }
 
@@ -80,25 +145,32 @@ function refreshWorkerStatusCard(){
   const lastChecked = loadLocal(STORAGE_KEYS.WORKER_LAST_CHECKED, '');
   const mode = getApiMode();
 
-  document.getElementById('worker-status-url').textContent = getWorkerUrl() || '(아직 입력되지 않음)';
+  // r9-gui-popup-menu-fix2: 아래 요소들은 연결 설정 바텀시트가 열려 있을 때만 DOM에 존재한다.
+  // 설정 화면 진입 시(바텀시트 미오픈)에도 오류 없이 동작하도록 전부 null guard 처리한다.
+  const urlEl = document.getElementById('worker-status-url');
+  if (urlEl) urlEl.textContent = getWorkerUrl() || '(아직 입력되지 않음)';
 
   const statusEl = document.getElementById('worker-status-badge');
-  if(status === 'success'){
-    statusEl.textContent = '연결 성공';
-    statusEl.className = 'badge success';
-  } else if(status === 'fail'){
-    statusEl.textContent = '연결 실패';
-    statusEl.className = 'badge';
-  } else {
-    statusEl.textContent = '미확인';
-    statusEl.className = 'badge';
+  if (statusEl) {
+    if(status === 'success'){
+      statusEl.textContent = '연결 성공';
+      statusEl.className = 'badge success';
+    } else if(status === 'fail'){
+      statusEl.textContent = '연결 실패';
+      statusEl.className = 'badge';
+    } else {
+      statusEl.textContent = '미확인';
+      statusEl.className = 'badge';
+    }
   }
 
-  document.getElementById('worker-status-last-checked').textContent =
-    lastChecked ? new Date(lastChecked).toLocaleString('ko-KR') : '아직 테스트한 적 없음';
+  const lastCheckedEl = document.getElementById('worker-status-last-checked');
+  if (lastCheckedEl) {
+    lastCheckedEl.textContent = lastChecked ? new Date(lastChecked).toLocaleString('ko-KR') : '아직 테스트한 적 없음';
+  }
 
-  document.getElementById('worker-status-mode').textContent =
-    mode === API_MODE.WORKER ? 'Worker 모드' : 'Mock 모드';
+  const modeEl = document.getElementById('worker-status-mode');
+  if (modeEl) modeEl.textContent = mode === API_MODE.WORKER ? 'Worker 모드' : 'Mock 모드';
 
   // r9-gui-one-screen-fix1: compact-row 요약 텍스트
   const summaryEl = document.getElementById('settings-connection-summary');
@@ -106,8 +178,10 @@ function refreshWorkerStatusCard(){
     summaryEl.textContent = status === 'success' ? '연결됨' : (status === 'fail' ? '연결 실패' : '미확인');
   }
 
-  document.getElementById('login-mode-info').textContent =
-    mode === API_MODE.WORKER ? 'Worker /auth/login (ADMIN_PASSWORD)' : 'Worker URL 미설정';
+  const loginInfoEl = document.getElementById('login-mode-info');
+  if (loginInfoEl) {
+    loginInfoEl.textContent = mode === API_MODE.WORKER ? 'Worker /auth/login (ADMIN_PASSWORD)' : 'Worker URL 미설정';
+  }
 
   // Worker URL은 저장돼 있지만 아직 연결 테스트(성공)를 하지 않아 mock 모드로 남아 있는 경우 안내
   const settingsHint = document.getElementById('settings-worker-mode-hint');
@@ -145,6 +219,9 @@ window.addEventListener('DOMContentLoaded', () => {
   checkLoginOnLoad();
   loadMaterialIntoForm();
   bindLoginEvents();
+  // r9-gui-popup-menu-fix4: 핫이슈 결과/원문 영역을 한 화면 요약형으로 축소
+  // (hotissue.js는 수정하지 않고, 렌더링 이후 결과 DOM만 후처리한다)
+  initHotissueResultCompactor();
 });
 
 /* ============================================================
@@ -203,7 +280,8 @@ function renderRecentPostsList() {
   const listEl = document.getElementById('recent-posts-list');
   if (!listEl) return;
 
-  const posts = typeof getRecentPosts === 'function' ? getRecentPosts() : [];
+  // r9-gui-popup-menu-fix3: 저장 데이터가 5개를 넘어도 화면에는 실제로 5개까지만 표시
+  const posts = (typeof getRecentPosts === 'function' ? getRecentPosts() : []).slice(0, 5);
   if (!posts.length) {
     listEl.innerHTML = '<p class="small-sub">저장된 글이 없습니다.</p>';
     return;
@@ -360,22 +438,29 @@ function toggleWriteOptions() {
   if (typeof bindGenerationOptionEvents === 'function') bindGenerationOptionEvents();
 }
 
-// r9-gui-layout-lock-fix4: 글 재료 — 카드 펼침 대신 바텀시트로 연다.
+// r9-gui-popup-menu-fix1: 글 재료 — textarea 5개를 한 번에 쌓지 않고 탭으로 나눈다.
 // textarea id는 그대로 유지하고, saveMaterial()/loadMaterialIntoForm()(editor.js)을 그대로 재사용한다.
+const MATERIAL_TABS = [
+  { key: 'situation', label: '상황', id: 'mat-situation',  ph: '실제 겪은 상황이 있다면 적어주세요' },
+  { key: 'opinion',   label: '의견', id: 'mat-opinion',    ph: '이 주제에 대한 나의 의견' },
+  { key: 'criteria',  label: '비교', id: 'mat-criteria',   ph: '무엇을 기준으로 비교했는지' },
+  { key: 'cons',      label: '주의', id: 'mat-cons',       ph: '조심해야 할 점' },
+  { key: 'mustline',  label: '문장', id: 'mat-mustline',   ph: '이 문장은 꼭 넣어주세요' }
+];
 function toggleMaterialOptions() {
+  const tabsHtml = MATERIAL_TABS.map((t, i) =>
+    `<button class="btn ${i===0?'btn-secondary':'btn-ghost'}" style="flex:1;min-height:34px;font-size:12px;margin-top:0;" id="mat-tab-btn-${t.key}" onclick="switchMaterialTab('${t.key}')">${t.label}</button>`
+  ).join('');
+  const panelsHtml = MATERIAL_TABS.map((t, i) =>
+    `<div id="mat-tab-panel-${t.key}" style="display:${i===0?'block':'none'};">
+      <textarea id="${t.id}" placeholder="${t.ph}"></textarea>
+    </div>`
+  ).join('');
   uiOpenBottomSheet(
     `<h3 style="margin:0 0 4px;font-size:15px;font-weight:700;color:#1c2434;">글 재료 (선택)</h3>` +
     `<p class="hint" style="margin-top:0;">실제 경험이 있으면 적어주세요. 없으면 AI가 일반적인 내용으로 작성합니다.</p>
-    <label style="margin-top:6px;">내가 겪은 상황</label>
-    <textarea id="mat-situation" placeholder="실제 겪은 상황이 있다면 적어주세요"></textarea>
-    <label>내 생각 / 결론</label>
-    <textarea id="mat-opinion" placeholder="이 주제에 대한 나의 의견"></textarea>
-    <label>비교 기준 / 추천 이유</label>
-    <textarea id="mat-criteria" placeholder="무엇을 기준으로 비교했는지"></textarea>
-    <label>주의할 점 / 비추천 이유</label>
-    <textarea id="mat-cons" placeholder="조심해야 할 점"></textarea>
-    <label>꼭 넣고 싶은 문장</label>
-    <textarea id="mat-mustline" placeholder="이 문장은 꼭 넣어주세요"></textarea>
+    <div style="display:flex;gap:4px;margin-top:8px;">${tabsHtml}</div>
+    <div style="margin-top:8px;">${panelsHtml}</div>
     <!-- 기존 editor.js가 참조하는 레거시 id 유지 (숨김) -->
     <textarea id="mat-around-case" style="display:none;"></textarea>
     <textarea id="mat-pros" style="display:none;"></textarea>
@@ -388,15 +473,32 @@ function toggleMaterialOptions() {
   );
   if (typeof loadMaterialIntoForm === 'function') loadMaterialIntoForm();
 }
+function switchMaterialTab(key) {
+  MATERIAL_TABS.forEach(t => {
+    const panel = document.getElementById('mat-tab-panel-' + t.key);
+    const btn   = document.getElementById('mat-tab-btn-' + t.key);
+    if (panel) panel.style.display = (t.key === key) ? 'block' : 'none';
+    if (btn)   btn.className = 'btn ' + (t.key === key ? 'btn-secondary' : 'btn-ghost');
+    if (btn)   btn.style.cssText = 'flex:1;min-height:34px;font-size:12px;margin-top:0;';
+  });
+}
 
-// r9-gui-layout-lock-fix4: 생성 결과 카드 내부 메타/라벨 미리보기 접기(compact 영역, 화면 내 유지)
-function toggleAutowriteResultMeta() {
-  const body = document.getElementById('autowrite-result-meta');
-  const arrow = document.getElementById('autowrite-result-meta-arrow');
-  if (!body) return;
-  const willOpen = body.style.display === 'none';
-  body.style.display = willOpen ? 'block' : 'none';
-  if (arrow) arrow.textContent = willOpen ? '▲' : '▼';
+// r9-gui-popup-menu-fix1: 생성된 글 상세(메타 설명/라벨) — 바텀시트에서 CURRENT_POST를 직접 읽어 표시
+function showAutowriteDetailSheet() {
+  const post = typeof loadLocal === 'function' ? loadLocal(STORAGE_KEYS.CURRENT_POST, null) : null;
+  const esc = typeof escapeHtml === 'function' ? escapeHtml : (s => String(s == null ? '' : s));
+  const meta = post?.metaDescription || post?.summary || '(없음)';
+  const labels = Array.isArray(post?.labels) && post.labels.length ? post.labels.join(', ') : '(없음)';
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">생성된 글 상세</h3>` +
+    `<div class="row-between small-sub" style="margin-bottom:2px;"><span>제목</span></div>
+    <p class="small-sub" style="margin:0 0 10px;font-size:12px;line-height:1.6;">${esc(post?.title || '(없음)')}</p>
+    <div class="row-between small-sub" style="margin-bottom:2px;"><span>메타 설명</span></div>
+    <p class="small-sub" style="margin:0 0 10px;font-size:12px;line-height:1.6;">${esc(meta)}</p>
+    <div class="row-between small-sub" style="margin-bottom:2px;"><span>라벨</span></div>
+    <p class="small-sub" style="margin:0;font-size:12px;">${esc(labels)}</p>` +
+    `<button class="btn btn-ghost" style="margin-top:14px;" onclick="uiCloseBottomSheet();">닫기</button>`
+  );
 }
 function toggleManualCopy() {
   const post = typeof loadLocal === 'function' ? loadLocal(STORAGE_KEYS.CURRENT_POST, null) : null;
@@ -406,23 +508,45 @@ function toggleManualCopy() {
          ? generateImagePrompts(post.keyword || '', post.title || '', post.summary || '')?.mainPrompt
          : ''))
     : '';
+  const esc = typeof escapeHtml === 'function' ? escapeHtml : (s => String(s == null ? '' : s));
+  const MC_TABS = [
+    { key: 'basic', label: '기본 복사' },
+    { key: 'image', label: '이미지 문구' },
+    { key: 'all',   label: '전체' }
+  ];
+  const tabsHtml = MC_TABS.map((t, i) =>
+    `<button class="btn ${i===0?'btn-secondary':'btn-ghost'}" style="flex:1;min-height:34px;font-size:12px;margin-top:0;" id="mc-tab-btn-${t.key}" onclick="switchManualCopyTab('${t.key}')">${t.label}</button>`
+  ).join('');
   uiOpenBottomSheet(
     `<h3 style="margin:0 0 4px;font-size:15px;font-weight:700;color:#1c2434;">수동 복사 (보조)</h3>` +
-    `<p class="hint" style="margin-top:0;">자동발행 실패 시 사용하는 보조 기능입니다.</p>` +
-    `<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+    `<p class="hint" style="margin-top:0;">자동발행 실패 시 사용하는 보조 기능입니다.</p>
+    <div style="display:flex;gap:4px;margin-top:8px;">${tabsHtml}</div>
+    <div id="mc-tab-panel-basic" style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
       <button class="btn btn-secondary" onclick="handleCopyTitle()">제목 복사</button>
       <button class="btn btn-secondary" onclick="handleCopyMeta()">메타 설명 복사</button>
       <button class="btn btn-secondary" onclick="handleCopyLabels()">라벨/태그 복사</button>
-      <button class="btn btn-primary"   onclick="handleCopyHtml()">HTML 전체 복사</button>
+    </div>
+    <div id="mc-tab-panel-image" style="margin-top:10px;display:none;">
+      <p class="small-sub" style="font-size:11px;background:#f8fafc;padding:8px;border-radius:6px;margin:0 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(imgPrompt || (post ? '(프롬프트 없음)' : '(생성된 글이 없습니다)'))}</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-ghost" onclick="handleCopyImgPrompt()">프롬프트 복사</button>
+        <button class="btn btn-ghost" onclick="handleCopyAlt()">alt 문구 복사</button>
+      </div>
+    </div>
+    <div id="mc-tab-panel-all" style="margin-top:10px;display:none;flex-direction:column;gap:8px;">
+      <button class="btn btn-primary" onclick="handleCopyHtml()">HTML 전체 복사</button>
       <button class="btn btn-secondary" onclick="handleCopyAll()">전체 패키지 복사</button>
-    </div>` +
-    `<div style="margin-top:14px;">
-      <p class="small-sub" style="font-weight:700;margin-bottom:4px;">AI 이미지 프롬프트</p>
-      <p class="small-sub" style="font-size:11px;word-break:break-all;background:#f8fafc;padding:8px;border-radius:6px;margin:4px 0;">${escapeHtml(imgPrompt || (post ? '(프롬프트 없음)' : '(생성된 글이 없습니다)'))}</p>
-      <button class="btn btn-ghost" style="font-size:12px;" onclick="handleCopyImgPrompt()">프롬프트 복사</button>
-      <button class="btn btn-ghost" style="font-size:12px;" onclick="handleCopyAlt()">alt 문구 복사</button>
     </div>`
   );
+}
+function switchManualCopyTab(key) {
+  const displayMode = { basic: 'flex', image: 'block', all: 'flex' };
+  ['basic', 'image', 'all'].forEach(k => {
+    const panel = document.getElementById('mc-tab-panel-' + k);
+    const btn   = document.getElementById('mc-tab-btn-' + k);
+    if (panel) panel.style.display = (k === key) ? displayMode[k] : 'none';
+    if (btn) { btn.className = 'btn ' + (k === key ? 'btn-secondary' : 'btn-ghost'); btn.style.cssText = 'flex:1;min-height:34px;font-size:12px;margin-top:0;'; }
+  });
 }
 
 // ── 자동작성 탭 글 생성: 결과를 자동작성 화면에 바로 표시 ──
@@ -449,14 +573,6 @@ function refreshAutowriteScreen() {
     const titleEl = document.getElementById('editor-title-preview');
     if (titleEl && !titleEl.textContent) titleEl.textContent = post.title || '';
     card.style.display = 'block';
-    // 메타/라벨 미리보기 데이터는 채워두되, 기본은 접힌 상태로 둔다 (compact 영역, 토글로 펼침)
-    const metaArea   = document.getElementById('autowrite-result-meta');
-    const metaPreEl  = document.getElementById('autowrite-meta-preview');
-    const labelPreEl = document.getElementById('autowrite-labels-preview');
-    if (metaArea && (post.metaDescription || post.labels?.length)) {
-      if (metaPreEl)  metaPreEl.textContent  = post.metaDescription || '(없음)';
-      if (labelPreEl) labelPreEl.textContent = Array.isArray(post.labels) ? post.labels.join(', ') : '(없음)';
-    }
   }
   // 품질검수 결과가 있으면 표시
   const score  = loadLocal(STORAGE_KEYS.QUALITY_SCORE, null);
@@ -502,25 +618,28 @@ function renderPubmgmtChecklist(post, score, connected) {
     schedFuture = st.getTime() > Date.now();
   }
 
-  const items = [
-    { label: 'Blogger 연결됨',      ok: connected },
-    { label: '글 생성 완료',         ok: !!(post && post.title && post.html) },
-    { label: '품질검수 완료',         ok: score !== null },
-    { label: '품질점수 50점 이상',    ok: score !== null && score >= 50 },
-    { label: '품질점수 70점 이상 (예약발행)', ok: score !== null && score >= 70 },
-    { label: '제목 있음',             ok: !!(post && post.title) },
-    { label: '본문 있음',             ok: !!(post && (post.html || post.contentHtml)) },
-    { label: '메타 설명 있음',        ok: !!(post && post.metaDescription && post.metaDescription.length >= 20) },
-    { label: '라벨 있음',             ok: !!(post && Array.isArray(post.labels) && post.labels.length > 0) },
-    { label: '예약 시간이 미래',       ok: schedFuture }
+  // r9-gui-popup-menu-fix4: 첫 화면에는 핵심 5개만 표시하고, 나머지는 요약 문구로 압축한다.
+  const coreItems = [
+    { label: 'Blogger 연결됨', ok: connected },
+    { label: '글 생성 완료',   ok: !!(post && post.title && post.html) },
+    { label: '제목/본문',     ok: !!(post && post.title && (post.html || post.contentHtml)) },
+    { label: '라벨 있음',     ok: !!(post && Array.isArray(post.labels) && post.labels.length > 0) },
+    { label: '예약 시간이 미래', ok: schedFuture }
   ];
 
-  el.innerHTML = items.map(it =>
+  const extraOkCount =
+    (score !== null ? 1 : 0) +
+    (score !== null && score >= 50 ? 1 : 0) +
+    (score !== null && score >= 70 ? 1 : 0) +
+    ((post && post.metaDescription && post.metaDescription.length >= 20) ? 1 : 0);
+
+  el.innerHTML = coreItems.map(it =>
     `<div style="display:flex;gap:6px;align-items:center;font-size:12px;padding:3px 0;">
       <span class="status-dot ${it.ok ? 'on' : 'off'}"></span>
       <span style="color:${it.ok ? '#374151' : '#9ca3af'};">${it.label}</span>
     </div>`
-  ).join('');
+  ).join('') +
+    `<div class="hint" style="margin-top:6px;">품질점수 ${score !== null ? score + '점' : '검수 전'} · 상세 항목 ${extraOkCount}/4 통과 (품질검수/50점/70점/메타설명)</div>`;
 }
 
 // ── 발행관리 화면 refresh ──
@@ -613,20 +732,85 @@ function handleBloggerConnectFromPubmgmt() {
   }
 }
 
+// r9-gui-popup-layout-fix: 발행관리 화면에서 Blogger 연결 카드를 제거한 대신,
+// 임시저장/예약발행 클릭 시 미연결이면 안내 팝업만 띄운다.
+// 실제 저장/예약 로직은 기존 handleSaveDraft()/handleSchedule()(blogger.js) 그대로 호출한다.
+function isBloggerConnectedForPubmgmt() {
+  const connected = loadLocal(STORAGE_KEYS.BLOGGER_CONNECTED, false);
+  const connMode  = loadLocal(STORAGE_KEYS.BLOGGER_CONNECTION_MODE, '');
+  return connected && connMode === API_MODE.WORKER;
+}
+function showBloggerConnectGuideSheet() {
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">Blogger 연결 필요</h3>` +
+    `<p style="font-size:13px;color:#6b7280;margin:0 0 16px;line-height:1.6;">설정 &gt; 연결 설정에서 Blogger 연결을 확인하세요.</p>` +
+    `<div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="btn btn-primary" onclick="uiCloseBottomSheet();safeGoScreen('settings')">설정 &gt; 연결 설정으로 이동</button>
+      <button class="btn btn-ghost" onclick="uiCloseBottomSheet();">닫기</button>
+    </div>`
+  );
+}
+function handlePubmgmtDraftClick() {
+  if (!isBloggerConnectedForPubmgmt()) { showBloggerConnectGuideSheet(); return; }
+  if (typeof handleSaveDraft === 'function') handleSaveDraft();
+}
+// r9-gui-popup-menu-fix1: 예약발행은 버튼 클릭 후 바텀시트에서 날짜/시간을 선택한다.
+function handlePubmgmtScheduleTrigger() {
+  if (!isBloggerConnectedForPubmgmt()) { showBloggerConnectGuideSheet(); return; }
+  showPubmgmtScheduleSheet();
+}
+function showPubmgmtScheduleSheet() {
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">예약발행</h3>` +
+    `<label style="margin-top:0;">예약 날짜 / 시간</label>
+    <div class="field-row">
+      <div><input type="date" id="schedule-date"></div>
+      <div><input type="time" id="schedule-time"></div>
+    </div>` +
+    `<div style="display:flex;flex-direction:column;gap:8px;margin-top:14px;">
+      <button class="btn btn-primary" onclick="confirmPubmgmtSchedule()">예약 확정</button>
+      <button class="btn btn-ghost" onclick="uiCloseBottomSheet();">취소</button>
+    </div>`
+  );
+}
+async function confirmPubmgmtSchedule() {
+  if (typeof handleSchedule === 'function') { await handleSchedule(); }
+  uiCloseBottomSheet();
+}
+
+// r9-gui-popup-layout-fix: 품질점수 상세 팝업 닫기
+function closeQualityResultCard() {
+  const el = document.getElementById('quality-result-card');
+  if (el) el.style.display = 'none';
+}
+
 // r9-gui-one-screen-fix1: Blogger 글 목록 / 최근 생성 글은 공통 바텀시트로 열림
 // (pubmgmt 화면 자체는 핵심 요소만 남기고 고정, 목록은 바텀시트 내부에서만 스크롤)
 function showBloggerListSheet() {
   uiOpenBottomSheet(
     `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">Blogger 글 목록</h3>` +
-    `<button class="btn btn-ghost" style="font-size:13px;" onclick="handleLoadBloggerList()">목록 새로 고침</button>` +
-    `<div id="blogger-saved-list" style="margin-top:8px;max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"><p class="small-sub">목록을 불러오려면 위 버튼을 눌러주세요.</p></div>`
+    `<p class="hint" style="margin-top:0;">최근 5건만 표시합니다.</p>` +
+    `<button class="btn btn-ghost" style="font-size:13px;" onclick="handleLoadBloggerListLimited()">목록 새로 고침</button>` +
+    `<div id="blogger-saved-list" style="margin-top:8px;"><p class="small-sub">목록을 불러오려면 위 버튼을 눌러주세요.</p></div>`
   );
+}
+// r9-gui-popup-menu-fix1: blogger.js의 handleLoadBloggerList()는 그대로 재사용하되,
+// 바텀시트 내부 스크롤을 만들지 않기 위해 렌더링된 목록을 최근 5건으로만 자른다.
+function handleLoadBloggerListLimited() {
+  if (typeof handleLoadBloggerList !== 'function') return;
+  handleLoadBloggerList().then(() => {
+    const listEl = document.getElementById('blogger-saved-list');
+    if (!listEl) return;
+    const items = listEl.querySelectorAll('.list-item');
+    items.forEach((el, idx) => { if (idx >= 5) el.style.display = 'none'; });
+  });
 }
 
 function showRecentPostsSheet() {
   uiOpenBottomSheet(
     `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">최근 생성 글</h3>` +
-    `<div id="recent-posts-list" style="max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"><p class="small-sub">저장된 글이 없습니다.</p></div>` +
+    `<p class="hint" style="margin-top:0;">최근 5건까지 저장됩니다.</p>` +
+    `<div id="recent-posts-list"><p class="small-sub">저장된 글이 없습니다.</p></div>` +
     `<button class="btn btn-ghost" onclick="handleClearRecentPosts()" style="margin-top:8px;font-size:12px;color:#dc2626;">전체 삭제</button>`
   );
   if (typeof renderRecentPostsList === 'function') renderRecentPostsList();
@@ -638,7 +822,7 @@ function showRecentPostsSheet() {
 function showPubmgmtChecklistSheet() {
   uiOpenBottomSheet(
     `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">발행 전 체크</h3>` +
-    `<div id="pubmgmt-checklist-list" style="display:flex;flex-direction:column;gap:5px;font-size:13px;max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>`
+    `<div id="pubmgmt-checklist-list" style="display:flex;flex-direction:column;gap:5px;font-size:13px;"></div>`
   );
   if (typeof refreshPubmgmtScreen === 'function') refreshPubmgmtScreen();
 }
@@ -647,11 +831,35 @@ function showPubmgmtChecklistSheet() {
 function refreshSettingsScreenExtra() {
   const verEl = document.getElementById('settings-worker-version');
   const aiEl  = document.getElementById('settings-ai-provider');
+  const aiInlineEl = document.getElementById('settings-ai-provider-inline');
   const status = loadLocal(STORAGE_KEYS.WORKER_STATUS, null);
   if (verEl && status?.version) verEl.textContent = status.version;
-  if (aiEl && status?.aiProviders) {
-    const connected = Object.entries(status.aiProviders).filter(([,v])=>v).map(([k])=>k);
-    aiEl.textContent = connected.length ? connected.join(', ') : '연결 안 됨';
+  const aiText = (status && status.aiProviders)
+    ? (Object.entries(status.aiProviders).filter(([,v])=>v).map(([k])=>k).join(', ') || '연결 안 됨')
+    : '연결 안 됨';
+  if (aiEl) aiEl.textContent = aiText;
+  if (aiInlineEl) aiInlineEl.textContent = aiText;
+
+  // r9-gui-popup-layout-fix: 연결 설정 안에 Blogger/Naver 상태도 함께 표시
+  const mode      = typeof getApiMode === 'function' ? getApiMode() : '';
+  const workerOk  = mode === API_MODE.WORKER;
+  const connected = loadLocal(STORAGE_KEYS.BLOGGER_CONNECTED, false);
+  const connMode  = loadLocal(STORAGE_KEYS.BLOGGER_CONNECTION_MODE, '');
+  const bloggerOk = connected && connMode === API_MODE.WORKER;
+  const blogName  = loadLocal('bloggerBlogName', '');
+
+  const bgEl = document.getElementById('settings-blogger-status-badge');
+  if (bgEl) { bgEl.textContent = bloggerOk ? '연결됨' : '미연결'; bgEl.className = bloggerOk ? 'badge success' : 'badge'; }
+  const bnEl = document.getElementById('settings-blogger-blog-name');
+  if (bnEl) bnEl.textContent = blogName || '—';
+  const nvEl = document.getElementById('settings-naver-status-badge');
+  if (nvEl) { nvEl.textContent = workerOk ? '연결됨' : '미확인'; nvEl.className = workerOk ? 'badge success' : 'badge'; }
+}
+
+// r9-gui-popup-layout-fix: 설정 화면에서 Blogger 연결 확인 (기존 handleBloggerConnect 재사용)
+function handleBloggerConnectFromSettings() {
+  if (typeof handleBloggerConnect === 'function') {
+    handleBloggerConnect().then(() => refreshSettingsScreenExtra()).catch(() => refreshSettingsScreenExtra());
   }
 }
 
@@ -756,3 +964,85 @@ function showPubmgmtSaveResult(result, type) {
 
 // refreshDashboard 오버라이드: 상태바 갱신 추가
 const _origRefreshDashboard = typeof refreshDashboard === 'function' ? refreshDashboard : null;
+
+// r9-gui-popup-layout-fix: 생성 진행 오버레이 / 품질점수 상세 / 메타·라벨 팝업이
+// 보일 때만 공통 배경(#popup-overlay-backdrop)을 함께 보여준다.
+// editor.js/quality-check.js가 각 요소의 class/style을 그대로 토글하는 방식을 유지하고,
+// 여기서는 그 변화를 관찰만 해서 배경 표시 여부만 동기화한다(내부 로직은 건드리지 않음).
+(function initPopupOverlayBackdrop() {
+  const backdrop = document.getElementById('popup-overlay-backdrop');
+  if (!backdrop) return;
+  const watchIds = ['generate-progress-box', 'quality-result-card', 'hotissue-raw-area'];
+  const isAnyVisible = () => watchIds.some(id => {
+    const el = document.getElementById(id);
+    if (!el) return false;
+    return window.getComputedStyle(el).display !== 'none';
+  });
+  const sync = () => { backdrop.style.display = isAnyVisible() ? 'block' : 'none'; };
+  watchIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) new MutationObserver(sync).observe(el, { attributes: true, attributeFilter: ['class', 'style'] });
+  });
+  sync();
+})();
+
+// r9-gui-popup-menu-fix4: 핫이슈 결과/원문 영역 한 화면 요약형 후처리
+// (hotissue.js의 renderHotissueResult()/renderRawItems() 출력 결과를 건드리지 않고
+//  렌더링 완료 후 DOM만 다듬는다: 이모지 중심 표시 제거 + 블로그/웹문서 각 2건으로 축소)
+const HOTISSUE_EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{FE0F}]/gu;
+
+function stripEmojiTextIn(root) {
+  if (!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  const nodes = [];
+  let n;
+  while ((n = walker.nextNode())) nodes.push(n);
+  nodes.forEach(node => {
+    if (!HOTISSUE_EMOJI_RE.test(node.nodeValue)) return;
+    HOTISSUE_EMOJI_RE.lastIndex = 0;
+    node.nodeValue = node.nodeValue.replace(HOTISSUE_EMOJI_RE, '').replace(/\s{2,}/g, ' ').trim();
+  });
+}
+
+function compactHotissueRawList(container, max) {
+  if (!container) return;
+  // hotissue.js의 renderRawItems()는 [라벨 <p>, 아이템 <div>...] 형태로 렌더링한다.
+  const children = Array.from(container.children).filter(el => el.tagName === 'DIV');
+  // 새 검색으로 목록 자체가 바뀌면(첫 항목 제목/건수 변경) 요약 문구를 다시 계산한다.
+  const sig = children.length + '|' + (children[0]?.textContent.slice(0, 20) || '');
+  if (container.dataset.hiSig === sig) return;
+  container.dataset.hiSig = sig;
+  if (children.length <= max) return;
+  children.forEach((el, idx) => { if (idx >= max) el.style.display = 'none'; });
+  const old = container.querySelector('.hi-more-note');
+  if (old) old.remove();
+  // r9-gui-popup-menu-fix5: "더보기"로 전체를 펼치지 않고, 짧은 요약 문구만 남긴다.
+  const note = document.createElement('p');
+  note.className = 'small-sub hi-more-note';
+  note.style.cssText = 'font-size:11px;margin:4px 0 0;color:#9ca3af;';
+  note.textContent = `총 ${children.length}건 중 ${max}건 표시 · 추가 결과는 다음 버전에서 확인`;
+  container.appendChild(note);
+}
+
+function compactHotissueResultDom() {
+  const resultArea = document.getElementById('hotissue-result-area');
+  const rawBlog     = document.getElementById('hotissue-raw-blog');
+  const rawWeb       = document.getElementById('hotissue-raw-web');
+  if (resultArea) stripEmojiTextIn(resultArea);
+  if (rawBlog)  { stripEmojiTextIn(rawBlog); compactHotissueRawList(rawBlog, 2); }
+  if (rawWeb)   { stripEmojiTextIn(rawWeb);  compactHotissueRawList(rawWeb, 2); }
+}
+
+function initHotissueResultCompactor() {
+  const resultArea = document.getElementById('hotissue-result-area');
+  const rawArea     = document.getElementById('hotissue-raw-area');
+  if (!resultArea && !rawArea) return;
+  let scheduled = false;
+  const run = () => {
+    if (scheduled) return;
+    scheduled = true;
+    setTimeout(() => { scheduled = false; compactHotissueResultDom(); }, 0);
+  };
+  if (resultArea) new MutationObserver(run).observe(resultArea, { childList: true, subtree: true });
+  if (rawArea)    new MutationObserver(run).observe(rawArea, { childList: true, subtree: true });
+}
