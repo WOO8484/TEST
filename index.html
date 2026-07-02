@@ -8,15 +8,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>얼렁뚱땅 — BlogSpot 자동화 (v0.1.1-r9-fix9-repair)</title>
-<link rel="stylesheet" href="./assets/css/style.css?v=r9-fix9-repair">
+<title>얼렁뚱땅 — BlogSpot 자동화 (v0.1.1-r9-fix9-repair-final3)</title>
+<link rel="stylesheet" href="./assets/css/style.css?v=r9-fix9-repair-final3">
 </head>
 <body>
 <div id="app">
 <!-- r8: 상단 한 줄 상태바 — 로그인 화면에서는 CSS로 숨김 -->
 <div id="status-bar" class="status-bar-hidden">
   <span id="sb-indicators" style="display:flex;gap:6px;align-items:center;cursor:pointer;" onclick="typeof showConnectionPanel==='function'&&showConnectionPanel()" title="연결 상태 보기">
-    <span id="sb-worker" title="Worker"><span class="status-dot off"></span>W</span>
+    <span id="sb-worker" title="W 상태"><span class="status-dot off"></span>W</span>
     <span id="sb-ai"     title="AI"><span class="status-dot off"></span>AI</span>
     <span id="sb-blogger-ind" title="Blogger"><span class="status-dot off"></span>B</span>
     <span id="sb-naver"  title="Naver"><span class="status-dot off"></span>N</span>
@@ -40,7 +40,7 @@
      ========================================= -->
 <div class="screen" id="screen-dashboard">
   <div class="topbar">
-    <h1>얼렁뚱땅 <small style="font-size:12px;font-weight:500;color:#6b7280;">v0.1.1-r9-fix9-repair</small></h1>
+    <h1>얼렁뚱땅 <small style="font-size:12px;font-weight:500;color:#6b7280;">v0.1.1-r9-fix9-repair-final3</small></h1>
   </div>
 
   <div class="page-content">
@@ -142,7 +142,7 @@
     </div>
 
     <button class="btn btn-primary" id="btn-generate-post" onclick="handleGeneratePostFromAutowrite()" style="font-size:14px;padding:9px;margin-top:8px;">글 자동 생성 시작</button>
-    <p class="hint" id="editor-worker-mode-hint" style="display:none;color:#d97706;">Worker 연결 테스트를 먼저 해주세요. Mock 모드로 진행됩니다.</p>
+    <p class="hint" id="editor-worker-mode-hint" style="display:none;color:#d97706;">연결 테스트 전에는 실제 발행이 제한됩니다.</p>
   </div>
 
   <!-- 카드 2: 작성 스타일 / 참고 자료 / 발행 정보 — compact row, 전부 바텀시트로 열림 -->
@@ -378,16 +378,16 @@
 </div>
 </div><!-- /app -->
 
-<script src="./assets/js/config.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/storage.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/ui.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/auth.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/editor.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/quality-check.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/hero-image.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/hotissue.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/blogger.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/api.js?v=r9-fix9-repair"></script>
-<script src="./assets/js/app.js?v=r9-fix9-repair"></script>
+<script src="./assets/js/config.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/storage.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/ui.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/auth.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/editor.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/quality-check.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/hero-image.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/hotissue.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/blogger.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/api.js?v=r9-fix9-repair-final3"></script>
+<script src="./assets/js/app.js?v=r9-fix9-repair-final3"></script>
 </body>
 </html>

@@ -93,11 +93,11 @@ async function handleBloggerConnect(){
     return;
   }
 
-  // Worker 모드가 아닌 경우
+  // 발행 연결(Worker) 모드가 아닌 경우
   saveLocal(STORAGE_KEYS.BLOGGER_CONNECTED, false);
   saveLocal(STORAGE_KEYS.BLOGGER_CONNECTION_MODE, API_MODE.MOCK);
-  saveLocal(STORAGE_KEYS.BLOGGER_FAIL_REASON, 'Worker 모드가 아님 (설정에서 Worker 연결 테스트 필요)');
-  showToast('Worker 모드가 아닙니다. 설정에서 Worker 연결 테스트를 먼저 진행해주세요.');
+  saveLocal(STORAGE_KEYS.BLOGGER_FAIL_REASON, '발행 연결 설정이 필요합니다 (설정에서 연결 테스트 필요)');
+  showToast('발행 연결 설정이 필요합니다. 설정에서 연결 테스트를 먼저 진행해주세요.');
   refreshBloggerScreen();
 }
 
@@ -364,7 +364,7 @@ function renderBloggerSavedList(){
   const listEl = document.getElementById('blogger-saved-list');
   if(!listEl) return;
   if(saved.length === 0){
-    listEl.innerHTML = '<p class="small-sub">아직 저장된 글이 없습니다. 임시저장 또는 예약발행 후 여기에 표시됩니다.</p>';
+    listEl.innerHTML = '<p class="small-sub">표시할 글이 없습니다.</p>';
     return;
   }
   listEl.innerHTML = saved.map(p => {
@@ -403,7 +403,7 @@ async function handleLoadBloggerList(){
   const workerUrl = getWorkerUrl();
 
   if(mode !== API_MODE.WORKER || !workerUrl){
-    showToast('Worker 모드가 아닙니다. 설정에서 Worker 연결 테스트를 먼저 해주세요.');
+    showToast('발행 연결 설정이 필요합니다. 설정에서 연결 테스트를 먼저 해주세요.');
     return;
   }
 
@@ -470,13 +470,6 @@ function refreshDashboard(){
   if(qsEl){
     const score = loadLocal(STORAGE_KEYS.QUALITY_SCORE, null);
     qsEl.textContent = score !== null ? `${score}점` : '검수 전';
-  }
-
-  const apiMode = getApiMode();
-  const modeBadge = document.getElementById('dash-mode-badge');
-  if(modeBadge){
-    modeBadge.textContent = apiMode === API_MODE.WORKER ? 'Worker 모드' : 'Mock 모드';
-    modeBadge.className = apiMode === API_MODE.WORKER ? 'badge success' : 'badge mock';
   }
 
   // Worker 연결 상태

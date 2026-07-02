@@ -201,8 +201,6 @@ function showConnectionPanel() {
 
   uiOpenBottomSheet(
     `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">연결 상태</h3>` +
-    row('Worker',       workerOk ? '연결됨' : 'Mock 모드', workerOk) +
-    row('Worker 버전',  verStr,   verStr !== '—') +
     row('AI Provider',  aiProv,   aiProv !== '—' && aiProv !== '없음') +
     row('Blogger',      blogLabel, bloggerOk) +
     `<p style="font-size:11px;color:#9ca3af;margin-top:10px;margin-bottom:10px;line-height:1.5;">

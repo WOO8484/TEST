@@ -175,7 +175,7 @@ function refreshWorkerStatusCard(){
   }
 
   const modeEl = document.getElementById('worker-status-mode');
-  if (modeEl) modeEl.textContent = mode === API_MODE.WORKER ? 'Worker 모드' : 'Mock 모드';
+  if (modeEl) modeEl.textContent = mode === API_MODE.WORKER ? '연결됨' : 'Mock 모드';
 
   // compact-row 요약 텍스트
   const summaryEl = document.getElementById('settings-connection-summary');
@@ -658,7 +658,6 @@ function renderPubmgmtChecklist(post, score, connected) {
 
   // 첫 화면에는 핵심 5개만 표시하고, 나머지는 요약 문구로 압축한다.
   const coreItems = [
-    { label: 'Blogger 연결됨', ok: connected },
     { label: '글 생성 완료',   ok: !!(post && post.title && post.html) },
     { label: '제목/본문',     ok: !!(post && post.title && (post.html || post.contentHtml)) },
     { label: '라벨 있음',     ok: !!(post && Array.isArray(post.labels) && post.labels.length > 0) },
@@ -933,9 +932,9 @@ function updateStatusBar(currentScreen) {
   const sbBlogger = document.getElementById('sb-blogger-ind');
   const sbNaver   = document.getElementById('sb-naver');
 
-  if (sbWorker)  { sbWorker.innerHTML  = '<span class="status-dot ' + (workerOk  ? 'on' : 'off') + '"></span>W';  sbWorker.title  = workerOk  ? 'Worker 연결됨' : 'Worker 미연결'; }
+  if (sbWorker)  { sbWorker.innerHTML  = '<span class="status-dot ' + (workerOk  ? 'on' : 'off') + '"></span>W';  sbWorker.title  = workerOk  ? 'W 연결됨' : 'W 미연결'; }
   if (sbAi)      { sbAi.innerHTML      = '<span class="status-dot ' + (workerOk  ? 'on' : 'off') + '"></span>AI'; sbAi.title      = 'AI 상태'; }
-  if (sbBlogger) { sbBlogger.innerHTML = '<span class="status-dot ' + (bloggerOk ? 'on' : 'off') + '"></span>B';  sbBlogger.title = bloggerOk ? 'Blogger 연결됨' : 'Blogger 미연결'; }
+  if (sbBlogger) { sbBlogger.innerHTML = '<span class="status-dot ' + (bloggerOk ? 'on' : 'off') + '"></span>B';  sbBlogger.title = bloggerOk ? '연결됨' : '미연결'; }
   if (sbNaver)   { sbNaver.innerHTML   = '<span class="status-dot ' + (workerOk  ? 'on' : 'off') + '"></span>N';  sbNaver.title   = 'Naver 상태'; }
 }
 
