@@ -89,7 +89,7 @@ body.login-open{
 
 /* ============================================================
    화면 전환 — !important로 Safari 우선순위 확보
-   r9-gui-one-screen-fix1: screen 자체는 절대 스크롤되지 않는다.
+   screen 자체는 절대 스크롤되지 않는다.
    (body 전체 스크롤 금지 + screen 자체 스크롤 금지 — 이중 고정)
    내부의 긴 목록/결과만 .compact-list 영역에서 개별적으로 스크롤한다.
    ============================================================ */
@@ -108,7 +108,7 @@ body.login-open{
 }
 @keyframes fadeIn{ from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
 
-/* r9-gui-popup-menu-fix3: .compact-list는 더 이상 내부 스크롤을 만들지 않는다.
+/* .compact-list는 더 이상 내부 스크롤을 만들지 않는다.
    긴 목록은 스크롤 대신 표시 항목 수 자체를 줄이는 방식(최대 3~5개)으로 처리한다. */
 .compact-list{ overscroll-behavior:contain; }
 
@@ -426,8 +426,12 @@ th{ background:var(--color-primary-light); }
   max-height: 88svh;
   overflow: hidden;
 }
-/* r9-gui-popup-menu-fix4: 시트 내부 콘텐츠는 스크롤 대신 폰트/여백을 줄여서 한 화면에 담는다 */
+/* 시트 내부 콘텐츠는 스크롤 대신 폰트/여백을 줄여서 한 화면에 담는다 */
 #bottom-sheet-content { max-height: calc(88svh - 56px); overflow: hidden; }
+/* 설정 바텀시트 등 입력칸/버튼 간격 압축 */
+#bottom-sheet-content label { margin-top: 6px; margin-bottom: 3px; }
+#bottom-sheet-content .btn { margin-top: 4px; }
+#bottom-sheet-content .btn + .btn { margin-top: 4px; }
 #bottom-sheet.open {
   display: block !important;
   transform: translateY(0);
@@ -727,7 +731,7 @@ img { max-width: 100%; height: auto; }
 #worker-status-url { max-width: 55%; }
 
 /* ============================================================
-   r9-gui-one-screen-fix1: screen 자체 스크롤 제거에 따른 전면 압축
+   screen 자체 스크롤 제거에 따른 전면 압축
    ============================================================ */
 
 /* 카드 기본 패딩/여백 추가 축소 (screen 전체를 스크롤 없이 담기 위함) */
@@ -738,7 +742,7 @@ img { max-width: 100%; height: auto; }
 /* ── 홈: 현재 상태를 compact-row로, 카드 수를 최소화 ───────── */
 #screen-dashboard .card { padding: 10px 12px; margin-bottom: 7px; }
 #screen-dashboard .topbar { margin-bottom: 8px !important; }
-/* r9-gui-popup-menu-fix3: 품질검수 핵심 문제는 최대 3개까지만 노출 (quality-check.js 미수정, CSS로만 제한) */
+/* 품질검수 핵심 문제는 최대 3개까지만 노출 (quality-check.js 미수정, CSS로만 제한) */
 #quality-gap-list > div:nth-child(n+4) { display: none; }
 #screen-dashboard .btn[style*="text-align:left"] {
   padding: 8px 12px !important;
@@ -769,18 +773,18 @@ img { max-width: 100%; height: auto; }
 #autowrite-ai-fail-card .btn { min-height: 34px; font-size: 12px; margin-top: 0; }
 #autowrite-result-meta { padding: 6px 8px !important; }
 #quality-result-card, #editor-result-card { padding: 8px 12px; }
-/* r9-gui-popup-menu-fix1: 품질검수 상세 팝업 내부 스크롤 제거 (item 2) — max-height/overflow 삭제 */
+/* 품질검수 상세 팝업 내부 스크롤 제거 (item 2) — max-height/overflow 삭제 */
 
 /* ── 핫이슈: 결과 목록만 내부 스크롤, screen 자체는 고정 ────── */
 #screen-hotissue .card { padding: 8px 12px; margin-bottom: 6px; }
-/* r9-gui-popup-menu-fix3: 핫이슈 확장 키워드/결과 요약 영역은 내부 스크롤 없이 자연스러운 높이로 표시 */
-/* r9-gui-popup-menu-fix3: 원문 상세는 스크롤 대신 각 3개까지만 노출 (hotissue.js 미수정, CSS로만 제한) */
+/* 핫이슈 확장 키워드/결과 요약 영역은 내부 스크롤 없이 자연스러운 높이로 표시 */
+/* 원문 상세는 스크롤 대신 각 3개까지만 노출 (hotissue.js 미수정, CSS로만 제한) */
 #hotissue-raw-blog div:nth-of-type(n+4), #hotissue-raw-web div:nth-of-type(n+4) { display: none; }
 
 /* ── 발행관리: 핵심만 표시, 목록류는 compact-list ───────────── */
 #screen-pubmgmt .card { padding: 8px 12px; margin-bottom: 6px; }
-/* r9-gui-popup-menu-fix1: 바텀시트 내부 스크롤 제거 (item 2) — 최근 5개 제한으로 대체 */
-/* r9-gui-popup-menu-fix3: 저장 결과는 성공/실패, 시간, 링크 정도만 표시해 스크롤 없이도 들어간다 */
+/* 바텀시트 내부 스크롤 제거 (item 2) — 최근 5개 제한으로 대체 */
+/* 저장 결과는 성공/실패, 시간, 링크 정도만 표시해 스크롤 없이도 들어간다 */
 
 /* ── 설정: compact-row 메뉴 형태 ─────────────────────────────── */
 #screen-settings .card { padding: 8px 12px; margin-bottom: 6px; }
@@ -841,7 +845,7 @@ img { max-width: 100%; height: auto; }
 #pubmgmt-score-info{ overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
 /* ============================================================
-   r9-gui-popup-layout-fix: 인라인으로 쌓이던 상세 카드를
+   인라인으로 쌓이던 상세 카드를
    화면을 밀지 않는 중앙 고정 팝업으로 전환한다.
    editor.js/quality-check.js가 하던 class 'active' / style.display
    토글 방식은 그대로 두고, 위치·레이어만 오버레이로 바꾼다.
@@ -875,12 +879,14 @@ img { max-width: 100%; height: auto; }
   transform: translate(-50%, -50%);
   width: calc(100% - 48px);
   max-width: 400px;
+  max-height: 88svh;
+  overflow: hidden;
   z-index: 401;
   box-shadow: 0 14px 36px rgba(0,0,0,0.24);
   margin: 0 !important;
 }
 
-/* r9-gui-popup-menu-fix3: 핫이슈 원문 상세 — 중앙 고정 팝업 (내부 스크롤 없음, item 5)
+/* 핫이슈 원문 상세 — 중앙 고정 팝업 (내부 스크롤 없음, item 5)
    hotissue.js의 toggleRawResults()가 하던 style.display 토글은 그대로 두고 위치/레이어만 바꾼다. */
 #hotissue-raw-area{
   position: fixed !important;
