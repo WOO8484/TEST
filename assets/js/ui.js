@@ -35,6 +35,7 @@ function hardResetUI(){
     const sOverlay = document.getElementById('bottom-sheet-overlay');
     if (sheet)    { sheet.classList.remove('open'); sheet.style.display = 'none'; }
     if (sOverlay) { sOverlay.classList.remove('open'); sOverlay.style.display = 'none'; }
+    typeof cancelBottomSheetCloseTimer === 'function' && cancelBottomSheetCloseTimer();
 
     // 공통 팝업 배경 / 로딩 오버레이
     ['popup-overlay-backdrop', 'loading-overlay'].forEach(id => {
@@ -110,6 +111,9 @@ function goScreen(name){
     // r9-gui-hard-reset-layout-fix: 화면 전환 직후 한 번 더 hard reset
     // (전환 중 비동기로 열린 오버레이/시트가 있어도 다음 프레임에 확실히 정리)
     requestAnimationFrame(() => hardResetUI());
+    // r9-gui-final-safari-stability-fix: iPhone Safari에서 rAF 직후에도 남는 경우를 대비해
+    // 50ms 뒤 한 번 더 정리한다(자동작성 ↔ 발행관리 반복 이동 안정화).
+    setTimeout(() => hardResetUI(), 50);
   } catch (e) {
     console.error('goScreen error', e);
     hardResetUI();
@@ -208,6 +212,7 @@ function showConnectionPanel() {
       <button class="btn btn-secondary" onclick="uiCloseBottomSheet();safeGoScreen('settings')">설정으로 이동</button>
       <button class="btn btn-secondary" onclick="uiCloseBottomSheet();safeGoScreen('pubmgmt')">발행관리로 이동</button>
       <button class="btn btn-ghost" onclick="uiCloseBottomSheet();typeof reconnectAllFromStatusBar==='function'&&reconnectAllFromStatusBar()">연결 재확인</button>
+      <button class="btn btn-ghost" onclick="uiCloseBottomSheet();">닫기</button>
     </div>`
   );
 }

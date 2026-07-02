@@ -34,6 +34,7 @@ function showConnectionSettingsSheet() {
       <button class="btn btn-secondary" onclick="showWorkerUrlSheet()">Worker URL 설정</button>
       <button class="btn btn-secondary" onclick="handleBloggerConnectFromSettings()">Blogger 연결 확인</button>
       <button class="btn btn-ghost" onclick="typeof reconnectAllFromStatusBar==='function'&&reconnectAllFromStatusBar()">전체 연결 재확인</button>
+      <button class="btn btn-ghost" onclick="uiCloseBottomSheet();">닫기</button>
     </div>`
   );
   refreshWorkerStatusCard();
@@ -57,7 +58,8 @@ function showWorkerUrlSheet() {
       <div class="row-between small-sub"><span>URL</span><b id="worker-status-url" style="font-size:11px;word-break:break-all;text-align:right;max-width:60%;">(미입력)</b></div>
       <div class="row-between small-sub" style="display:none;"><span>로그인</span><span id="login-mode-info">Worker /auth/login</span></div>
     </div>` +
-    `<button class="btn btn-ghost" style="margin-top:10px;" onclick="uiCloseBottomSheet();showConnectionSettingsSheet();">← 연결 설정으로</button>`
+    `<button class="btn btn-ghost" style="margin-top:10px;" onclick="uiCloseBottomSheet();showConnectionSettingsSheet();">← 연결 설정으로</button>` +
+    `<button class="btn btn-ghost" style="margin-top:6px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
   const workerUrlEl = document.getElementById('setting-worker-url');
   if (workerUrlEl) workerUrlEl.value = loadLocal(STORAGE_KEYS.WORKER_URL, '') || DEFAULT_WORKER_URL;
@@ -69,7 +71,8 @@ function showWritingDefaultsSheet() {
     `<h3 style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1c2434;">글쓰기 기본값</h3>` +
     `<p class="desc" style="margin-top:0;">쉼표(,)로 구분해서 입력하세요.</p>
     <textarea id="setting-banned-words" placeholder="예: 100% 효과, 무조건 보장" style="min-height:70px;"></textarea>
-    <button class="btn btn-secondary" onclick="saveBannedWords()">저장하기</button>`
+    <button class="btn btn-secondary" onclick="saveBannedWords()">저장하기</button>
+    <button class="btn btn-ghost" style="margin-top:6px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
   const bannedEl = document.getElementById('setting-banned-words');
   if (bannedEl) bannedEl.value = loadLocal(STORAGE_KEYS.BANNED_WORDS, '');
@@ -81,7 +84,8 @@ function showPublishSettingsSheet() {
     `<label style="margin-top:0;">최대 건수 (1~10)</label>
     <input type="number" id="setting-daily-limit" min="1" max="10" value="3">
     <button class="btn btn-secondary" onclick="saveDailyLimitSetting()">하루 제한 저장</button>
-    <p class="hint">초기 운영 권장: 하루 3~5건</p>`
+    <p class="hint">초기 운영 권장: 하루 3~5건</p>
+    <button class="btn btn-ghost" style="margin-top:6px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
   const dailyEl = document.getElementById('setting-daily-limit');
   if (dailyEl) dailyEl.value = getDailyPublishLimit();
@@ -93,7 +97,8 @@ function showDataManagementSheet() {
     `<div class="row-between small-sub"><span>앱</span><span>${typeof APP_DISPLAY_VERSION !== 'undefined' ? APP_DISPLAY_VERSION : '—'}</span></div>
     <div class="row-between small-sub"><span>Worker</span><span id="settings-worker-version">—</span></div>
     <div class="row-between small-sub"><span>AI</span><span id="settings-ai-provider">—</span></div>
-    <button class="btn btn-danger" style="margin-top:10px;" onclick="resetAllData()">전체 초기화</button>`
+    <button class="btn btn-danger" style="margin-top:10px;" onclick="resetAllData()">전체 초기화</button>
+    <button class="btn btn-ghost" style="margin-top:6px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
   refreshSettingsScreenExtra();
 }
@@ -426,7 +431,8 @@ function toggleWriteOptions() {
       <option value="few">적게 사용</option>
       <option value="none">사용 안 함</option>
       <option value="moderate">적당히 사용</option>
-    </select>`
+    </select>
+    <button class="btn btn-ghost" style="margin-top:10px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
   // 새로 생성된 select에 값 복원 + change 이벤트 바인딩 (editor.js 함수 재사용)
   const personaSelect = document.getElementById('setting-writer-persona');
@@ -469,7 +475,8 @@ function toggleMaterialOptions() {
     <textarea id="mat-verified-source" style="display:none;"></textarea>
     <textarea id="mat-reader-question" style="display:none;"></textarea>
     <button class="btn btn-secondary" onclick="saveMaterial()">재료 저장하기</button>
-    <p class="hint" id="material-saved-hint" style="display:none;color:#16a34a;">저장되었습니다</p>`
+    <p class="hint" id="material-saved-hint" style="display:none;color:#16a34a;">저장되었습니다</p>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
   if (typeof loadMaterialIntoForm === 'function') loadMaterialIntoForm();
 }
@@ -536,7 +543,8 @@ function toggleManualCopy() {
     <div id="mc-tab-panel-all" style="margin-top:10px;display:none;flex-direction:column;gap:8px;">
       <button class="btn btn-primary" onclick="handleCopyHtml()">HTML 전체 복사</button>
       <button class="btn btn-secondary" onclick="handleCopyAll()">전체 패키지 복사</button>
-    </div>`
+    </div>
+    <button class="btn btn-ghost" style="margin-top:10px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
 }
 function switchManualCopyTab(key) {
@@ -562,6 +570,9 @@ function handleGeneratePostFromAutowrite() {
 }
 
 function refreshAutowriteScreen() {
+  // r9-gui-no-overlap-popup-fix2: 화면 진입 시 남은 오버레이/바텀시트를 먼저 정리한다.
+  typeof hardResetUI === 'function' && hardResetUI();
+
   const edKw = document.getElementById('editor-keyword');
   const awKw = document.getElementById('autowrite-keyword');
   if (edKw && awKw && edKw.value && !awKw.value) awKw.value = edKw.value;
@@ -574,12 +585,14 @@ function refreshAutowriteScreen() {
     if (titleEl && !titleEl.textContent) titleEl.textContent = post.title || '';
     card.style.display = 'block';
   }
-  // 품질검수 결과가 있으면 표시
-  const score  = loadLocal(STORAGE_KEYS.QUALITY_SCORE, null);
-  const checks = loadLocal(STORAGE_KEYS.QUALITY_CHECKS, null);
-  if (score !== null && checks && typeof renderQualityResult === 'function') {
-    renderQualityResult(score, checks);
-  }
+  // r9-gui-no-overlap-popup-fix2: 품질검수 팝업은 사용자가 버튼을 눌렀을 때만 열려야 하므로
+  // 화면 진입 시 자동으로 renderQualityResult()를 호출해 팝업을 띄우지 않는다.
+  // (품질점수 원본 데이터는 그대로 storage에 남아있고, "품질검수" 버튼을 누르면
+  //  runQualityCheckAndShow()가 필요할 때 다시 계산/표시한다.)
+  const qCard = document.getElementById('quality-result-card');
+  if (qCard) { qCard.style.display = 'none'; qCard.classList.remove('active'); }
+
+  updateAutowriteImportStatus();
 }
 
 // ── 핫이슈 화면 refresh ──
@@ -590,6 +603,19 @@ function refreshHotissueScreen() {
   }
 }
 
+// r9-gui-no-overlap-popup-fix2: 가져오기 영역 — 무엇을 가져왔는지 표시한다.
+function updateAutowriteImportStatus(source) {
+  const el = document.getElementById('autowrite-import-status');
+  if (!el) return;
+  const aw = document.getElementById('autowrite-keyword');
+  const kw = aw && aw.value.trim();
+  if (!kw) { el.textContent = '가져온 키워드 없음'; return; }
+  const lastHot = (typeof loadLocal === 'function' && typeof STORAGE_KEYS !== 'undefined' && STORAGE_KEYS.LAST_KEYWORD)
+    ? loadLocal(STORAGE_KEYS.LAST_KEYWORD, '') : '';
+  const src = (source === 'hotissue' || (lastHot && lastHot === kw)) ? '핫이슈' : '직접입력';
+  el.textContent = `가져온 키워드: ${kw} · 출처: ${src} · 상태: 적용됨`;
+}
+
 // ── syncAutowriteKeyword ──
 function syncAutowriteKeyword() {
   const hot = document.getElementById('hotissue-keyword');
@@ -598,6 +624,7 @@ function syncAutowriteKeyword() {
     aw.value = hot.value.trim();
     const edKw = document.getElementById('editor-keyword');
     if (edKw) edKw.value = hot.value.trim();
+    updateAutowriteImportStatus('hotissue');
     showToast('핫이슈 키워드를 가져왔습니다');
   } else {
     showToast('핫이슈 탭에서 키워드를 먼저 입력해주세요');
@@ -791,7 +818,8 @@ function showBloggerListSheet() {
     `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">Blogger 글 목록</h3>` +
     `<p class="hint" style="margin-top:0;">최근 5건만 표시합니다.</p>` +
     `<button class="btn btn-ghost" style="font-size:13px;" onclick="handleLoadBloggerListLimited()">목록 새로 고침</button>` +
-    `<div id="blogger-saved-list" style="margin-top:8px;"><p class="small-sub">목록을 불러오려면 위 버튼을 눌러주세요.</p></div>`
+    `<div id="blogger-saved-list" style="margin-top:8px;"><p class="small-sub">목록을 불러오려면 위 버튼을 눌러주세요.</p></div>` +
+    `<button class="btn btn-ghost" style="margin-top:8px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
 }
 // r9-gui-popup-menu-fix1: blogger.js의 handleLoadBloggerList()는 그대로 재사용하되,
@@ -811,7 +839,8 @@ function showRecentPostsSheet() {
     `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">최근 생성 글</h3>` +
     `<p class="hint" style="margin-top:0;">최근 5건까지 저장됩니다.</p>` +
     `<div id="recent-posts-list"><p class="small-sub">저장된 글이 없습니다.</p></div>` +
-    `<button class="btn btn-ghost" onclick="handleClearRecentPosts()" style="margin-top:8px;font-size:12px;color:#dc2626;">전체 삭제</button>`
+    `<button class="btn btn-ghost" onclick="handleClearRecentPosts()" style="margin-top:8px;font-size:12px;color:#dc2626;">전체 삭제</button>` +
+    `<button class="btn btn-ghost" style="margin-top:8px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
   if (typeof renderRecentPostsList === 'function') renderRecentPostsList();
 }
@@ -829,7 +858,8 @@ function showPubmgmtMoreMenuSheet() {
     </div>
     <div class="settings-menu-row" style="border-bottom:none;" onclick="uiCloseBottomSheet();showRecentPostsSheet();">
       <span class="smr-icon">최</span><span class="smr-label">최근 생성 글</span><span class="smr-arrow">›</span>
-    </div>`
+    </div>` +
+    `<button class="btn btn-ghost" style="margin-top:8px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
 }
 
@@ -839,7 +869,8 @@ function showPubmgmtMoreMenuSheet() {
 function showPubmgmtChecklistSheet() {
   uiOpenBottomSheet(
     `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">발행 전 체크</h3>` +
-    `<div id="pubmgmt-checklist-list" style="display:flex;flex-direction:column;gap:5px;font-size:13px;"></div>`
+    `<div id="pubmgmt-checklist-list" style="display:flex;flex-direction:column;gap:5px;font-size:13px;"></div>` +
+    `<button class="btn btn-ghost" style="margin-top:10px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
   if (typeof refreshPubmgmtScreen === 'function') refreshPubmgmtScreen();
 }
@@ -921,11 +952,15 @@ function updateStatusBar(currentScreen) {
 }
 
 // ── 바텀시트 열기/닫기 ──
+// r9-gui-final-safari-stability-fix: close→즉시 reopen 패턴(설정 하위 메뉴 등)에서
+// 이전 닫기 타이머가 뒤늦게 발동해 방금 연 시트/overlay를 강제로 숨기는 경쟁 상태를 막는다.
+let _bottomSheetCloseTimer = null;
 function openBottomSheet(contentHtml) {
   const overlay = document.getElementById('bottom-sheet-overlay');
   const sheet   = document.getElementById('bottom-sheet');
   const content = document.getElementById('bottom-sheet-content');
   if (!sheet || !overlay) return;
+  if (_bottomSheetCloseTimer) { clearTimeout(_bottomSheetCloseTimer); _bottomSheetCloseTimer = null; }
   if (content) content.innerHTML = contentHtml;
   overlay.classList.add('open');
   sheet.classList.add('open');
@@ -939,10 +974,17 @@ function closeBottomSheet() {
   if (!sheet || !overlay) return;
   sheet.classList.remove('open');
   overlay.classList.remove('open');
-  setTimeout(() => {
+  if (_bottomSheetCloseTimer) clearTimeout(_bottomSheetCloseTimer);
+  _bottomSheetCloseTimer = setTimeout(() => {
     sheet.style.display   = 'none';
     overlay.style.display = 'none';
+    _bottomSheetCloseTimer = null;
   }, 260);
+}
+
+// hardResetUI(ui.js)가 즉시 닫을 때, 뒤늦게 발동할 수 있는 예약된 닫기 타이머도 함께 정리한다.
+function cancelBottomSheetCloseTimer() {
+  if (_bottomSheetCloseTimer) { clearTimeout(_bottomSheetCloseTimer); _bottomSheetCloseTimer = null; }
 }
 
 // 저장 성공 후 상태바도 갱신
@@ -1046,13 +1088,93 @@ function compactHotissueRawList(container, max) {
   container.appendChild(note);
 }
 
+// r9-gui-no-overlap-popup-fix3: rawBlog/rawWeb의 아이템 DOM(제목/설명/링크)만 읽어서
+// app.js가 직접 최대 max개짜리 요약 HTML을 구성한다. hotissue.js의 원본 HTML(더보기 토글
+// 버튼 포함)은 그대로 쓰지 않는다 — 바텀시트 안에서 hotissue-raw-area 고정 팝업이
+// 다시 열리는 것을 막기 위함이다.
+function extractRawItemSummaryHtml(container, max) {
+  if (!container) return '<p class="small-sub" style="margin:4px 0;">결과 없음</p>';
+  const items = Array.from(container.children)
+    .filter(el => el.tagName === 'DIV' && el.style.display !== 'none')
+    .slice(0, max);
+  if (!items.length) return '<p class="small-sub" style="margin:4px 0;">결과 없음</p>';
+  return items.map(el => {
+    const rows  = Array.from(el.children).filter(c => c.tagName === 'DIV');
+    const title = rows[0]?.textContent.trim() || '';
+    const desc  = rows[1]?.textContent.trim() || '';
+    const link  = el.querySelector('a')?.getAttribute('href') || '';
+    return `<div style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+      <div style="font-size:12.5px;font-weight:600;line-height:1.4;">${escapeHtml(title)}</div>
+      <div style="font-size:11px;color:#6b7280;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(desc)}</div>
+      ${link ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:#2563eb;">원문보기 ↗</a>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// r9-gui-no-overlap-popup-fix2/fix3: 핫이슈 검색 결과를 본문에 길게 펼치지 않고,
+// 짧은 요약(키워드/점수/건수) + "결과 보기" 버튼만 본문에 남긴다.
+// 바텀시트에 넣을 내용은 app.js가 직접 한 화면 요약형으로 구성해 dataset에 저장한다.
+function compactHotissueMainResult(area) {
+  if (!area || !area.innerHTML.trim()) return;
+  if (area.querySelector('.hi-compacted-wrap')) return; // 이미 처리됨(무한 루프 방지)
+
+  const fullHtml    = area.innerHTML;
+  const scoreText   = area.querySelector('div[style*="border-radius:50%"]')?.textContent.trim() || '';
+  const keywordText = area.querySelector('div[style*="font-weight:800;font-size:16px"]')?.textContent.trim() || '';
+  const badgeTexts  = Array.from(area.querySelectorAll('span[style*="background:rgba(255,255,255,0.8)"]')).map(s => s.textContent.trim());
+
+  if (!scoreText) {
+    // 예상한 구조가 아니면(검색 결과 없음 안내 등) 원본을 그대로 둔다.
+    area.innerHTML = `<div class="hi-compacted-wrap">${fullHtml}</div>`;
+    return;
+  }
+
+  const rawBlog = document.getElementById('hotissue-raw-blog');
+  const rawWeb  = document.getElementById('hotissue-raw-web');
+  const sheetBodyHtml =
+    `<div class="row-between" style="margin-bottom:4px;">
+      <span style="font-weight:700;font-size:14px;">${escapeHtml(keywordText)}</span>
+      <span style="font-weight:800;color:#2563eb;">${escapeHtml(scoreText)}</span>
+    </div>
+    <p class="small-sub" style="margin:0 0 10px;">${escapeHtml(badgeTexts.join(' · '))}</p>
+    <p class="small-sub" style="font-weight:700;margin:0 0 2px;">블로그</p>
+    ${extractRawItemSummaryHtml(rawBlog, 2)}
+    <p class="small-sub" style="font-weight:700;margin:8px 0 2px;">웹문서</p>
+    ${extractRawItemSummaryHtml(rawWeb, 2)}`;
+  area.dataset.hiSheetHtml = encodeURIComponent(sheetBodyHtml);
+
+  area.innerHTML =
+    `<div class="hi-compacted-wrap card" style="padding:10px 12px;">
+      <div class="row-between" style="margin-bottom:2px;">
+        <span style="font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;">${keywordText}</span>
+        <span style="font-weight:800;color:#2563eb;font-size:13px;">${scoreText}</span>
+      </div>
+      <p class="small-sub" style="margin:2px 0 8px;">${badgeTexts.join(' · ')}</p>
+      <button class="btn btn-primary" style="font-size:13px;" onclick="showHotissueResultSheet()">결과 보기</button>
+    </div>`;
+}
+
+// r9-gui-no-overlap-popup-fix3: 바텀시트 내용은 app.js가 직접 만든 요약 HTML만 사용한다.
+// (hotissue.js의 "검색 결과 보기 ▼" 토글 버튼은 포함하지 않으므로 hotissue-raw-area
+//  고정 팝업이 바텀시트 위에 다시 열리는 일이 없다)
+function showHotissueResultSheet() {
+  const area = document.getElementById('hotissue-result-area');
+  const stored = area && area.dataset.hiSheetHtml;
+  if (!stored) return;
+  uiOpenBottomSheet(
+    `<h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#1c2434;">핫이슈 검색 결과</h3>` +
+    decodeURIComponent(stored) +
+    `<button class="btn btn-ghost" style="margin-top:12px;" onclick="uiCloseBottomSheet();">닫기</button>`
+  );
+}
+
 function compactHotissueResultDom() {
   const resultArea = document.getElementById('hotissue-result-area');
   const rawBlog     = document.getElementById('hotissue-raw-blog');
   const rawWeb       = document.getElementById('hotissue-raw-web');
-  if (resultArea) stripEmojiTextIn(resultArea);
-  if (rawBlog)  { stripEmojiTextIn(rawBlog); compactHotissueRawList(rawBlog, 2); }
-  if (rawWeb)   { stripEmojiTextIn(rawWeb);  compactHotissueRawList(rawWeb, 2); }
+  if (rawBlog) { stripEmojiTextIn(rawBlog); compactHotissueRawList(rawBlog, 2); }
+  if (rawWeb)  { stripEmojiTextIn(rawWeb);  compactHotissueRawList(rawWeb, 2); }
+  if (resultArea) { stripEmojiTextIn(resultArea); compactHotissueMainResult(resultArea); }
 }
 
 function initHotissueResultCompactor() {
