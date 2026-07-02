@@ -505,19 +505,6 @@ function refreshDashboard(){
   else if(connected){ bloggerDot = 'off'; bloggerText = 'Mock 모드'; }
   else { bloggerDot = 'fail'; bloggerText = '연결 실패'; }
   setStatusMiniCard('dash-blogger-status', bloggerDot, bloggerText);
-
-  const saved = loadLocal(STORAGE_KEYS.SAVED_POSTS, []);
-  const listEl = document.getElementById('dash-recent-list');
-  if(saved.length === 0){
-    listEl.innerHTML = '<p class="small-sub">아직 저장된 글이 없습니다.</p>';
-  } else {
-    listEl.innerHTML = saved.slice(0, 3).map(p => `
-      <div class="list-item">
-        <b>${escapeHtml(p.title)}</b>
-        <div class="small-sub">${p.status === 'draft' ? '임시저장' : '예약발행'} · ${p.score}점 · ${p.savedVia === SAVE_VIA.BLOGGER ? '실제 Blogger' : 'Mock'}</div>
-      </div>
-    `).join('');
-  }
 }
 
 // 대시보드 상태 미니카드(점 + 텍스트)를 갱신하는 공통 도우미 함수

@@ -684,73 +684,33 @@ function renderPubmgmtChecklist(post, score, connected) {
 function refreshPubmgmtScreen() {
   const connected    = loadLocal(STORAGE_KEYS.BLOGGER_CONNECTED, false);
   const connMode     = loadLocal(STORAGE_KEYS.BLOGGER_CONNECTION_MODE, API_MODE.MOCK);
-  const failReason   = loadLocal(STORAGE_KEYS.BLOGGER_FAIL_REASON, '');
-  const blogName     = loadLocal('bloggerBlogName', '');
-  const statusEl     = document.getElementById('pubmgmt-blogger-status');
-  const failBox      = document.getElementById('pubmgmt-fail-box');
-  const failReasonEl = document.getElementById('pubmgmt-fail-reason');
-  const blogNameEl   = document.getElementById('pubmgmt-blogger-blog-name');
-
-  if (statusEl) {
-    if (connected && connMode === API_MODE.WORKER) {
-      statusEl.textContent = '연결됨'; statusEl.className = 'badge success';
-      if (failBox) failBox.style.display = 'none';
-      if (blogNameEl && blogName) { blogNameEl.textContent = `블로그: ${blogName}`; blogNameEl.style.display = 'block'; }
-    } else if (failReason) {
-      statusEl.textContent = '연결 실패'; statusEl.className = 'badge';
-      if (failBox)      failBox.style.display = 'block';
-      if (failReasonEl) failReasonEl.textContent = failReason;
-      if (blogNameEl)   blogNameEl.style.display = 'none';
-    } else {
-      statusEl.textContent = '미연결'; statusEl.className = 'badge';
-      if (failBox)   failBox.style.display = 'none';
-      if (blogNameEl) blogNameEl.style.display = 'none';
-    }
-  }
 
   const post         = loadLocal(STORAGE_KEYS.CURRENT_POST, null);
   const contentArea  = document.getElementById('pubmgmt-content-area');
   const emptyState   = document.getElementById('pubmgmt-empty-state');
   const fullState     = document.getElementById('pubmgmt-full-state');
-  const actionFull   = document.getElementById('pubmgmt-action-full');
-  const actionEmpty  = document.getElementById('pubmgmt-action-empty');
-  const menuFull     = document.getElementById('pubmgmt-menu-full');
-  const menuEmpty    = document.getElementById('pubmgmt-menu-empty');
   // r9-fix9-ux-cleanup: 글이 없으면 기존 3카드(full-state)는 숨기고
   // 단순 안내 카드 1개(empty-state)만 보여준다. 글이 있으면 기존 흐름 그대로 유지한다.
   if (contentArea) contentArea.style.display = 'flex';
   if (!post) {
     if (emptyState) emptyState.style.display = 'block';
     if (fullState)  fullState.style.display  = 'none';
-    if (actionFull)  actionFull.style.display  = 'none';
-    if (actionEmpty) actionEmpty.style.display = 'block';
-    if (menuFull)    menuFull.style.display    = 'none';
-    if (menuEmpty)   menuEmpty.style.display   = 'block';
-    const titleEl = document.getElementById('pubmgmt-title');
-    if (titleEl) titleEl.textContent = '생성된 글 없음';
-    const scoreEl = document.getElementById('pubmgmt-score');
-    if (scoreEl) scoreEl.textContent = '—';
-    const infoEl = document.getElementById('pubmgmt-score-info');
-    if (infoEl) infoEl.textContent = '자동작성 탭에서 글을 먼저 만들어주세요.';
-    const draftBtn = document.getElementById('btn-draft-save');
-    const schedBtn = document.getElementById('btn-schedule-save');
-    if (draftBtn) draftBtn.className = 'btn btn-disabled';
-    if (schedBtn) schedBtn.className = 'btn btn-disabled';
     return;
   }
   if (emptyState) emptyState.style.display = 'none';
   if (fullState)  fullState.style.display  = 'block';
-  if (actionFull)  actionFull.style.display  = 'block';
-  if (actionEmpty) actionEmpty.style.display = 'none';
-  if (menuFull)    menuFull.style.display    = 'block';
-  if (menuEmpty)   menuEmpty.style.display   = 'none';
 
   const titleEl = document.getElementById('pubmgmt-title');
   if (titleEl) titleEl.textContent = post.title || '(제목 없음)';
 
+  const labelsEl = document.getElementById('pubmgmt-labels');
+  if (labelsEl) {
+    const hasLabels = Array.isArray(post.labels) && post.labels.length > 0;
+    labelsEl.textContent = hasLabels ? post.labels.join(', ') : '없음';
+  }
+
   const score      = loadLocal(STORAGE_KEYS.QUALITY_SCORE, null);
   const scoreEl    = document.getElementById('pubmgmt-score');
-  const infoEl     = document.getElementById('pubmgmt-score-info');
   const draftBtn   = document.getElementById('btn-draft-save');
   const schedBtn   = document.getElementById('btn-schedule-save');
   const dailyLimit = typeof getDailyPublishLimit === 'function' ? getDailyPublishLimit() : DAILY_PUBLISH_LIMIT;
@@ -761,17 +721,15 @@ function refreshPubmgmtScreen() {
 
   const dis = () => { if(draftBtn) draftBtn.className='btn btn-disabled'; if(schedBtn) schedBtn.className='btn btn-disabled'; };
 
-  if (!connected)       { if(infoEl) infoEl.textContent = 'Blogger를 먼저 연결해주세요.'; dis(); }
-  else if (overLimit)   { if(infoEl) infoEl.textContent = `오늘 발행 제한(${dailyLimit}건)을 초과했습니다.`; dis(); }
-  else if (score===null){ if(infoEl) infoEl.textContent = '품질검수를 먼저 진행해주세요. (자동작성 탭)'; dis(); }
+  if (!connected)       { dis(); }
+  else if (overLimit)   { dis(); }
+  else if (score===null){ dis(); }
   else if (score < QUALITY_DRAFT_MIN_SCORE) {
-    if(infoEl) infoEl.textContent = `${score}점: ${QUALITY_DRAFT_MIN_SCORE}점 미만이라 저장 제한됩니다.`; dis();
+    dis();
   } else if (score < QUALITY_SCHEDULE_MIN_SCORE) {
-    if(infoEl) infoEl.textContent = `${score}점: 임시저장만 가능합니다. (오늘 ${todayCount}/${dailyLimit}건)`;
     if(draftBtn) draftBtn.className = 'btn btn-primary';
     if(schedBtn) schedBtn.className = 'btn btn-disabled';
   } else {
-    if(infoEl) infoEl.textContent = `${score}점: 임시저장·예약발행 모두 가능합니다. (오늘 ${todayCount}/${dailyLimit}건)`;
     if(draftBtn) draftBtn.className = 'btn btn-primary';
     if(schedBtn) schedBtn.className = 'btn btn-success';
   }
@@ -970,18 +928,11 @@ function updateStatusBar(currentScreen) {
   const workerOk  = mode === API_MODE.WORKER;
   const bloggerOk = connected && connMode === API_MODE.WORKER;
 
-  const sbMode    = document.getElementById('sb-mode');
-  const sbScreen  = document.getElementById('sb-current-screen');
   const sbWorker  = document.getElementById('sb-worker');
   const sbAi      = document.getElementById('sb-ai');
   const sbBlogger = document.getElementById('sb-blogger-ind');
   const sbNaver   = document.getElementById('sb-naver');
 
-  if (sbMode)    { sbMode.textContent = workerOk ? 'Worker' : 'Mock'; }
-  if (sbScreen)  {
-    const screenNames = { dashboard:'홈', hotissue:'핫이슈', autowrite:'자동작성', pubmgmt:'발행관리', settings:'설정', preview:'미리보기' };
-    sbScreen.textContent = screenNames[currentScreen] || currentScreen;
-  }
   if (sbWorker)  { sbWorker.innerHTML  = '<span class="status-dot ' + (workerOk  ? 'on' : 'off') + '"></span>W';  sbWorker.title  = workerOk  ? 'Worker 연결됨' : 'Worker 미연결'; }
   if (sbAi)      { sbAi.innerHTML      = '<span class="status-dot ' + (workerOk  ? 'on' : 'off') + '"></span>AI'; sbAi.title      = 'AI 상태'; }
   if (sbBlogger) { sbBlogger.innerHTML = '<span class="status-dot ' + (bloggerOk ? 'on' : 'off') + '"></span>B';  sbBlogger.title = bloggerOk ? 'Blogger 연결됨' : 'Blogger 미연결'; }
@@ -1052,12 +1003,6 @@ function showPubmgmtSaveResult(result, type) {
     bodyHtml +
     `<button class="btn btn-ghost" style="margin-top:8px;" onclick="uiCloseBottomSheet();">닫기</button>`
   );
-  // r9-gui-hard-reset-layout-fix: 본문에는 짧은 요약 한 줄만 남긴다 (예: "임시저장 완료 · 88점")
-  const summaryEl = document.getElementById('pubmgmt-last-save-summary');
-  if (summaryEl) {
-    const scoreTxt = score !== null ? ` · ${score}점` : '';
-    summaryEl.textContent = isFail ? `${typeLabel} 실패` : `${typeLabel} 완료${scoreTxt}`;
-  }
   // 상태바도 갱신
   updateStatusBar();
 }
