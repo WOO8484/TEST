@@ -113,16 +113,57 @@ async function handleHotissueSearch() {
 }
 
 /* ----------------------------------------------------------
-   확장 키워드 표시
+   확장 키워드 표시 — r9-fix9-ux-cleanup: 1줄 칩 + 더보기/처음 순환
+   큰 카드/팝업/바텀시트를 쓰지 않고, 같은 자리에서 묶음만 교체한다.
    ---------------------------------------------------------- */
+const HOTISSUE_CHIP_GROUP_SIZE = 4;
+let _hotissueExpandState = { keywords: [], groupIndex: 0 };
+
 function showExpandedKeywords(expanded) {
-  const card = document.getElementById('hotissue-expand-card');
-  const list = document.getElementById('hotissue-expand-list');
-  if (!card || !list) return;
-  list.innerHTML = expanded.map(kw =>
-    `<span style="display:inline-block;background:#f1f5f9;border-radius:20px;padding:3px 10px;font-size:12px;margin:3px;border:1px solid #e2e8f0;">${_esc(kw)}</span>`
-  ).join('');
-  card.style.display = 'block';
+  const row = document.getElementById('hotissue-expand-row');
+  if (!row) return;
+  _hotissueExpandState = { keywords: expanded || [], groupIndex: 0 };
+  if (!_hotissueExpandState.keywords.length) {
+    row.style.display = 'none';
+    return;
+  }
+  row.style.display = 'flex';
+  renderExpandedKeywordGroup();
+}
+
+function renderExpandedKeywordGroup() {
+  const chipsEl = document.getElementById('hotissue-expand-chips');
+  const moreBtn = document.getElementById('hotissue-expand-more-btn');
+  if (!chipsEl || !moreBtn) return;
+
+  const { keywords, groupIndex } = _hotissueExpandState;
+  if (!keywords.length) { chipsEl.innerHTML = ''; moreBtn.style.display = 'none'; return; }
+
+  const totalGroups = Math.ceil(keywords.length / HOTISSUE_CHIP_GROUP_SIZE);
+  const start = groupIndex * HOTISSUE_CHIP_GROUP_SIZE;
+  const group = keywords.slice(start, start + HOTISSUE_CHIP_GROUP_SIZE);
+
+  chipsEl.innerHTML = group.map(kw => `<span class="hotissue-chip">${_esc(kw)}</span>`).join('');
+
+  if (totalGroups <= 1) {
+    moreBtn.style.display = 'none';
+    return;
+  }
+  moreBtn.style.display = 'inline-block';
+  if (groupIndex >= totalGroups - 1) {
+    moreBtn.textContent = '처음';
+  } else {
+    const remaining = keywords.length - (start + group.length);
+    moreBtn.textContent = remaining > 0 ? `+${remaining}` : '더보기';
+  }
+}
+
+function cycleExpandedKeywords() {
+  const { keywords, groupIndex } = _hotissueExpandState;
+  const totalGroups = Math.ceil(keywords.length / HOTISSUE_CHIP_GROUP_SIZE);
+  if (totalGroups <= 1) return;
+  _hotissueExpandState.groupIndex = (groupIndex + 1) % totalGroups;
+  renderExpandedKeywordGroup();
 }
 
 /* ----------------------------------------------------------
@@ -227,8 +268,8 @@ function syncAutowriteKeyword() {
 function onHotissueKeywordInput() {
   const kw = document.getElementById('hotissue-keyword')?.value.trim() || '';
   if (!kw) {
-    const c = document.getElementById('hotissue-expand-card');
-    if (c) c.style.display = 'none';
+    const row = document.getElementById('hotissue-expand-row');
+    if (row) row.style.display = 'none';
     return;
   }
   showExpandedKeywords(expandKeywords(kw));

@@ -422,7 +422,7 @@ function handleClearRecentPosts() {
 // input/select id는 그대로 유지하고, 시트 삽입 직후 editor.js의 바인딩/복원 함수를 재사용한다.
 function toggleWriteOptions() {
   uiOpenBottomSheet(
-    `<h3 style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1c2434;">글쓰기 옵션</h3>` +
+    `<h3 style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1c2434;">작성 스타일</h3>` +
     `<label style="margin-top:0;">글쓴이 느낌</label>
     <select id="setting-writer-persona">
       <option value="neutral">성별 드러내지 않음</option>
@@ -474,7 +474,7 @@ function toggleMaterialOptions() {
     </div>`
   ).join('');
   uiOpenBottomSheet(
-    `<h3 style="margin:0 0 4px;font-size:15px;font-weight:700;color:#1c2434;">글 재료 (선택)</h3>` +
+    `<h3 style="margin:0 0 4px;font-size:15px;font-weight:700;color:#1c2434;">참고 자료</h3>` +
     `<p class="hint" style="margin-top:0;">실제 경험이 있으면 적어주세요. 없으면 AI가 일반적인 내용으로 작성합니다.</p>
     <div style="display:flex;gap:4px;margin-top:8px;">${tabsHtml}</div>
     <div style="margin-top:8px;">${panelsHtml}</div>
@@ -710,14 +710,18 @@ function refreshPubmgmtScreen() {
 
   const post         = loadLocal(STORAGE_KEYS.CURRENT_POST, null);
   const contentArea  = document.getElementById('pubmgmt-content-area');
+  const emptyState   = document.getElementById('pubmgmt-empty-state');
+  const fullState     = document.getElementById('pubmgmt-full-state');
   const actionFull   = document.getElementById('pubmgmt-action-full');
   const actionEmpty  = document.getElementById('pubmgmt-action-empty');
   const menuFull     = document.getElementById('pubmgmt-menu-full');
   const menuEmpty    = document.getElementById('pubmgmt-menu-empty');
-  // r9-gui-mobile-layout-reset-fix2: 글이 없어도 같은 3카드 구조를 유지하되,
-  // 별도의 4번째 안내 카드를 추가하지 않고 카드2/카드3 내부만 empty 상태로 전환한다.
+  // r9-fix9-ux-cleanup: 글이 없으면 기존 3카드(full-state)는 숨기고
+  // 단순 안내 카드 1개(empty-state)만 보여준다. 글이 있으면 기존 흐름 그대로 유지한다.
   if (contentArea) contentArea.style.display = 'flex';
   if (!post) {
+    if (emptyState) emptyState.style.display = 'block';
+    if (fullState)  fullState.style.display  = 'none';
     if (actionFull)  actionFull.style.display  = 'none';
     if (actionEmpty) actionEmpty.style.display = 'block';
     if (menuFull)    menuFull.style.display    = 'none';
@@ -734,6 +738,8 @@ function refreshPubmgmtScreen() {
     if (schedBtn) schedBtn.className = 'btn btn-disabled';
     return;
   }
+  if (emptyState) emptyState.style.display = 'none';
+  if (fullState)  fullState.style.display  = 'block';
   if (actionFull)  actionFull.style.display  = 'block';
   if (actionEmpty) actionEmpty.style.display = 'none';
   if (menuFull)    menuFull.style.display    = 'block';
@@ -1208,62 +1214,23 @@ function compactHotissueResultDom() {
   if (resultArea) { stripEmojiTextIn(resultArea); compactHotissueMainResult(resultArea); }
 }
 
-// r9-gui-mobile-layout-reset-fix1: 확장 검색 키워드(10개) 카드를 본문에 길게 펼치지 않는다.
-// hotissue.js가 매 검색마다 #hotissue-expand-list.innerHTML을 다시 채우므로,
-// 그 요소 자체는 삭제/치환하지 않고 화면에서만 숨긴 뒤, 요약 줄 + "보기" 버튼을 추가한다.
-function compactHotissueExpandCard() {
-  const card = document.getElementById('hotissue-expand-card');
-  const list = document.getElementById('hotissue-expand-list');
-  if (!card || !list || !list.innerHTML.trim()) return;
-
-  const h2 = card.querySelector('h2');
-  if (h2 && h2.style.display !== 'none') h2.style.display = 'none';
-  if (list.style.display !== 'none') list.style.display = 'none';
-
-  const count = list.querySelectorAll('span').length;
-  let summary = card.querySelector('.hi-expand-summary-row');
-  if (!summary) {
-    summary = document.createElement('div');
-    summary.className = 'row-between hi-expand-summary-row';
-    summary.style.cssText = 'align-items:center;';
-    summary.innerHTML = `<span class="small-sub" style="font-weight:700;">확장 검색 키워드</span>
-      <button class="btn btn-ghost" style="font-size:12px;min-height:28px;padding:0 10px;margin:0;" onclick="showHotissueExpandSheet()"></button>`;
-    card.insertBefore(summary, card.firstChild);
-  }
-  const btn = summary.querySelector('button');
-  if (btn) btn.textContent = `${count}개 보기`;
-}
-
-function showHotissueExpandSheet() {
-  const list = document.getElementById('hotissue-expand-list');
-  if (!list || !list.innerHTML.trim()) return;
-  const spans = Array.from(list.querySelectorAll('span'));
-  const shown = spans.slice(0, 5).map(s => s.outerHTML).join('');
-  const note = spans.length > 5
-    ? `<p class="small-sub" style="font-size:11px;margin:6px 0 0;color:#9ca3af;">총 ${spans.length}개 중 5개 표시</p>`
-    : '';
-  uiOpenBottomSheet(
-    `<h3 style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1c2434;">확장 검색 키워드</h3>` +
-    `<div style="line-height:2;">${shown}</div>` +
-    note +
-    `<button class="btn btn-ghost" style="margin-top:8px;" onclick="uiCloseBottomSheet();">닫기</button>`
-  );
-}
+// r9-fix9-ux-cleanup: 확장 검색 키워드는 이제 hotissue.js가 처음부터
+// 1줄 칩(#hotissue-expand-row)으로 렌더링하므로, 이전의 큰 카드→바텀시트
+// 압축 로직(compactHotissueExpandCard/showHotissueExpandSheet)은 더 이상 필요하지 않다.
+// (핫이슈 키워드 팝업/바텀시트 추가 금지 원칙에 맞춰 제거)
 
 function initHotissueResultCompactor() {
   const resultArea = document.getElementById('hotissue-result-area');
   const rawArea     = document.getElementById('hotissue-raw-area');
-  const expandList  = document.getElementById('hotissue-expand-list');
-  if (!resultArea && !rawArea && !expandList) return;
+  if (!resultArea && !rawArea) return;
   let scheduled = false;
   const run = () => {
     if (scheduled) return;
     scheduled = true;
-    setTimeout(() => { scheduled = false; compactHotissueResultDom(); compactHotissueExpandCard(); }, 0);
+    setTimeout(() => { scheduled = false; compactHotissueResultDom(); }, 0);
   };
   if (resultArea) new MutationObserver(run).observe(resultArea, { childList: true, subtree: true });
   if (rawArea)    new MutationObserver(run).observe(rawArea, { childList: true, subtree: true });
-  if (expandList) new MutationObserver(run).observe(expandList, { childList: true });
 }
 
 // r9-gui-mobile-layout-reset: 홈 화면 "최근 생성 글" 카드는 최근 1건 + 요약 문구만 남긴다.

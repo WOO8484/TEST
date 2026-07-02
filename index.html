@@ -8,8 +8,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>BPW — BlogSpot 자동화 (v0.1.1-r9-fix8)</title>
-<link rel="stylesheet" href="./assets/css/style.css?v=r9-fix8">
+<title>BPW — BlogSpot 자동화 (v0.1.1-r9-fix9)</title>
+<link rel="stylesheet" href="./assets/css/style.css?v=r9-fix9">
 </head>
 <body>
 <div id="app">
@@ -42,7 +42,7 @@
      ========================================= -->
 <div class="screen" id="screen-dashboard">
   <div class="topbar">
-    <h1>BPW <small style="font-size:12px;font-weight:500;color:#6b7280;">v0.1.1-r9-fix8</small></h1>
+    <h1>BPW <small style="font-size:12px;font-weight:500;color:#6b7280;">v0.1.1-r9-fix9</small></h1>
     <span class="badge mock" id="dash-mode-badge">Mock 모드</span>
   </div>
 
@@ -73,7 +73,7 @@
       <span class="cr-value" id="dash-post-status">생성된 글 없음</span>
     </div>
     <div id="dash-recent-list" class="compact-list compact-list-sm" style="margin-top:4px;"><p class="small-sub">아직 저장된 글이 없습니다.</p></div>
-    <!-- r9-fix8: blogger.js refreshDashboard()가 참조하는 기존 id는 UI 축소를 위해 화면에서는 숨기되 DOM에는 유지한다 (id/기능 변경 금지) -->
+    <!-- r9-fix9: blogger.js refreshDashboard()가 참조하는 기존 id는 UI 축소를 위해 화면에서는 숨기되 DOM에는 유지한다 (id/기능 변경 금지) -->
     <span id="dash-current-keyword" style="display:none;"></span>
     <span id="dash-quality-score" style="display:none;"></span>
     <span id="dash-today-count" style="display:none;"></span>
@@ -99,12 +99,11 @@
     <h2>키워드 입력</h2>
     <input type="text" id="hotissue-keyword" placeholder="예: 전기요금 누진세, 청년대출, AI 스마트폰" oninput="onHotissueKeywordInput()">
     <button class="btn btn-primary" style="margin-top:10px;" onclick="handleHotissueSearch()">핫이슈 검색 시작</button>
-    <p class="hint">확장 키워드(전망·비교·혜택 등 10종)로 네이버를 검색해 핫이슈 점수를 분석합니다.<br>※ 최신순(sort=date) 검색은 r8 Worker 업데이트 예정</p>
-  </div>
-
-  <div class="card" id="hotissue-expand-card" style="display:none;">
-    <h2>확장 검색 키워드 (10개)</h2>
-    <div id="hotissue-expand-list" style="line-height:2;"></div>
+    <p class="hint">확장 키워드(전망·비교·혜택 등 10종)로 네이버를 검색해 핫이슈 점수를 분석합니다.<br>※ 다른 키워드를 입력한 뒤 다시 검색하면 결과가 갱신됩니다.</p>
+    <div id="hotissue-expand-row" class="hotissue-chip-row" style="display:none;">
+      <div id="hotissue-expand-chips" class="hotissue-chip-list"></div>
+      <button type="button" id="hotissue-expand-more-btn" class="hotissue-chip-more" onclick="cycleExpandedKeywords()"></button>
+    </div>
   </div>
 
   <div class="card" id="hotissue-loading-card" style="display:none;text-align:center;padding:12px 12px;">
@@ -139,7 +138,7 @@
   <div class="card" style="padding:8px 12px;">
     <div style="display:flex;gap:8px;align-items:center;">
       <input type="text" id="autowrite-keyword" placeholder="키워드 입력 또는 핫이슈 탭에서 가져오기" style="flex:1;">
-      <button class="btn btn-ghost autowrite-import-btn" style="white-space:nowrap;" onclick="syncAutowriteKeyword()">가져오기</button>
+      <button class="btn btn-ghost autowrite-import-btn" style="white-space:nowrap;" onclick="syncAutowriteKeyword()">핫이슈 가져오기</button>
     </div>
     <p id="autowrite-import-status" class="hint" style="margin:6px 0 0;">가져온 키워드 없음</p>
 
@@ -162,16 +161,16 @@
     <p class="hint" id="editor-worker-mode-hint" style="display:none;color:#d97706;">Worker 연결 테스트를 먼저 해주세요. Mock 모드로 진행됩니다.</p>
   </div>
 
-  <!-- 카드 2: 글쓰기 옵션 / 글 재료 / 메타·라벨 — compact row, 전부 바텀시트로 열림 -->
+  <!-- 카드 2: 작성 스타일 / 참고 자료 / 발행 정보 — compact row, 전부 바텀시트로 열림 -->
   <div class="card" style="padding:2px 12px;">
     <div class="settings-menu-row" onclick="toggleWriteOptions()">
-      <span class="smr-icon">옵</span><span class="smr-label">글쓰기 옵션</span><span class="smr-arrow">›</span>
+      <span class="smr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="18" r="2"/></svg></span><span class="smr-label">작성 스타일</span><span class="smr-arrow">›</span>
     </div>
     <div class="settings-menu-row" onclick="toggleMaterialOptions()">
-      <span class="smr-icon">재</span><span class="smr-label">글 재료 (선택)</span><span class="smr-arrow">›</span>
+      <span class="smr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span><span class="smr-label">참고 자료</span><span class="smr-arrow">›</span>
     </div>
     <div class="settings-menu-row" style="border-bottom:none;" onclick="showAutowriteDetailSheet()">
-      <span class="smr-icon">메</span><span class="smr-label">메타·라벨</span><span class="smr-arrow">›</span>
+      <span class="smr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5V5a1 1 0 0 1 1-1h6.5a1 1 0 0 1 .7.3l9 9a1 1 0 0 1 0 1.4l-6.5 6.5a1 1 0 0 1-1.4 0l-9-9a1 1 0 0 1-.3-.7z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="smr-label">발행 정보</span><span class="smr-arrow">›</span>
     </div>
   </div>
 
@@ -241,6 +240,15 @@
   <!-- 발행관리 본문 — 글 유무와 상관없이 항상 같은 3카드 구조를 유지한다 -->
   <div id="pubmgmt-content-area" class="page-content">
 
+  <!-- 글 없음 상태 — 안내 카드 1개로 단순화 -->
+  <div id="pubmgmt-empty-state" class="card" style="display:none;text-align:center;padding:22px 16px;">
+    <p class="small-sub" style="margin:0 0 4px;">아직 생성된 글이 없습니다.</p>
+    <p class="small-sub" style="margin:0 0 14px;">자동작성에서 글을 만든 뒤 저장/예약할 수 있습니다.</p>
+    <button class="btn btn-primary" onclick="safeGoScreen('autowrite')">자동작성으로 이동</button>
+  </div>
+
+  <!-- 글 있음 상태 — 기존 3카드 구조 그대로 유지 -->
+  <div id="pubmgmt-full-state">
     <!-- 카드 1: 현재 상태 -->
     <div class="card" style="padding:8px 12px;">
       <div class="row-between" style="margin-bottom:4px;">
@@ -291,6 +299,7 @@
         <p class="small-sub">글 생성 후 임시저장/예약발행이 가능합니다.</p>
       </div>
     </div>
+  </div><!-- /pubmgmt-full-state -->
   </div><!-- /pubmgmt-content-area -->
 </div>
 
@@ -400,16 +409,16 @@
 </div>
 </div><!-- /app -->
 
-<script src="./assets/js/config.js?v=r9-fix8"></script>
-<script src="./assets/js/storage.js?v=r9-fix8"></script>
-<script src="./assets/js/ui.js?v=r9-fix8"></script>
-<script src="./assets/js/auth.js?v=r9-fix8"></script>
-<script src="./assets/js/editor.js?v=r9-fix8"></script>
-<script src="./assets/js/quality-check.js?v=r9-fix8"></script>
-<script src="./assets/js/hero-image.js?v=r9-fix8"></script>
-<script src="./assets/js/hotissue.js?v=r9-fix8"></script>
-<script src="./assets/js/blogger.js?v=r9-fix8"></script>
-<script src="./assets/js/api.js?v=r9-fix8"></script>
-<script src="./assets/js/app.js?v=r9-fix8"></script>
+<script src="./assets/js/config.js?v=r9-fix9"></script>
+<script src="./assets/js/storage.js?v=r9-fix9"></script>
+<script src="./assets/js/ui.js?v=r9-fix9"></script>
+<script src="./assets/js/auth.js?v=r9-fix9"></script>
+<script src="./assets/js/editor.js?v=r9-fix9"></script>
+<script src="./assets/js/quality-check.js?v=r9-fix9"></script>
+<script src="./assets/js/hero-image.js?v=r9-fix9"></script>
+<script src="./assets/js/hotissue.js?v=r9-fix9"></script>
+<script src="./assets/js/blogger.js?v=r9-fix9"></script>
+<script src="./assets/js/api.js?v=r9-fix9"></script>
+<script src="./assets/js/app.js?v=r9-fix9"></script>
 </body>
 </html>

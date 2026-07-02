@@ -800,6 +800,8 @@ img { max-width: 100%; height: auto; }
   border-radius: 6px; background: #eef1f5; color: #475569;
   font-size: 11px; font-weight: 800;
 }
+/* r9-fix9-ux-cleanup: 하단 메뉴와 같은 계열의 심플 svg 아이콘 크기 통일 (텍스트 배지 대체) */
+.settings-menu-row .smr-icon svg { width: 14px; height: 14px; display: block; }
 .settings-menu-row .smr-label { flex: 1; font-weight: 700; font-size: 13px; color: #1c2434; }
 .settings-menu-row .smr-value { font-size: 11.5px; color: #6b7280; max-width: 45%; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .settings-menu-row .smr-arrow { color: #9ca3af; font-size: 13px; flex-shrink: 0; }
@@ -1028,4 +1030,54 @@ input[type="date"], input[type="time"], select {
 #bottom-sheet {
   padding-bottom: max(10px, env(safe-area-inset-bottom));
 }
+
+/* ============================================================
+   r9-fix9-ux-cleanup: 핫이슈 연관/확장 키워드 — 1줄 칩 형태
+   큰 카드/팝업/바텀시트를 쓰지 않고 키워드 입력 카드 안에서
+   가로 1줄로만 표시한다. 카드 높이가 늘어나지 않도록
+   줄바꿈/세로 확장/내부 스크롤을 모두 막는다.
+   ============================================================ */
+.hotissue-chip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.hotissue-chip-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.hotissue-chip-list .hotissue-chip {
+  flex: 0 0 auto;
+  display: inline-block;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  color: #475569;
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hotissue-chip-more {
+  flex: 0 0 auto;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #4338ca;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hotissue-chip-more:active { background: #e0e7ff; }
 
