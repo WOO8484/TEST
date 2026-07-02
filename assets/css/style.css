@@ -106,7 +106,7 @@ body.login-open{
 .screen.active{
   display:flex !important;
 }
-@keyframes fadeIn{ from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
 
 /* .compact-list는 더 이상 내부 스크롤을 만들지 않는다.
    긴 목록은 스크롤 대신 표시 항목 수 자체를 줄이는 방식(최대 3~5개)으로 처리한다. */
@@ -187,7 +187,7 @@ body.login-open{
 
 
 .topbar{
-  position:sticky; top:0; z-index:10; background:rgba(255,255,255,0.92); backdrop-filter:blur(6px);
+  position:static; background:rgba(255,255,255,0.92); backdrop-filter:blur(6px);
   padding:16px 16px 14px 16px; border-bottom:1px solid var(--color-border);
   display:flex; align-items:center; justify-content:space-between;
   width:100%; max-width:100%; overflow-x:hidden;
@@ -960,4 +960,72 @@ input[type="date"], input[type="time"], select {
 
 /* 미리보기 요약 카드 */
 #preview-content .card { padding: 10px 12px; }
+
+/* ============================================================
+   r9-fix6-mobile-shell-fix
+   상단 상태바(top-status) / 화면 제목(page-title) / 본문(page-content) /
+   하단 메뉴(bottom-nav) 4구역을 고정한다.
+   기존 구조(.screen이 flex-column, .topbar가 첫 자식)는 그대로 두고
+   page-title 영역의 "높이"만 화면마다 고정해 본문 시작 위치가
+   화면 이동 시 흔들리지 않도록 한다. 카드 추가/버튼 확대/내부 스크롤은
+   추가하지 않는다.
+   ============================================================ */
+
+/* page-title(.topbar) — 내용 길이와 무관하게 항상 같은 높이.
+   홈 화면의 버전명(subtitle)이 길어져도 topbar 높이가 늘어나지 않고
+   ellipsis로 잘리므로 다른 화면과 제목/본문 시작 위치가 항상 같다. */
+.topbar {
+  height: 52px;
+  min-height: 52px;
+  max-height: 52px;
+  margin: 0 0 8px 0;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+.topbar h1 {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.topbar h1 small {
+  display: inline-block;
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.topbar .badge {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* page-content — 제목 아래 남은 높이를 차지하는 고정 본문 영역.
+   화면(홈/핫이슈/자동작성/발행관리/설정) 공통으로 본문이 항상 같은
+   위치(top)에서 시작하도록 flex-start(기본값)로 정렬한다.
+   내부 스크롤은 만들지 않는다(overflow:hidden 유지). */
+.page-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.page-content > .card:last-child,
+.page-content > *:last-child > .card:last-child {
+  margin-bottom: 0;
+}
+
+/* 바텀시트 하단 safe-area 보강 — 패딩 10~12px 기준은 유지하고
+   하단만 iPhone 하단 제스처 영역만큼 최소 확보한다. */
+#bottom-sheet {
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+}
 

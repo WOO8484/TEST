@@ -716,7 +716,7 @@ function refreshPubmgmtScreen() {
   const menuEmpty    = document.getElementById('pubmgmt-menu-empty');
   // r9-gui-mobile-layout-reset-fix2: 글이 없어도 같은 3카드 구조를 유지하되,
   // 별도의 4번째 안내 카드를 추가하지 않고 카드2/카드3 내부만 empty 상태로 전환한다.
-  if (contentArea) contentArea.style.display = 'block';
+  if (contentArea) contentArea.style.display = 'flex';
   if (!post) {
     if (actionFull)  actionFull.style.display  = 'none';
     if (actionEmpty) actionEmpty.style.display = 'block';
